@@ -2046,8 +2046,9 @@ static int op_jz(void)                  /* JZ nn */
     i = memrdr(PC8++);
     i += memrdr(PC8++) << 8;
     PC8 = i;
-  } else
+  } else {
     PC8 += 2;
+  }
   return(10);
 }
 
@@ -2059,8 +2060,9 @@ static int op_jnz(void)                 /* JNZ nn */
     i = memrdr(PC8++);
     i += memrdr(PC8++) << 8;
     PC8 = i;
-  } else
+  } else {
     PC8 += 2;
+  }
   return(10);
 }
 
@@ -2072,8 +2074,9 @@ static int op_jc(void)                  /* JC nn */
     i = memrdr(PC8++);
     i += memrdr(PC8++) << 8;
     PC8 = i;
-  } else
+  } else {
     PC8 += 2;
+  }
   return(10);
 }
 
@@ -2085,8 +2088,9 @@ static int op_jnc(void)                 /* JNC nn */
     i = memrdr(PC8++);
     i += memrdr(PC8++) << 8;
     PC8 = i;
-  } else
+  } else {
     PC8 += 2;
+  }
   return(10);
 }
 
@@ -2098,8 +2102,9 @@ static int op_jpe(void)                 /* JPE nn */
     i = memrdr(PC8++);
     i += memrdr(PC8++) << 8;
     PC8 = i;
-  } else
+  } else {
     PC8 += 2;
+  }
   return(10);
 }
 
@@ -2111,8 +2116,9 @@ static int op_jpo(void)                 /* JPO nn */
     i = memrdr(PC8++);
     i += memrdr(PC8++) << 8;
     PC8 = i;
-  } else
+  } else {
     PC8 += 2;
+  }
   return(10);
 }
 
@@ -2124,8 +2130,9 @@ static int op_jm(void)                  /* JM nn */
     i = memrdr(PC8++);
     i += memrdr(PC8++) << 8;
     PC8 = i;
-  } else
+  } else {
     PC8 += 2;
+  }
   return(10);
 }
 
@@ -2137,8 +2144,9 @@ static int op_jp(void)                  /* JP nn */
     i = memrdr(PC8++);
     i += memrdr(PC8++) << 8;
     PC8 = i;
-  } else
+  } else {
     PC8 += 2;
+  }
   return(10);
 }
 
