@@ -19,7 +19,7 @@ static inline BYTE memrdr(WORD addr)
   if (addr < MEMSIZE)
     return(memory[addr]);
   else
-    fatal("address out of range in memrdr()");
+    fatal("addr range memrdr");
 }
 
 // write a byte data into 8080 CPU memory address addr 
@@ -28,5 +28,5 @@ static inline void memwrt(WORD addr, BYTE data)
   if (addr < MEMSIZE)
     memory[addr] = data;
   else
-    fatal("address out of range in memwrt()"); 
+    fatal("addr range memwrt"); 
 }
