@@ -2494,7 +2494,7 @@ void cpu_8080(void)
     op_dcrd,                        /* 0x15 */
     op_mvidn,                       /* 0x16 */
     op_ral,                         /* 0x17 */
-    op_nop,                        /* 0x18 */
+    op_nop,                         /* 0x18 */
     op_dadd,                        /* 0x19 */
     op_ldaxd,                       /* 0x1a */
     op_dcxd,                        /* 0x1b */
