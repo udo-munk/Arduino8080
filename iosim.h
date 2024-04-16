@@ -13,7 +13,7 @@ static BYTE io_in(BYTE addrl, BYTE addrh)
 // Write byte to Arduino tty.
 static void p000_out(BYTE data)
 {
-  Serial.print(data);
+  Serial.write(data);
 }
 
 // This array contains function pointers for every output
