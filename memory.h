@@ -10,8 +10,8 @@
 // forward declaration for stuff needed here
 extern void fatal(char *);
 
-// memory for the 8080 CPU
-BYTE memory[MEMSIZE];
+// get preloaded memory for the 8080 CPU
+#include "8080code.h"
 
 // read a byte from 8080 CPU memory address addr
 static inline BYTE memrdr(WORD addr)
