@@ -17,6 +17,10 @@ typedef unsigned int  WORD;
 BYTE A, B, C, D, E, H, L, F, IFF;
 WORD PC8, SP8; // funny names because SP already is a macro here
 
+// other global variables
+CPUState State = Running;         // CPU state
+unsigned long tstates = 0;        // executed T-states
+
 // Precompiled parity table
 const static int parity[256] = {
 		0 /* 00000000 */, 1 /* 00000001 */, 1 /* 00000010 */,
@@ -134,8 +138,7 @@ static int op_hlt(void)                 /* HLT */
   Serial.print(PC8, HEX);
   Serial.println();
   digitalWrite(LED_BUILTIN, true);
-  while(true)
-    ;
+  State = Halted;
   return(7);
 }
 
@@ -2728,11 +2731,9 @@ void cpu_8080(void)
     op_rst7                         /* 0xff */
   };
 
-  register int states;              // clock states returned by the opcode functions
-
   do {
-    states = (*op_sim[memrdr(PC8++)]) ();    // execute next opcode
-  } while (true);
+    tstates += (*op_sim[memrdr(PC8++)]) ();    // execute next opcode
+  } while (State == Running);
 }
 
 void setup() {
@@ -2750,6 +2751,20 @@ void loop() {
   // put a few NOP and a HLT instruction into memory and see if CPU executes it
   //memwrt(0,0); memwrt(1,0); memwrt(2,0); memwrt(3,0); memwrt(4,0); memwrt(5,0); memwrt(6,0x76);
 
+  // for measuring the run time
+  unsigned long start, stop;
+
   // run the 8080 CPU with whatever code is in memory
+  start = millis();
   cpu_8080();
+  stop = millis();
+
+  // print some execution statistics
+  Serial.print(F("8080 ran "));
+  Serial.print(stop - start);
+  Serial.print(F(" ms and executed "));
+  Serial.print(tstates, DEC);
+  Serial.println(F(" T states"));
+  delay(2000);
+  exit(0);
 }

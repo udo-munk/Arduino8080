@@ -13,3 +13,6 @@
 #define P_FLAG          4
 #define N_FLAG          2
 #define C_FLAG          1
+
+// possible states of the 8080 CPU
+enum CPUState { Running = 1, Halted = 2 };
