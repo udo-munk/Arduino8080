@@ -1,0 +1,37 @@
+Z80-Macro-Assembler  Release 1.11-dev	Tue Apr 16 13:50:11 2024
+
+LOC   OBJECT CODE   LINE   STMT SOURCE CODE
+                       1      1 ;
+                       2      2 ; Example program for the Arduino 8080
+                       3      3 ; Sends some text to the serial I/O port
+                       4      4 ;
+                       5      5 ; Udo Munk, April 2024
+                       6      6 ;
+                       7      7 	.8080			; we want 8080 code
+                       8      8 	ORG 0000H		; starting at memory location 0
+                       9      9 
+0000  31 00 01        10     10 	LXI  SP,0100H		; set SP somewhere in upper memory
+0003  11 12 00        11     11 	LXI  D,TEXT		; DE points to the text we want to send
+0006  1a              12     12 LOOP	LDAX D			; get next character into A
+0007  13              13     13 	INX  D			; increment pointer to the text
+0008  b7              14     14 	ORA  A			; 0 termination?
+0009  ca 11 00        15     15 	JZ   DONE		; if so we are done
+000c  d3 00           16     16         OUT  0			; output character to I/O port 0
+000e  f2 06 00        17     17         JP   LOOP		; and repeat until done
+                      18     18 
+0011  76              19     19 DONE	HLT			; we are done, halt CPU
+                      20     20 
+                      21     21 				; text we want to send to serial port
+0012  48 65 6c 6c     22     22 TEXT	DEFM "Hello from the 8080 CPU"
+0016  6f 20 66 72     22     23
+001a  6f 6d 20 74     22     24
+001e  68 65 20 38     22     25
+0022  30 38 30 20     22     26
+0026  43 50 55        22     27
+0029  0d 0a 00        23     28 	DEFB 13,10,0		; carriage return, linefeed and string termination
+                      24     29 
+002c                  25     30 	END			; of program
+
+Symbol table
+
+DONE 0011    LOOP 0006    TEXT 0012    
