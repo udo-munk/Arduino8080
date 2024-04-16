@@ -4,7 +4,7 @@
 ;
 ; Udo Munk, April 2024
 ;
-	.8080			; we want 8080 code
+	.8080			; we use Intel 8080 syntax
 	ORG 0000H		; starting at memory location 0
 
 	LXI  SP,0100H		; set SP somewhere in upper memory
@@ -13,7 +13,7 @@ LOOP	LDAX D			; get next character into A
 	INX  D			; increment pointer to the text
 	ORA  A			; 0 termination?
 	JZ   DONE		; if so we are done
-        OUT  0			; output character to I/O port 0
+        OUT  0			; output character in A to I/O port 0 (tty)
         JP   LOOP		; and repeat until done
 
 DONE	HLT			; we are done, halt CPU

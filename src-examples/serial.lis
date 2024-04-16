@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 1.11-dev	Tue Apr 16 15:01:01 2024
+Z80/8080-Macro-Assembler  Release 1.11-dev	Tue Apr 16 15:07:57 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;
@@ -7,7 +7,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        4      4 ;
                        5      5 ; Udo Munk, April 2024
                        6      6 ;
-                       7      7 	.8080			; we want 8080 code
+                       7      7 	.8080			; we use Intel 8080 syntax
                        8      8 	ORG 0000H		; starting at memory location 0
                        9      9 
 0000  31 00 01        10     10 	LXI  SP,0100H		; set SP somewhere in upper memory
@@ -16,7 +16,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0007  13              13     13 	INX  D			; increment pointer to the text
 0008  b7              14     14 	ORA  A			; 0 termination?
 0009  ca 11 00        15     15 	JZ   DONE		; if so we are done
-000c  d3 00           16     16         OUT  0			; output character to I/O port 0
+000c  d3 00           16     16         OUT  0			; output character in A to I/O port 0 (tty)
 000e  f2 06 00        17     17         JP   LOOP		; and repeat until done
                       18     18 
 0011  76              19     19 DONE	HLT			; we are done, halt CPU
