@@ -2750,7 +2750,7 @@ void loop() {
   Serial.print(stop - start);
   Serial.print(F(" ms and executed "));
   Serial.print(tstates, DEC);
-  Serial.println(F(" T states"));
+  Serial.println(F(" t-states"));
   delay(2000);
   exit(0);
 }
