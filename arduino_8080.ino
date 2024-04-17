@@ -111,18 +111,6 @@ const static int parity[256] = {
 		1 /* 11111110 */, 0 /* 11111111 */
 };
 
-// in case of a fatal error cry and die
-void fatal(char *msg)
-{
-  Serial.println(msg);
-  Serial.print(F("PC = 0x"));
-  Serial.print(PC8, HEX);
-  Serial.println();
-  digitalWrite(LED_BUILTIN, true);
-  delay(2000);
-  exit(1);
-}
-
 // 8080 CPU instructions, return value is clock states of a real Intel 8080 CPU.
 // All undocumented instructions are executed and not trapped, to keep it simpler,
 // for analysis use PC version.
@@ -2745,8 +2733,6 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   // some simple tests of the basics
-  //memrdr(2048);           // fatal, we do not have the memory
-  //memwrt(2048, 0xff);     // fatal, we do not have the memory
   //op_hlt();               // test HLT instruction
   // put a few NOP and a HLT instruction into memory and see if CPU executes it
   //memwrt(0,0); memwrt(1,0); memwrt(2,0); memwrt(3,0); memwrt(4,0); memwrt(5,0); memwrt(6,0x76);
