@@ -13,7 +13,7 @@ LOOP	LDAX D			; get next character into A
 	INX  D			; increment pointer to the text
 	ORA  A			; 0 termination?
 	JZ   DONE		; if so we are done
-        OUT  0			; output character in A to I/O port 0 (tty)
+        OUT  1			; output character in A to I/O port 1 (tty)
         JP   LOOP		; and repeat until done
 
 DONE	HLT			; we are done, halt CPU
