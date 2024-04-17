@@ -2,8 +2,8 @@ This directory contains 8080 code examples for the Arduino 8080.
 I have assembled the sources with z80asm from z80pack, but you
 can use any 8080 assembler of course.
 
-Copy one of the "example".h files to ../8080code.h and rebuild
+Copy one of the "example".c files to ../8080code.h and rebuild
 the application.
 
 The examples are:
-serial		- send some text to the tty serial port
+serial.c		- send some text to the tty serial port

@@ -14,7 +14,7 @@
 static inline BYTE memrdr(WORD addr)
 {
   if (addr < MEMSIZE)
-    return(memory[addr]);
+    return(code[addr]);
   else
     return(0xff);
 }
@@ -23,5 +23,5 @@ static inline BYTE memrdr(WORD addr)
 static inline void memwrt(WORD addr, BYTE data)
 {
   if (addr < MEMSIZE)
-    memory[addr] = data;
+    code[addr] = data;
 }
