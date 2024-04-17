@@ -125,7 +125,6 @@ static int op_hlt(void)                 /* HLT */
   Serial.print(F("HLT instruction PC = 0x"));
   Serial.print(PC8, HEX);
   Serial.println();
-  digitalWrite(LED_BUILTIN, true);
   State = Halted;
   return(7);
 }
@@ -2744,6 +2743,9 @@ void loop() {
   start = millis();
   cpu_8080();
   stop = millis();
+  
+  // 8080 CPU stopped working, signal this on builtin LED
+  digitalWrite(LED_BUILTIN, true);
 
   // print some execution statistics
   Serial.print(F("8080 ran "));
