@@ -2751,6 +2751,9 @@ void loop() {
   Serial.print(F(" ms and executed "));
   Serial.print(tstates, DEC);
   Serial.println(F(" t-states"));
+  Serial.print(F("Clock frequency "));
+  Serial.print(float(tstates) / 1000.0, 2);
+  Serial.println(F(" MHz"));
   delay(2000);
   exit(0);
 }
