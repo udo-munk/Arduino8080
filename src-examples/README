@@ -4,3 +4,6 @@ can use any 8080 assembler of course.
 
 Copy one of the "example".h files to ../8080code.h and rebuild
 the application.
+
+The examples are:
+serial		- send some text to the tty serial port
