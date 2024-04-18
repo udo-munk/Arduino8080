@@ -6,5 +6,5 @@ Copy one of the "example".c files to ../8080code.h and rebuild
 the application.
 
 The examples are:
-serial.c		- send some text to the tty serial port
-echo.c			- echo text send to the tty serial port
+serial.c		- send some text to the tty serial port and then halt CPU
+echo.c			- echo text send to the tty serial port endless
