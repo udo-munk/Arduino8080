@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0-dev	Thu Apr 18 13:39:37 2024
+Z80/8080-Macro-Assembler  Release 2.0-dev	Thu Apr 18 15:20:14 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;
@@ -21,7 +21,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0008  b7              18     18         ORA  A			; 0 termination?
 0009  ca 11 00        19     19         JZ   INCH		; if so we are done
 000c  d3 01           20     20         OUT  CONDA		; output character in A to console
-000e  f2 06 00        21     21         JP   LOOP1		; and repeat until done
+000e  c3 06 00        21     21         JMP  LOOP1		; and repeat until done
 0011  db 00           22     22 INCH    IN   CONST		; get console status into A
 0013  0f              23     23 	RRC			; is input available?
 0014  d2 11 00        24     24 	JNC  INCH		; if not try again

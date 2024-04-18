@@ -18,7 +18,7 @@ LOOP1   LDAX D			; get next character into A
         ORA  A			; 0 termination?
         JZ   INCH		; if so we are done
         OUT  CONDA		; output character in A to console
-        JP   LOOP1		; and repeat until done
+        JMP  LOOP1		; and repeat until done
 INCH    IN   CONST		; get console status into A
 	RRC			; is input available?
 	JNC  INCH		; if not try again
