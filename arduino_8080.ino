@@ -2731,12 +2731,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  // some simple tests of the basics
-  //op_hlt();               // test HLT instruction
-  // put a few NOP and a HLT instruction into memory and see if CPU executes it
-  //memwrt(0,0); memwrt(1,0); memwrt(2,0); memwrt(3,0); memwrt(4,0); memwrt(5,0); memwrt(6,0x76);
-
-  // for measuring the run time
+  // variables for measuring the run time
   unsigned long start, stop;
 
   // run the 8080 CPU with whatever code is in memory
