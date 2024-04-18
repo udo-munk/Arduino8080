@@ -1,10 +1,17 @@
 This directory contains 8080 code examples for the Arduino 8080.
 I have assembled the sources with z80asm from z80pack, but you
-can use any 8080 assembler of course.
+can use any 8080 assembler of course. Advantage of using z80asm
+is, that the latest version can output C code we can right use
+here, without the need to convert from binaries or hex dumps.
 
 Copy one of the "example".c files to ../8080code.h and rebuild
 the application.
 
 The examples are:
-serial.c		- send some text to the tty serial port and then halt CPU
-echo.c			- echo text send to the tty serial port endless
+serial.c		- Send some text to the tty serial port and then halt CPU.
+echo.c			- Echo text send to the tty serial port endless.
+turnmon.c		- Very basic monitor program from "The Age Of The Altair",
+			  when users had very little memory, like we now also have.
+			  Read the manual if you don't know this program!
+			  Don't use with Arduino IDE Serial Monitor, won't work,
+			  use a terminal emulation like minicom, putty ...!
