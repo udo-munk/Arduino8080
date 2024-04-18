@@ -7,3 +7,4 @@ the application.
 
 The examples are:
 serial.c		- send some text to the tty serial port
+echo.c			- echo text send to the tty serial port

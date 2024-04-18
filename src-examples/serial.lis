@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0-dev	Wed Apr 17 13:21:40 2024
+Z80/8080-Macro-Assembler  Release 2.0-dev	Thu Apr 18 13:39:37 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;
@@ -17,7 +17,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0008  b7              14     14 	ORA  A			; 0 termination?
 0009  ca 11 00        15     15 	JZ   DONE		; if so we are done
 000c  d3 01           16     16         OUT  1			; output character in A to I/O port 1 (tty)
-000e  f2 06 00        17     17         JP   LOOP		; and repeat until done
+000e  c3 06 00        17     17         JMP  LOOP		; and repeat until done
                       18     18 
 0011  76              19     19 DONE	HLT			; we are done, halt CPU
                       20     20 
