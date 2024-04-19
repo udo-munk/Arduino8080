@@ -33,13 +33,16 @@ static BYTE p001_in(void)
 // I/O port (0 - 255), to do the required I/O.
 const static BYTE (*port_in[5]) (void) = {
   p000_in,                // port 0
-  p001_in                 // port 1
+  p001_in,                // port 1
+  0,                      // port 2
+  0,                      // port 3
+  0                       // port 4
 };
 
 // read a byte from 8080 CPU I/O
 static BYTE io_in(BYTE addrl, BYTE addrh)
 {
-  if (addrl <= 1) // for now we can use 0 and 1 only
+  if ((addrl <= 4) && (*port_in[addrl] != 0)) // for now we use 0-4
     return((*port_in[addrl]) ());
   else
     return(0xff); // all other return 0xff
@@ -56,12 +59,15 @@ static void p001_out(BYTE data)
 // I/O port (0 - 255), to do the required I/O.
 const static void (*port_out[5]) (BYTE) = {
   0,                      // port 0
-  p001_out                // port 1
+  p001_out,               // port 1
+  0,                      // port 2
+  0,                      // port 3
+  0                       // port 4
 };
 
 // write a byte to 8080 CPU I/O
 static void io_out(BYTE addrl, BYTE addrh, BYTE data)
 {
-  if (addrl == 1) // for now we can use 1 only, all other do nothing
+  if ((addrl <= 4) && (*port_out[addrl] != 0)) // for now we use 0-4, all other do nothing
     (*port_out[addrl]) (data);
 }
