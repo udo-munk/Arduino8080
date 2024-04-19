@@ -12,7 +12,7 @@ some problem.
 
 With the tiny 512 bytes RAM we can run very small programs only, but the
 first Altair users got their systems with 256 bytes and were happy. Of
-course one can add external memory, a SD card reader for disk immages,
+course one can add external memory, a SD card reader for disk images,
 so that it could run CP/M and so on. I don't know if I will go this
 far in this life, but you don't have to wait for me. Here is another
 good looking project, that already might do all you want:
