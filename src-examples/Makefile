@@ -3,6 +3,9 @@ all :		serial.c echo.c turnmon.c
 	@echo "Done."
 	@echo
 
+clean :
+	rm -f *.c
+
 serial.c :	serial.asm
 	z80asm -fc -l -sn -p0 $?
 
