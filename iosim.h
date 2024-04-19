@@ -10,12 +10,12 @@
 // bit 7 = 0, transmitter ready to write character to tty
 static BYTE p000_in(void)
 {
-  register BYTE stat = 0b10000001;
+  register BYTE stat = 0b10000001;  // initially not ready
 
-  if (Serial.available())
-    stat &= 0b11111110;
-  if (Serial.availableForWrite())
-    stat &= 0b01111111;
+  if (Serial.available())           // check if there is input from tty
+    stat &= 0b11111110;             // if so flip status bit
+  if (Serial.availableForWrite())   // check if output to tty is possible
+    stat &= 0b01111111;             // if so flip status bit
     
   return(stat);
 }
