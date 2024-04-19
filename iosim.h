@@ -8,13 +8,16 @@
 // read status of the Arduino tty and return:
 // bit 0 = 0, character available for input from tty
 // bit 7 = 0, transmitter ready to write character to tty
-// bit 7 is always 0 for now, because we cannot get easily at this
 static BYTE p000_in(void)
 {
+  register BYTE stat = 0b10000001;
+
   if (Serial.available())
-    return(0);
-  else
-    return(1);
+    stat &= 0b11111110;
+  if (Serial.availableForWrite())
+    stat &= 0b01111111;
+    
+  return(stat);
 }
 
 // I/O function port 1 read:
