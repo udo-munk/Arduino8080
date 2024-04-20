@@ -48,6 +48,16 @@ static BYTE io_in(BYTE addrl, BYTE addrh)
     return(0xff); // all other return 0xff
 }
 
+// I/O function port 0 write:
+// Switch builtin LED on/off.
+static void p000_out(BYTE data)
+{
+  if (!data)
+    digitalWrite(LED_BUILTIN, false); // 0 switches LED off
+  else
+    digitalWrite(LED_BUILTIN, true);  // everything else on
+}
+
 // I/O function port 1 write:
 // Write byte to Arduino tty.
 static void p001_out(BYTE data)
@@ -58,7 +68,7 @@ static void p001_out(BYTE data)
 // This array contains function pointers for every output
 // I/O port (0 - 255), to do the required I/O.
 const static void (*port_out[5]) (BYTE) = {
-  0,                      // port 0
+  p000_out,               // port 0
   p001_out,               // port 1
   0,                      // port 2
   0,                      // port 3
