@@ -1,4 +1,4 @@
-all :		serial.c echo.c turnmon.c blink.c
+all :		serial.c echo.c turnmon.c blink.c banner.c
 	@echo
 	@echo "Done."
 	@echo
@@ -16,4 +16,7 @@ turnmon.c :	turnmon.asm
 	z80asm -fc -l -sn -p0 -8 $?
 
 blink.c :	blink.asm
+	z80asm -fc -l -sn -p0 $?
+
+banner.c :	banner.asm
 	z80asm -fc -l -sn -p0 $?
