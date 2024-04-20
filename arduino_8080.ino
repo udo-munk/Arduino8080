@@ -2752,7 +2752,7 @@ void loop() {
   Serial.print(tstates, DEC);
   Serial.println(F(" t-states"));
   Serial.print(F("Clock frequency "));
-  Serial.print(float(tstates) / 1000.0, 2);
+  Serial.print(float(tstates) / float(stop - start) / 1000.0, 2);
   Serial.println(F(" MHz"));
   delay(2000);
   exit(0);
