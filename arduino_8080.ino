@@ -2754,6 +2754,7 @@ void loop() {
   Serial.print(F("Clock frequency "));
   Serial.print(float(tstates) / float(stop - start) / 1000.0, 2);
   Serial.println(F(" MHz"));
+  Serial.println();
   Serial.flush();
   exit(0);
 }
