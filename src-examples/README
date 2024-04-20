@@ -15,3 +15,4 @@ turnmon.c		- Very basic monitor program from "The Age Of The Altair",
 			  Read the manual if you don't know this program!
 			  Don't use with Arduino IDE Serial Monitor, won't work,
 			  use a terminal emulation like minicom, putty ...!
+blink.c			- Blink builtin LED with 8080
