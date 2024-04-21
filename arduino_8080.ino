@@ -2452,6 +2452,26 @@ static int op_rst7(void)                /* RST 7 */
   return (11);
 }
 
+// This function initializes the CPU into the documented
+// state. Prevents assumptions about register contents
+// of a just powered CPU, like HL is always 0 in the
+// beginning, which is not the case with the silicon.
+static void init_cpu(void)
+{
+  PC8 = 0;
+  SP8 = random(65535);
+  A = random(255);
+  B = random(255);
+  C = random(255);
+  D = random(255);
+  E = random(255);
+  H = random(255);
+  L = random(255);
+  F = random(255);
+  F &= ~(N2_FLAG | N1_FLAG);
+  F |= N_FLAG;
+}
+
 // This function builds the 8080 central processing unit.
 // The opcode where PC points to is fetched from the memory
 // and PC incremented by one. The opcode is used as an
@@ -2729,6 +2749,8 @@ void setup() {
   Serial.begin(9600);
   while (!Serial) {
     ; // Wait for serial port to connect. Needed for native USB
+  randomSeed(analogRead(7));
+  init_cpu();
   }
 }
 
