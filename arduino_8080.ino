@@ -2747,7 +2747,7 @@ void loop() {
 
   // print some execution statistics
   Serial.print(F("8080 ran "));
-  Serial.print(stop - start);
+  Serial.print(stop - start, DEC);
   Serial.print(F(" ms and executed "));
   Serial.print(tstates, DEC);
   Serial.println(F(" t-states"));
