@@ -2743,7 +2743,8 @@ void cpu_8080(void)
   } while (State == Running);
 }
 
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
@@ -2754,7 +2755,8 @@ void setup() {
   }
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
   // variables for measuring the run time
   unsigned long start, stop;
