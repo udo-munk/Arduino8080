@@ -17,7 +17,7 @@ static BYTE p000_in(void)
   if (Serial.availableForWrite())   // check if output to tty is possible
     stat &= 0b01111111;             // if so flip status bit
     
-  return(stat);
+  return (stat);
 }
 
 // I/O function port 1 read:
@@ -26,7 +26,7 @@ static BYTE p001_in(void)
 {
   while (!Serial.available())   // block until data available
     ;                           // compatible with z80sim
-  return((BYTE)Serial.read());  // read data
+  return ((BYTE)Serial.read()); // read data
 }
 
 // This array contains function pointers for every input
@@ -43,9 +43,9 @@ const static BYTE (*port_in[5]) (void) = {
 static BYTE io_in(BYTE addrl, BYTE addrh)
 {
   if ((addrl <= 4) && (*port_in[addrl] != 0)) // for now we use 0-4
-    return((*port_in[addrl]) ());
+    return ((*port_in[addrl]) ());
   else
-    return(0xff); // all other return 0xff
+    return (0xff); // all other return 0xff
 }
 
 // I/O function port 0 write:

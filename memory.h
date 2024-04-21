@@ -14,9 +14,9 @@
 static inline BYTE memrdr(WORD addr)
 {
   if (addr < MEMSIZE)
-    return(code[addr]);
+    return (code[addr]);
   else
-    return(0xff);
+    return (0xff);
 }
 
 // write a byte data into 8080 CPU memory address addr 
