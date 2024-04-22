@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0-dev	Sat Apr 20 17:28:52 2024
+Z80/8080-Macro-Assembler  Release 2.0-dev	Mon Apr 22 12:10:21 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;
@@ -15,14 +15,14 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0001  =               12     12 CONDA	EQU  1			; console data port
                       13     13 
 0000  31 00 01        14     14 	LXI  SP,0100H		; set stack far enough in upper memory
-0003  11 28 00        15     15         LXI  D,TEXT		; DE points to the text we want to send
-0006  1a              16     16 LOOP1   LDAX D			; get next character into A
-0007  13              17     17         INX  D			; increment pointer to the text
-0008  b7              18     18         ORA  A			; 0 termination?
-0009  ca 11 00        19     19         JZ   INCH		; if so we are done
-000c  d3 01           20     20         OUT  CONDA		; output character in A to console
-000e  c3 06 00        21     21         JMP  LOOP1		; and repeat until done
-0011  db 00           22     22 INCH    IN   CONST		; get console status into A
+0003  11 28 00        15     15 	LXI  D,TEXT		; DE points to the text we want to send
+0006  1a              16     16 LOOP1	LDAX D			; get next character into A
+0007  13              17     17 	INX  D			; increment pointer to the text
+0008  b7              18     18 	ORA  A			; 0 termination?
+0009  ca 11 00        19     19 	JZ   INCH		; if so we are done
+000c  d3 01           20     20 	OUT  CONDA		; output character in A to console
+000e  c3 06 00        21     21 	JMP  LOOP1		; and repeat until done
+0011  db 00           22     22 INCH	IN   CONST		; get console status into A
 0013  0f              23     23 	RRC			; is input available?
 0014  d2 11 00        24     24 	JNC  INCH		; if not try again
 0017  db 01           25     25 	IN   CONDA		; get input into A
@@ -35,7 +35,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0023  d3 01           32     32 	OUT  CONDA		; echo to console
 0025  c3 11 00        33     33 	JMP  INCH		; and do again
                       34     34 
-0028  54 68 65 20     35     35 TEXT    DEFM "The 8080 CPU will echo what you type"
+0028  54 68 65 20     35     35 TEXT	DEFM "The 8080 CPU will echo what you type"
 002c  38 30 38 30     35     36
 0030  20 43 50 55     35     37
 0034  20 77 69 6c     35     38
@@ -44,7 +44,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0040  68 61 74 20     35     41
 0044  79 6f 75 20     35     42
 0048  74 79 70 65     35     43
-004c  0d 0a 00        36     44         DEFB 13,10,0            ; carriage return, linefeed and string termination
+004c  0d 0a 00        36     44 	DEFB 13,10,0		; carriage return, linefeed and string termination
                       37     45 
 004f                  38     46 	END			; of program
 

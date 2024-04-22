@@ -29,8 +29,8 @@ PRTLN1	LDAX D			; get next character into A
 	INX  D			; increment pointer to the text
 	ORA  A			; 0 termination?
 	RZ			; if so we are done
-        OUT  CONDA		; output character in A to I/O port 1 (tty)
-        JMP  PRTLN1		; and repeat until done
+	OUT  CONDA		; output character in A to I/O port 1 (tty)
+	JMP  PRTLN1		; and repeat until done
 
 BANNER	DEFM " #####    ###     #####    ###            #####    ###   #     #"
 	DEFB CR,LF,0

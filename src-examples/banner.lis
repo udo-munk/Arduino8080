@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0-dev	Sat Apr 20 23:55:09 2024
+Z80/8080-Macro-Assembler  Release 2.0-dev	Mon Apr 22 12:10:21 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;
@@ -32,8 +32,8 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0017  13              29     29 	INX  D			; increment pointer to the text
 0018  b7              30     30 	ORA  A			; 0 termination?
 0019  c8              31     31 	RZ			; if so we are done
-001a  d3 01           32     32         OUT  CONDA		; output character in A to I/O port 1 (tty)
-001c  c3 16 00        33     33         JMP  PRTLN1		; and repeat until done
+001a  d3 01           32     32 	OUT  CONDA		; output character in A to I/O port 1 (tty)
+001c  c3 16 00        33     33 	JMP  PRTLN1		; and repeat until done
                       34     34 
 001f  20 23 23 23     35     35 BANNER	DEFM " #####    ###     #####    ###            #####    ###   #     #"
 0023  23 23 20 20     35     36
