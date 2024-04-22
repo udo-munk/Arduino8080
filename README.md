@@ -18,6 +18,7 @@ far in this life, but you don't have to wait for me. There are some other
 good looking projects, that already might do what you want:
 
 https://github.com/WA6YDQ/nano80
+
 https://forum.arduino.cc/t/cp-m-computer-on-arduino-nano-3-0/446350
 
 Udo Munk, April 2024
