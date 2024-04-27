@@ -1,25 +1,60 @@
 ;
 ; Example program for the Arduino 8080
-; Sends some text to the serial I/O port
+; Do some serial I/O
 ;
 ; Udo Munk, April 2024
 ;
-	.8080			; we use Intel 8080 syntax
-	ORG 0000H		; starting at memory location 0
 
-	LXI  SP,0100H		; set SP somewhere in upper memory
-	LXI  D,TEXT		; DE points to the text we want to send
-LOOP	LDAX D			; get next character into A
-	INX  D			; increment pointer to the text
-	ORA  A			; 0 termination?
-	JZ   DONE		; if so we are done
-	OUT  1			; output character in A to I/O port 1 (tty)
-	JMP  LOOP		; and repeat until done
+	.8080		; we use 8080 syntax
 
-DONE	HLT			; we are done, halt CPU
+TTYSTA	EQU  0		; tty status port
+TTYDAT	EQU  1		; tty data port
 
-				; text we want to send to serial port
+CR	EQU  13		; carriage return
+LF	EQU  10		; line feed
+
+	ORG  0000H	; starting at memory location 0
+
+	DI		; disable interrupts
+	LXI  SP,0100H	; set stack far enough in upper memory
+
+			; print instructions
+	LXI  H,TEXT	; HL points to text to send
+LOOP	MOV  A,M	; get next character into A
+	ORA  A		; is it 0 termination?
+	JZ   ECHO	; if yes done
+	CALL OUTCH	; output character to tty
+	INX  H		; point to next character
+	JMP  LOOP	; and again
+
+			; now echo what is typed
+ECHO	IN   TTYSTA	; get tty status
+	RRC		; is there any input?
+	JC   ECHO	; wait if not
+	IN   TTYDAT	; get character from tty into A
+	CALL OUTCH	; echo it
+	CPI  'X'	; is it a X?
+	JZ   DONE	; done if so
+	CPI  CR		; is it a carriage return?
+	JNZ  ECHO	; no, go on
+	MVI  A,LF	; else also send line feed
+	CALL OUTCH
+	JMP  ECHO	; repeat
+
+DONE	HLT		; done
+
+			; output character in A to tty
+OUTCH	PUSH PSW	; save character in A
+OUTCH1	IN   TTYSTA	; get tty status
+	RLC		; output ready?
+	JC   OUTCH1	; wait if not
+	POP  PSW	; get character back into A
+	OUT  TTYDAT	; send character to tty
+	RET
+
 TEXT	DEFM "Hello from the 8080 CPU"
-	DEFB 13,10,0		; carriage return, linefeed and string termination
+	DEFB CR,LF
+	DEFM "I will echo what you type, type X if done"
+	DEFB CR,LF,0
 
-	END			; of program
+	END

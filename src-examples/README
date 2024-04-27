@@ -8,8 +8,7 @@ Copy one of the "example".c files to ../8080code.h and rebuild
 the application.
 
 The examples are:
-serial.c		- Send some text to the tty serial port and then halt CPU.
-echo.c			- Echo text send to the tty serial port endless.
+serial.c		- Show how serial I/O is done.
 turnmon.c		- Very basic monitor program from "The Age Of The Altair",
 			  when users had very little memory, like we now also have.
 			  Read the manual if you don't know this program!
