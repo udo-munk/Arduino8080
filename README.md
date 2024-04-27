@@ -4,11 +4,11 @@ I managed to get the z80pack 8080 core squeezed into 32KB flash and 2 KB RAM
 of the Arduino Nano, I wasn't certain it would fit before trying. This is the
 smallest computer system I used so far for z80pack machines.
 
-So far all you need is an Arduino Nano board, some PC, an USB cable and the
+All you need is an Arduino Nano board, some PC, an USB cable and the
 Arduino IDE for compiling the program und uploading it into the device. The
 builtin LED shows when the 8080 emulation stopped running for some reason.
 
-With the tiny 512 bytes RAM we can run very small programs only, but the
+With 512 bytes RAM for the 8080 we can run very small programs only, but the
 first Altair users got their systems with 256 bytes and used it. Included
 are some 8080 example programs to show how.
 
