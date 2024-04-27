@@ -122,6 +122,7 @@ static int op_nop(void)                 /* NOP */
 static int op_hlt(void)                 /* HLT */
 {
   // cry and die, no interrupts yet
+  Serial.println();
   Serial.print(F("HLT instruction PC = 0x"));
   Serial.print(PC8, HEX);
   Serial.println();
@@ -2770,6 +2771,7 @@ void loop()
   digitalWrite(LED_BUILTIN, true);
 
   // print some execution statistics
+  Serial.println();
   Serial.print(F("8080 ran "));
   Serial.print(stop - start, DEC);
   Serial.print(F(" ms and executed "));
