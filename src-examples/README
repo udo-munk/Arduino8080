@@ -13,10 +13,10 @@ the application.
 
 The examples are:
 serial.c		- Show how serial I/O is done.
+banner.c		- Print a cool banner to the tty serial port and then halt CPU.
 turnmon.c		- Very basic monitor program from "The Age Of The Altair",
 			  when users had very little memory, like we now also have.
 			  Read the manual if you don't know this program!
 			  Don't use with Arduino IDE Serial Monitor, won't work,
 			  use a terminal emulation like minicom, putty ...!
 blink.c			- Blink builtin LED with 8080
-banner.c		- Print a cool banner to the tty serial port and then halt CPU.
