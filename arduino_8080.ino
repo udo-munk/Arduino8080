@@ -4,6 +4,9 @@
 // Copyright 2024, Udo Munk
 //
 
+// unused analog pin to seed random generator
+#define UAP 7
+
 // data types for the 8080 CPU
 typedef unsigned char BYTE;
 typedef unsigned int  WORD;
@@ -2751,7 +2754,7 @@ void setup()
   Serial.begin(9600);
   while (!Serial) {
     ; // Wait for serial port to connect. Needed for native USB
-  randomSeed(analogRead(7));
+  randomSeed(analogRead(UAP));
   init_cpu();
   }
 }
