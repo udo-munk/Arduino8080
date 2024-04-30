@@ -2765,11 +2765,10 @@ void setup()
   // put your setup code here, to run once:
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
-  while (!Serial) {
+  while (!Serial)
     ; // Wait for serial port to connect. Needed for native USB
   randomSeed(analogRead(UAP));
   init_cpu();
-  }
 }
 
 void loop()
