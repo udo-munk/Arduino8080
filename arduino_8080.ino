@@ -25,7 +25,7 @@ CPUState State = Running;         // CPU state
 unsigned long tstates = 0;        // executed T-states
 
 // Precompiled parity table
-const static byte parity[256] = {
+const byte parity[256] = {
 		0 /* 00000000 */, 1 /* 00000001 */, 1 /* 00000010 */,
 		0 /* 00000011 */, 1 /* 00000100 */, 0 /* 00000101 */,
 		0 /* 00000110 */, 1 /* 00000111 */, 1 /* 00001000 */,
@@ -2483,7 +2483,7 @@ static void init_cpu(void)
 // function which emulates this 8080 opcode.
 void cpu_8080(void)
 {
-  const static int (*op_sim[256]) (void) = {
+  const int (*op_sim[256]) (void) = {
     op_nop,                         /* 0x00 */
     op_lxibnn,                      /* 0x01 */
     op_staxb,                       /* 0x02 */
