@@ -2747,6 +2747,19 @@ void cpu_8080(void)
   } while (State == Running);
 }
 
+// from the Arduino Memory Guide
+void display_freeram() {
+  Serial.print(F("SRAM left: "));
+  Serial.println(freeRam());
+}
+
+int freeRam() {
+  extern int __heap_start,*__brkval;
+  int v;
+  return (int)&v - (__brkval == 0  
+    ? (int)&__heap_start : (int) __brkval);  
+}
+
 void setup()
 {
   // put your setup code here, to run once:
@@ -2783,6 +2796,7 @@ void loop()
   Serial.print(F("Clock frequency "));
   Serial.print(float(tstates) / float(stop - start) / 1000.0, 2);
   Serial.println(F(" MHz"));
+  display_freeram();
   Serial.println();
   Serial.flush();
   exit(0);
