@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0	Tue Apr 30 15:06:41 2024
+Z80/8080-Macro-Assembler  Release 2.0	Tue Apr 30 15:10:12 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;
@@ -13,32 +13,33 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                       10     10 
 0000  =               11     11 LED	EQU  0			; builtin LED port
                       12     12 
-0000  31 00 01        13     13 	LXI  SP,0100H		; set stack far enough in upper memory
-                      14     14 
-0003  26 0a           15     15 	MVI  H,10		; blink LED 10 times
-                      16     16 
-0005  3e 01           17     17 L1	MVI  A,1		; switch LED on
-0007  d3 00           18     18 	OUT  LED
-0009  01 00 00        19     19 	LXI  B,0		; wait a second
-000c  0b              20     20 L2	DCX  B
-000d  78              21     21 	MOV  A,B
-000e  b1              22     22 	ORA  C
-000f  c2 0c 00        23     23 	JNZ  L2
-0012  3e 00           24     24 	MVI  A,0		; switch LED off
-0014  d3 00           25     25 	OUT  LED
-0016  01 00 00        26     26 	LXI  B,0		; wait a second
-0019  0b              27     27 L3	DCX  B
-001a  78              28     28 	MOV  A,B
-001b  b1              29     29 	ORA  C
-001c  c2 19 00        30     30 	JNZ  L3
-                      31     31 
-001f  25              32     32 	DCR  H
-0020  c2 05 00        33     33 	JNZ  L1			; again if not done
-                      34     34 
-0023  76              35     35 	HLT			; done, halt CPU
-                      36     36 
-0024                  37     37 	END			; of program
+0000  f3              13     13 	DI			; disable interrupts
+0001  31 00 01        14     14 	LXI  SP,0100H		; set stack far enough in upper memory
+                      15     15 
+0004  26 0a           16     16 	MVI  H,10		; blink LED 10 times
+                      17     17 
+0006  3e 01           18     18 L1	MVI  A,1		; switch LED on
+0008  d3 00           19     19 	OUT  LED
+000a  01 00 00        20     20 	LXI  B,0		; wait a second
+000d  0b              21     21 L2	DCX  B
+000e  78              22     22 	MOV  A,B
+000f  b1              23     23 	ORA  C
+0010  c2 0d 00        24     24 	JNZ  L2
+0013  3e 00           25     25 	MVI  A,0		; switch LED off
+0015  d3 00           26     26 	OUT  LED
+0017  01 00 00        27     27 	LXI  B,0		; wait a second
+001a  0b              28     28 L3	DCX  B
+001b  78              29     29 	MOV  A,B
+001c  b1              30     30 	ORA  C
+001d  c2 1a 00        31     31 	JNZ  L3
+                      32     32 
+0020  25              33     33 	DCR  H
+0021  c2 06 00        34     34 	JNZ  L1			; again if not done
+                      35     35 
+0024  76              36     36 	HLT			; done, halt CPU
+                      37     37 
+0025                  38     38 	END			; of program
 
 Symbol table
 
-L1  0005    L2  000c    L3  0019    LED 0000    
+L1  0006    L2  000d    L3  001a    LED 0000    

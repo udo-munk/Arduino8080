@@ -10,6 +10,7 @@
 
 LED	EQU  0			; builtin LED port
 
+	DI			; disable interrupts
 	LXI  SP,0100H		; set stack far enough in upper memory
 
 	MVI  H,10		; blink LED 10 times
