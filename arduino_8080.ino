@@ -25,7 +25,7 @@ CPUState State = Running;         // CPU state
 unsigned long tstates = 0;        // executed T-states
 
 // Precompiled parity table
-const static int parity[256] = {
+const static byte parity[256] = {
 		0 /* 00000000 */, 1 /* 00000001 */, 1 /* 00000010 */,
 		0 /* 00000011 */, 1 /* 00000100 */, 0 /* 00000101 */,
 		0 /* 00000110 */, 1 /* 00000111 */, 1 /* 00001000 */,
