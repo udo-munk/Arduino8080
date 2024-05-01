@@ -14,8 +14,10 @@ LF	EQU  10			; line feed
 CONST 	EQU  0			; console status port
 CONDA	EQU  1			; console data port
 
+	DI			; disable interrupts
 	LXI  SP,0200H		; set stack far enough in upper memory
-	LXI  D,BANNER		; DE points to the array with text we want to send
+
+	LXI  D,BANNER		; DE points to the array with text to send
 	MVI  B,7		; 7 lines to print
 LOOP	CALL PRTLN		; print a line on console
 	DCR  B			; next one
