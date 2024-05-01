@@ -117,6 +117,7 @@ const byte parity[256] = {
 // 8080 CPU instructions, return value is clock states of a real Intel 8080 CPU.
 // All undocumented instructions are executed and not trapped, to keep it simpler,
 // for analysis use PC version.
+
 static int op_nop(void)                 /* NOP */
 {
   return (4);
@@ -2748,16 +2749,19 @@ void cpu_8080(void)
 }
 
 // from the Arduino Memory Guide
-void display_freeram() {
+void display_freeram()
+{
   Serial.print(F("SRAM left: "));
   Serial.println(freeRam());
 }
 
-int freeRam() {
-  extern int __heap_start,*__brkval;
+int freeRam()
+{
+  extern int __heap_start, *__brkval;
   int v;
-  return (int)&v - (__brkval == 0  
-    ? (int)&__heap_start : (int) __brkval);  
+
+  return (int) &v - (__brkval == 0 ?  
+         (int) &__heap_start : (int) __brkval);  
 }
 
 void setup()
