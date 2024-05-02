@@ -12,6 +12,8 @@ With 512 bytes RAM for the 8080 we can run very small programs only, but the
 first Altair users got their systems with 256 bytes and used it. Included
 are some 8080 example programs to show how.
 
+A video that shows it in action is available: https://youtu.be/wKuIKwkP6O8
+
 Of course one can add external memory, a SD card reader for disk images,
 so that it could run CP/M and so on. I don't know if I will get so
 far in this life, but you don't have to wait for me. There are some other
