@@ -2484,7 +2484,7 @@ static void init_cpu(void)
 // function which emulates this 8080 opcode.
 void cpu_8080(void)
 {
-  const int (*op_sim[256]) (void) = {
+  static const int (*op_sim[256]) (void) = {
     op_nop,                         /* 0x00 */
     op_lxibnn,                      /* 0x01 */
     op_staxb,                       /* 0x02 */
