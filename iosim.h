@@ -40,7 +40,7 @@ const static BYTE (*port_in[5]) (void) = {
 };
 
 // read a byte from 8080 CPU I/O
-static BYTE io_in(BYTE addrl, BYTE addrh)
+BYTE io_in(BYTE addrl, BYTE addrh)
 {
   if ((addrl <= 4) && (*port_in[addrl] != 0)) // for now we use 0-4
     return ((*port_in[addrl]) ());
@@ -76,7 +76,7 @@ const static void (*port_out[5]) (BYTE) = {
 };
 
 // write a byte to 8080 CPU I/O
-static void io_out(BYTE addrl, BYTE addrh, BYTE data)
+void io_out(BYTE addrl, BYTE addrh, BYTE data)
 {
   if ((addrl <= 4) && (*port_out[addrl] != 0)) // for now we use 0-4, all other do nothing
     (*port_out[addrl]) (data);
