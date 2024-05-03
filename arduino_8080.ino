@@ -129,7 +129,7 @@ static int op_hlt(void)                 /* HLT */
   Serial.println();
   Serial.print(F("HLT instruction PC = 0x"));
   Serial.println(PC8, HEX);
-  display_freeram();
+  //display_freeram();
   State = Halted;
   return (7);
 }
