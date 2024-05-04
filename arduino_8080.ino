@@ -3,6 +3,8 @@
 //            derived from Z80PACK
 // Copyright 2024, Udo Munk
 //
+// History:
+// 04-MAY-2024 Release 1.0
 
 // unused analog pin to seed random generator
 #define UAP 7
@@ -2780,6 +2782,10 @@ void loop()
   // put your main code here, to run repeatedly:
   // variables for measuring the run time
   unsigned long start, stop;
+
+  Serial.println(F("Arduino Nano Intel 8080 emulator version 1.0"));
+  Serial.println(F("Copyright (C) 2024 by Udo Munk"));
+  Serial.println();
 
   // run the 8080 CPU with whatever code is in memory
   start = millis();

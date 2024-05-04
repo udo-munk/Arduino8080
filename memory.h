@@ -3,6 +3,8 @@
 //            derived from Z80PACK
 // Copyright 2024, Udo Munk
 //
+// History:
+// 04-MAY-2024 Release 1.0
 
 // trying to give 0.5KB memory from the available 2KB to the 8080 CPU
 #define MEMSIZE 512
