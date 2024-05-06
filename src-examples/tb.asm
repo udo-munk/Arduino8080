@@ -1572,7 +1572,7 @@ RANPNT: DS   2                          ;RANDOM NUMBER POINTER
 TXTUNF: DS   2                          ;->UNFILLED TEXT AREA
 TXTBGN: DS   2                          ;TEXT SAVE AREA BEGINS
 ;       ORG  1366H
-        ORG  0980H
+        ORG  0940H
 TXTEND: DS   0                          ;TEXT SAVE AREA ENDS
 VARBGN: DS   55                         ;VARIABLE @(0)
 BUFFER: DS   64                         ;INPUT BUFFER
