@@ -6,7 +6,7 @@
 ;
 
 	.8080			; we use Intel 8080 syntax
-	ORG  0000H		; starting at memory location 0
+	ORG  0000H		; starting at memory location 0 in ROM
 
 CR	EQU  13			; carriage return
 LF	EQU  10			; line feed
@@ -15,7 +15,7 @@ CONST 	EQU  0			; console status port
 CONDA	EQU  1			; console data port
 
 	DI			; disable interrupts
-	LXI  SP,0200H		; set stack far enough in upper memory
+	LXI  SP,0A00H		; set stack to top of RAM
 
 	LXI  D,BANNER		; DE points to the array with text to send
 	MVI  B,7		; 7 lines to print

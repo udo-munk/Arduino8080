@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0	Tue Apr 30 15:06:41 2024
+Z80/8080-Macro-Assembler  Release 2.0	Mon May  6 10:23:53 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;
@@ -16,10 +16,10 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 000d  =               13     13 CR	EQU  13		; carriage return
 000a  =               14     14 LF	EQU  10		; line feed
                       15     15 
-                      16     16 	ORG  0000H	; starting at memory location 0
+                      16     16 	ORG  0000H	; starting at memory location 0 in ROM
                       17     17 
 0000  f3              18     18 	DI		; disable interrupts
-0001  31 00 01        19     19 	LXI  SP,0100H	; set stack far enough in upper memory
+0001  31 00 0a        19     19 	LXI  SP,0A00H	; set stack to top of RAM
                       20     20 
                       21     21 			; print instructions
 0004  21 3c 00        22     22 	LXI  H,TEXT	; HL points to text to send

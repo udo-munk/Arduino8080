@@ -19,11 +19,11 @@
 ;
 ; **************************************************************
 
-STACK   EQU     0200H           ;MUST BE VALID RAM, NOT ROM!
+STACK   EQU     0A00H           ;MUST BE VALID RAM, NOT ROM!
 CONSTAT EQU     0Q              ;IO STATUS PORT
 CONDATA EQU     1Q              ;IO DATA PORT
 
-        ORG     0000H           ;WE HAVE NO ROM, PUT LOW IN RAM
+        ORG     0000H           ;STARTING AT MEMORY LOCATION 0 IN ROM
 
 ENTER:  LXI     SP,STACK        ;INITIALIZE STACK POINTER
         CALL    CRLF            ;PRINT CARRIAGE RET+LINE FEED

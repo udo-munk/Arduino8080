@@ -4,6 +4,10 @@ can use any 8080 assembler of course. Advantage of using z80asm
 is, that the latest version can output C code we can right use
 here, without the need to convert from binaries or hex dumps.
 
+In Release 1.1 we put code into a ROM that's in flash memory of the
+Arduino. For this you need to add const... PROGMEM... to the array
+declaration in "example".c, which is done already for you.
+
 With z80pack z80sim examples like these can be debugged under
 control of an In Circuit Emulator (debug probe), the serial
 port implemented in the latest release is identical.

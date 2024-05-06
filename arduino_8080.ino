@@ -5,6 +5,8 @@
 //
 // History:
 // 04-MAY-2024 Release 1.0
+// 06-MAY-2024 Release 1.1, add support for a ROM in flash
+//
 
 // unused analog pin to seed random generator
 #define UAP 7
@@ -2783,7 +2785,7 @@ void loop()
   // variables for measuring the run time
   unsigned long start, stop;
 
-  Serial.println(F("Arduino Nano Intel 8080 emulator version 1.0"));
+  Serial.println(F("Arduino Nano Intel 8080 emulator version 1.1"));
   Serial.println(F("Copyright (C) 2024 by Udo Munk"));
   Serial.println();
 

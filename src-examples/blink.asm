@@ -6,12 +6,12 @@
 ;
 
 	.8080			; we use Intel 8080 syntax
-	ORG 0000H		; starting at memory location 0
+	ORG 0000H		; starting at memory location 0 in ROM
 
 LED	EQU  0			; builtin LED port
 
 	DI			; disable interrupts
-	LXI  SP,0100H		; set stack far enough in upper memory
+	LXI  SP,0A00H		; set stack to top of RAM
 
 	MVI  H,10		; blink LED 10 times
 

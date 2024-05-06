@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0	Tue Apr 30 15:10:12 2024
+Z80/8080-Macro-Assembler  Release 2.0	Mon May  6 10:49:57 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;
@@ -9,12 +9,12 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        6      6 ;
                        7      7 
                        8      8 	.8080			; we use Intel 8080 syntax
-                       9      9 	ORG 0000H		; starting at memory location 0
+                       9      9 	ORG 0000H		; starting at memory location 0 in ROM
                       10     10 
 0000  =               11     11 LED	EQU  0			; builtin LED port
                       12     12 
 0000  f3              13     13 	DI			; disable interrupts
-0001  31 00 01        14     14 	LXI  SP,0100H		; set stack far enough in upper memory
+0001  31 00 0a        14     14 	LXI  SP,0A00H		; set stack to top of RAM
                       15     15 
 0004  26 0a           16     16 	MVI  H,10		; blink LED 10 times
                       17     17 

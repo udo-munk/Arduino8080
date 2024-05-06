@@ -14,13 +14,19 @@ are some 8080 example programs to show how.
 
 A video that shows it in action is available: https://youtu.be/wKuIKwkP6O8
 
-Of course one can add external memory, a SD card reader for disk images,
-so that it could run CP/M and so on. I don't know if I will get so
-far in this life, but you don't have to wait for me. There are some other
-good looking projects, that already might do what you want:
-
-https://github.com/WA6YDQ/nano80
-
-https://forum.arduino.cc/t/cp-m-computer-on-arduino-nano-3-0/446350
-
 Udo Munk, April 2024
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+The little 8080 computer looked promising, so in the next step we will
+provide more memory. For this the AVR CPU allows to put data in flash
+and get it out of the tiny RAM. Now this data needs to be accessed with
+functions provided by the runtime, which will cost some performance.
+Documentation is a bit spare about this, and others claim it costs a lot
+of performance. Our CPU core provides exact run time statistics, so I
+just have a look my self.
+
+It doesn't cost a lot of performance, about 10% slower, but for that we
+now got 2KB ROM and 1KB RAM, a very good tradeoff.
+
+Udo Munk, May 2024
