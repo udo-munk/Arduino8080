@@ -45,7 +45,7 @@ this as is. To summarize, now we have:
 	2 KB ROM for programm code @ 0000H - 07FFH
 	1 KB RAM for data	   @ 0800H - 0BFFH
 
-And that all on a tiny piece of hardware smaller than a 8080 CPU chip,
+And all that on a tiny piece of hardware smaller than a 8080 CPU chip,
 leave alone a complete computer system.
 
 Udo Munk, May 2024
