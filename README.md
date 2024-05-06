@@ -27,6 +27,6 @@ of performance. Our CPU core provides exact run time statistics, so I
 just have a look my self.
 
 It doesn't cost a lot of performance, about 10% slower, but for that we
-now got 2KB ROM and 1KB RAM, a very good tradeoff.
+now got 2KB ROM and 512 Bytes RAM, a very good tradeoff.
 
 Udo Munk, May 2024
