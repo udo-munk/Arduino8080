@@ -8,7 +8,7 @@
 //
 
 // I/O function port 0 read:
-// read status of the Arduino tty and return:
+// read status of the Arduino UART and return:
 // bit 0 = 0, character available for input from tty
 // bit 7 = 0, transmitter ready to write character to tty
 static BYTE p000_in(void)
@@ -24,7 +24,7 @@ static BYTE p000_in(void)
 }
 
 // I/O function port 1 read:
-// Read byte from Arduino tty.
+// Read byte from Arduino UART.
 static BYTE p001_in(void)
 {
   while (!Serial.available())   // block until data available
@@ -62,7 +62,7 @@ static void p000_out(BYTE data)
 }
 
 // I/O function port 1 write:
-// Write byte to Arduino tty.
+// Write byte to Arduino UART.
 static void p001_out(BYTE data)
 {
   Serial.write(data);
