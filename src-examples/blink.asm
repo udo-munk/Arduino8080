@@ -11,7 +11,7 @@
 LED	EQU  0			; builtin LED port
 
 	DI			; disable interrupts
-	LXI  SP,0A00H		; set stack to top of RAM
+	LXI  SP,0C00H		; set stack to top of RAM
 
 	MVI  H,10		; blink LED 10 times
 

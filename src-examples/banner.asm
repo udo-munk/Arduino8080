@@ -15,7 +15,7 @@ CONST 	EQU  0			; console status port
 CONDA	EQU  1			; console data port
 
 	DI			; disable interrupts
-	LXI  SP,0A00H		; set stack to top of RAM
+	LXI  SP,0C00H		; set stack to top of RAM
 
 	LXI  D,BANNER		; DE points to the array with text to send
 	MVI  B,7		; 7 lines to print

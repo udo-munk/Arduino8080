@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0	Mon May  6 12:07:49 2024
+Z80/8080-Macro-Assembler  Release 2.0	Mon May  6 15:23:45 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;*************************************************************
@@ -39,7 +39,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                       36     36         ENDM
                       37     37 ;
                       38     38         ORG  0H
-0000  31 00 0a        39     39 START:  LXI  SP,STACK                   ;*** COLD START ***
+0000  31 00 0c        39     39 START:  LXI  SP,STACK                   ;*** COLD START ***
 0003  3e ff           40     40         MVI  A,0FFH
 0005  c3 45 06        41     41         JMP  INIT
                       42     42 ;
@@ -92,7 +92,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0049  cd 59 04        89     89         CALL SIZE                       ;FIND SIZE OF FREE
 004c  e7              90     90         RST  4                          ;AND CHECK THAT
 004d  da f7 04        91     91         JC   ASORRY                     ;IF SO, SAY "SORRY"
-0050  21 40 09        92     92         LXI  H,VARBGN                   ;IF NOT GET ADDRESS
+0050  21 40 0b        92     92         LXI  H,VARBGN                   ;IF NOT GET ADDRESS
 0053  cd 7c 04        93     93         CALL SUBDE                      ;OF @(EXPR) AND PUT IT
 0056  d1              94     94         POP  D                          ;IN HL
 0057  c9              95     95         RET                             ;C FLAG IS CLEARED
@@ -100,7 +100,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 005a  3f              97     97         CMC                             ;IF NOT RETURN C FLAG
 005b  d8              98     98         RC
 005c  13              99     99         INX  D                          ;IF A THROUGH Z
-005d  21 40 09       100    100         LXI  H,VARBGN                   ;COMPUTE ADDRESS OF
+005d  21 40 0b       100    100         LXI  H,VARBGN                   ;COMPUTE ADDRESS OF
 0060  07             101    101         RLC                             ;THAT VARIABLE
 0061  85             102    102         ADD  L                          ;AND RETURN IT IN HL
 0062  6f             103    103         MOV  L,A                        ;WITH C FLAG CLEARED
@@ -200,7 +200,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                      195    197 ; THIS LOOP OR WHILE WE ARE INTERPRETING A DIRECT COMMAND
                      196    198 ; (SEE NEXT SECTION). "CURRNT" SHOULD POINT TO A 0.
                      197    199 ;
-00ba  31 00 0a       198    200 RSTART: LXI  SP,STACK
+00ba  31 00 0c       198    200 RSTART: LXI  SP,STACK
 00bd  cd 0e 00       199    201 ST1:    CALL CRLF                       ;AND JUMP TO HERE
 00c0  11 ab 00       200    202         LXI  D,OK                       ;DE->STRING
 00c3  97             201    203         SUB  A                          ;A=0
@@ -213,7 +213,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 00d6  3e 3e          208    210 ST3:    MVI  A,3EH                      ;PROMPT '>' AND
 00d8  cd fd 04       209    211         CALL GETLN                      ;READ A LINE
 00db  d5             210    212         PUSH D                          ;DE->END OF LINE
-00dc  11 77 09       211    213         LXI  D,BUFFER                   ;DE->BEGINNING OF LINE
+00dc  11 77 0b       211    213         LXI  D,BUFFER                   ;DE->BEGINNING OF LINE
 00df  cd 77 00       212    214         CALL TSTNUM                     ;TEST IF IT IS A NUMBER
 00e2  ef             213    215         RST  5
 00e3  7c             214    216         MOV  A,H                        ;HL=VALUE OF THE # OR
@@ -254,7 +254,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0118  3e 00          249    251         MVI  A,0
 011a  8c             250    252         ADC  H
 011b  67             251    253         MOV  H,A                        ;HL->NEW UNFILLED AREA
-011c  11 40 09       252    254         LXI  D,TXTEND                   ;CHECK TO SEE IF THERE
+011c  11 40 0b       252    254         LXI  D,TXTEND                   ;CHECK TO SEE IF THERE
 011f  e7             253    255         RST  4                          ;IS ENOUGH SPACE
 0120  d2 f6 04       254    256         JNC  QSORRY                     ;SORRY, NO ROOM FOR IT
 0123  22 15 08       255    257         SHLD TXTUNF                     ;OK, UPDATE TXTUNF
@@ -664,7 +664,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 02fe  d5             659    661         PUSH D                          ;OLD HL
 02ff  3e 3a          660    662         MVI  A,3AH                      ;PRINT THIS TOO
 0301  cd fd 04       661    663         CALL GETLN                      ;AND GET A LINE
-0304  11 77 09       662    664         LXI  D,BUFFER                   ;POINTS TO BUFFER
+0304  11 77 0b       662    664         LXI  D,BUFFER                   ;POINTS TO BUFFER
 0307  df             663    665         RST  3                          ;EVALUATE INPUT
 0308  00             664    666         NOP                             ;CAN BE 'CALL ENDCHK'
 0309  00             665    667         NOP
@@ -910,7 +910,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0459  2a 15 08       905    907 SIZE:   LHLD TXTUNF                     ;*** SIZE ***
 045c  d5             906    908         PUSH D                          ;GET THE NUMBER OF FREE
 045d  eb             907    909         XCHG                            ;BYTES BETWEEN 'TXTUNF'
-045e  21 40 09       908    910         LXI  H,VARBGN                   ;AND 'VARBGN'
+045e  21 40 0b       908    910         LXI  H,VARBGN                   ;AND 'VARBGN'
 0461  cd 7c 04       909    911         CALL SUBDE
 0464  d1             910    912         POP  D
 0465  c9             911    913         RET
@@ -1109,7 +1109,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                     1104   1106 ; 'FNDSKP' USE DE TO FIND A CR, AND THEN START SEARCH.
                     1105   1107 ;
 04fd  d7            1106   1108 GETLN:  RST  2                          ;*** GETLN ***
-04fe  11 77 09      1107   1109         LXI  D,BUFFER                   ;PROMPT AND INIT.
+04fe  11 77 0b      1107   1109         LXI  D,BUFFER                   ;PROMPT AND INIT.
 0501  cd 7e 06      1108   1110 GL1:    CALL CHKIO                      ;CHECK KEYBOARD
 0504  ca 01 05      1109   1111         JZ   GL1                        ;NO INPUT, WAIT
 0507  fe 7f         1110   1112         CPI  7FH                        ;DELETE LAST CHARACTER?
@@ -1340,7 +1340,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 061a  c5            1335   1337 PP1:    PUSH B                          ;BC = RETURN ADDR.
 061b  c9            1336   1338         RET
                     1337   1339 ;
-061c  21 b8 09      1338   1340 PUSHA:  LXI  H,STKLMT                   ;*** PUSHA ***
+061c  21 b8 0b      1338   1340 PUSHA:  LXI  H,STKLMT                   ;*** PUSHA ***
 061f  cd 86 04      1339   1341         CALL CHGSGN
 0622  c1            1340   1342         POP  B                          ;BC=RETURN ADDRESS
 0623  39            1341   1343         DAD  SP                         ;IS STACK NEAR THE TOP?
@@ -1643,20 +1643,20 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0815                1572   1640 TXTUNF: DS   2                          ;->UNFILLED TEXT AREA
 0817                1573   1641 TXTBGN: DS   2                          ;TEXT SAVE AREA BEGINS
                     1574   1642 ;       ORG  1366H
-                    1575   1643         ORG  0940H
-0940                1576   1644 TXTEND: DS   0                          ;TEXT SAVE AREA ENDS
-0940                1577   1645 VARBGN: DS   55                         ;VARIABLE @(0)
-0977                1578   1646 BUFFER: DS   64                         ;INPUT BUFFER
-09b7                1579   1647 BUFEND: DS   1                          ;BUFFER ENDS
-09b8                1580   1648 STKLMT: DS   1                          ;TOP LIMIT FOR STACK
+                    1575   1643         ORG  0B40H
+0b40                1576   1644 TXTEND: DS   0                          ;TEXT SAVE AREA ENDS
+0b40                1577   1645 VARBGN: DS   55                         ;VARIABLE @(0)
+0b77                1578   1646 BUFFER: DS   64                         ;INPUT BUFFER
+0bb7                1579   1647 BUFEND: DS   1                          ;BUFFER ENDS
+0bb8                1580   1648 STKLMT: DS   1                          ;TOP LIMIT FOR STACK
                     1581   1649 ;       ORG  1400H
-                    1582   1650         ORG  0A00H
-0a00                1583   1651 STACK:  DS   0                          ;STACK STARTS HERE
+                    1582   1650         ORG  0C00H
+0c00                1583   1651 STACK:  DS   0                          ;STACK STARTS HERE
                     1584   1652 ;
 000d  =             1585   1653 CR      EQU  0DH
 000a  =             1586   1654 LF      EQU  0AH
                     1587   1655 
-0a00                1588   1656         END
+0c00                1588   1656         END
 
 Macro table
 
@@ -1664,8 +1664,8 @@ DWA
 
 Symbol table
 
-ABS    0450    AHOW   00a0    ASORRY 04f7    AWHAT  04ca    BUFEND 09b7 
-BUFFER 0977    CHGSGN 0486    CHKIO  067e    CHKSGN 0483    CI1    0697 
+ABS    0450    AHOW   00a0    ASORRY 04f7    AWHAT  04ca    BUFEND 0bb7 
+BUFFER 0b77    CHGSGN 0486    CHKIO  067e    CHKSGN 0483    CI1    0697 
 CK1    04a1    CKHLDE 049b    CR     000d    CRLF   000e    CURRNT 0801 
 DEFLT  031d    DIRECT 0732    DIVIDE 0466    DV1    0471    DV2    0473 
 ENDCHK 04c5    ERROR  04cd    EX0    0735    EX1    0737    EX2    074a 
@@ -1692,12 +1692,12 @@ QT3    0581    QT4    0589    QT5    0594    QTSTG  056f    QWHAT  04c9
 RA1    0440    RANPNT 0813    REM    02b0    RETURN 01df    RND    0425 
 RSTART 00ba    RUN    0141    RUNNXL 0147    RUNSML 0157    RUNTSL 0150 
 SETVAL 04a3    SIZE   0459    SORRY  00b4    SS1    0028    ST1    00bd*
-ST2    00cd    ST3    00d6    ST4    010b    STACK  0a00    START  0000 
-STKGOS 0803    STKINP 0807    STKLMT 09b8    STOP   013b    SUBDE  047c 
+ST2    00cd    ST3    00d6    ST4    010b    STACK  0c00    START  0000 
+STKGOS 0803    STKINP 0807    STKLMT 0bb8    STOP   013b    SUBDE  047c 
 SV1    04b3    TAB1   06a8    TAB2   06b8    TAB4   06fc    TAB5   070e 
 TAB6   0714    TAB8   071c    TC1    0068    TC2    0073    TN1    007c 
-TSTNUM 0077    TV1    0058    TXTBGN 0817    TXTEND 0940    TXTUNF 0815 
-VARBGN 0940    VARNXT 0805    WHAT   00ae    XP11   0333    XP12   0339 
+TSTNUM 0077    TV1    0058    TXTBGN 0817    TXTEND 0b40    TXTUNF 0815 
+VARBGN 0b40    VARNXT 0805    WHAT   00ae    XP11   0333    XP12   0339 
 XP13   033f    XP14   0346    XP15   034e    XP16   0354    XP17   035a 
 XP18   035c    XP21   037a    XP22   037d    XP23   0380    XP24   0387 
 XP25   0398    XP26   039b    XP31   03a8    XP32   03c5    XP33   03cd 

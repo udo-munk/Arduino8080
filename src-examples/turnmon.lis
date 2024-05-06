@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0	Mon May  6 10:54:23 2024
+Z80/8080-Macro-Assembler  Release 2.0	Mon May  6 15:18:59 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ; **************************************************************
@@ -22,13 +22,13 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                       19     19 ;
                       20     20 ; **************************************************************
                       21     21 
-0a00  =               22     22 STACK   EQU     0A00H           ;MUST BE VALID RAM, NOT ROM!
+0c00  =               22     22 STACK   EQU     0C00H           ;MUST BE VALID RAM, NOT ROM!
 0000  =               23     23 CONSTAT EQU     0Q              ;IO STATUS PORT
 0001  =               24     24 CONDATA EQU     1Q              ;IO DATA PORT
                       25     25 
                       26     26         ORG     0000H           ;STARTING AT MEMORY LOCATION 0 IN ROM
                       27     27 
-0000  31 00 0a        28     28 ENTER:  LXI     SP,STACK        ;INITIALIZE STACK POINTER
+0000  31 00 0c        28     28 ENTER:  LXI     SP,STACK        ;INITIALIZE STACK POINTER
 0003  cd 8e 00        29     29         CALL    CRLF            ;PRINT CARRIAGE RET+LINE FEED
 0006  cd 8e 00        30     30         CALL    CRLF            ;PRINT CARRIAGE RET+LINE FEED
 0009  3e 2e           31     31         MVI     A,'.'           ;MONITOR PROMPT
@@ -192,4 +192,4 @@ CRLF    008e    DAGN    0085    DCONT   0057    DMP     004c    DO20    0065
 ENTER   0000    ERR     0044    INCH    00e0    LOOP    00ed    MEM     0024 
 NEXT1   00ce    NEXT3   00ca    NXT3    00cb    NXTMEM  0076    OCTL    009f 
 OCTL3   009d    OCTL6   0098    OUTCHK  00ea    PRT3    00c4    PRT6    00be 
-SPACE   00db    STACK   0a00    
+SPACE   00db    STACK   0c00    

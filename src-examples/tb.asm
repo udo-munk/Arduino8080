@@ -1572,14 +1572,14 @@ RANPNT: DS   2                          ;RANDOM NUMBER POINTER
 TXTUNF: DS   2                          ;->UNFILLED TEXT AREA
 TXTBGN: DS   2                          ;TEXT SAVE AREA BEGINS
 ;       ORG  1366H
-        ORG  0940H
+        ORG  0B40H
 TXTEND: DS   0                          ;TEXT SAVE AREA ENDS
 VARBGN: DS   55                         ;VARIABLE @(0)
 BUFFER: DS   64                         ;INPUT BUFFER
 BUFEND: DS   1                          ;BUFFER ENDS
 STKLMT: DS   1                          ;TOP LIMIT FOR STACK
 ;       ORG  1400H
-        ORG  0A00H
+        ORG  0C00H
 STACK:  DS   0                          ;STACK STARTS HERE
 ;
 CR      EQU  0DH

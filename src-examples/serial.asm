@@ -16,7 +16,7 @@ LF	EQU  10		; line feed
 	ORG  0000H	; starting at memory location 0 in ROM
 
 	DI		; disable interrupts
-	LXI  SP,0A00H	; set stack to top of RAM
+	LXI  SP,0C00H	; set stack to top of RAM
 
 			; print instructions
 	LXI  H,TEXT	; HL points to text to send

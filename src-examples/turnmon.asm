@@ -19,7 +19,7 @@
 ;
 ; **************************************************************
 
-STACK   EQU     0A00H           ;MUST BE VALID RAM, NOT ROM!
+STACK   EQU     0C00H           ;MUST BE VALID RAM, NOT ROM!
 CONSTAT EQU     0Q              ;IO STATUS PORT
 CONDATA EQU     1Q              ;IO DATA PORT
 

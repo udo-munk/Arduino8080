@@ -31,4 +31,13 @@ now got 2KB ROM and 512 Bytes RAM, a very good tradeoff. And with this
 "much" memory we now can run some more interesting 8080 programs, like
 Li-Chen Wang's famous TINY BASIC.
 
+Now with knowing this, we even can move more stuff into flash and free up
+some more RAM. For example the parity table, not every instruction
+computes parity, so that will reduce our performance less than another
+10%, depends on the instructions a program uses. Acceptable and now we
+can increase RAM to 1 KB.
+Another large array we could move is the op-code jump table, but that
+will reduce our speed for every single op-code fetch, for now we leave
+this as is.
+
 Udo Munk, May 2024

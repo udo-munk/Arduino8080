@@ -9,7 +9,7 @@
 //
 
 #define ROMSIZE 2048
-#define RAMSIZE 512
+#define RAMSIZE 1024
 #define MEMSIZE ROMSIZE
 
 // get preloaded ROM for the 8080 CPU
