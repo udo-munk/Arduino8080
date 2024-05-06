@@ -2471,7 +2471,7 @@ static int op_rst7(void)                /* RST 7 */
 // used a power on jump circuit, which forces the CPU
 // to jump somewhere to the ROM entry, usually in upper
 // memory. Here we simulate that by loading PC with the
-// ROM start address.
+// code entry anywhere in the ROM.
 static void init_cpu(void)
 {
   PC8 = code_start_addr;
