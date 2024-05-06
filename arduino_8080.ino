@@ -2465,9 +2465,16 @@ static int op_rst7(void)                /* RST 7 */
 // state. Prevents assumptions about register contents
 // of a just powered CPU, like HL is always 0 in the
 // beginning, which is not the case with the silicon.
+//
+// At power on a 8080 CPU sets PC to 0, so even early
+// computer systems like the Altair 8080 and the IMSAI 8080
+// used a power on jump circuit, which forces the CPU
+// to jump somewhere to the ROM entry, usually in upper
+// memory. Here we simulate that by loading PC with the
+// ROM start address.
 static void init_cpu(void)
 {
-  PC8 = 0;
+  PC8 = code_start_addr;
   SP8 = random(65535);
   A = random(255);
   B = random(255);
