@@ -16,7 +16,7 @@ A video that shows it in action is available: https://youtu.be/wKuIKwkP6O8
 
 Udo Munk, April 2024
 
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+<><><><><><><><><><><><><><><><><><><><><><><>
 
 The little 8080 computer looked promising, so in the next step we will
 provide more memory. For this the AVR CPU allows to put data in flash
