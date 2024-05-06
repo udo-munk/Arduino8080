@@ -40,7 +40,7 @@ Another large array we could move is the op-code jump table, but that
 will reduce our speed for every single op-code fetch, for now we leave
 this as is. To summarize, now we have:
 
-	Intel 8080 CPU
+	Intel 8080 CPU running at ca. 0.8 MHz
 	UART for serial communication
 	2 KB ROM for programm code @ 0000H - 07FFH
 	1 KB RAM for data	   @ 0800H - 0BFFH
