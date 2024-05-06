@@ -38,6 +38,14 @@ computes parity, so that will reduce our performance less than another
 can increase RAM to 1 KB.
 Another large array we could move is the op-code jump table, but that
 will reduce our speed for every single op-code fetch, for now we leave
-this as is.
+this as is. To summarize, now we have:
+
+	Intel 8080 CPU
+	UART for serial communication
+	2 KB ROM for programm code @ 0000H - 07FFH
+	1 KB RAM for data	   @ 0800H - 0BFFH
+
+And that all on a tiny piece of hardware smaller than a 8080 CPU chip,
+leave alone a complete computer system.
 
 Udo Munk, May 2024
