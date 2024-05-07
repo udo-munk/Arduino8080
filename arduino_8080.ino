@@ -23,7 +23,8 @@
 typedef unsigned char BYTE;
 typedef unsigned int  WORD;
 
-Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS);  // use hardware SPI
+// we want hardware SPI with 20 MHz clock frequency
+Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS, 20000000);
 
 // project includes
 #include "simcore.h"
@@ -2477,7 +2478,7 @@ static int op_rst7(void)                /* RST 7 */
 // beginning, which is not the case with the silicon.
 //
 // At power on a 8080 CPU sets PC to 0, so even early
-// computer systems like the Altair 8080 and the IMSAI 8080
+// computer systems like the Altair 8800 and the IMSAI 8080
 // used a power on jump circuit, which forces the CPU
 // to jump somewhere to the ROM entry, usually in upper
 // memory. Here we simulate that by loading PC with the
@@ -2808,7 +2809,7 @@ void loop()
   // variables for measuring the run time
   unsigned long start, stop;
 
-  Serial.println(F("\fArduino Nano Intel 8080 emulator version 1.1"));
+  Serial.println(F("\fArduino Nano Intel 8080 emulator version 1.2"));
   Serial.println(F("Copyright (C) 2024 by Udo Munk"));
   Serial.println();
 
