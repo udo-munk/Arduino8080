@@ -64,22 +64,20 @@ Today my modules arrived, soldered in the header for usage on a breadboard
 and connected it to the Arduino Nano. Adafruit also provides some example
 programs, so let's see if I got everything correct:
 
-```
-18:13:51.136 -> FRAM Size = 0x80000
-18:13:51.136 -> Found SPI FRAM
-18:13:52.646 -> SPI FRAM address size is 3 bytes.
-18:13:52.680 -> SPI FRAM capacity appears to be..
-18:13:52.714 -> 524288 bytes
-18:13:52.714 -> 512 kilobytes
-18:13:52.755 -> 4096 kilobits
-18:13:52.755 -> 4 megabits
-```
+	18:13:51.136 -> FRAM Size = 0x80000
+	18:13:51.136 -> Found SPI FRAM
+	18:13:52.646 -> SPI FRAM address size is 3 bytes.
+	18:13:52.680 -> SPI FRAM capacity appears to be..
+	18:13:52.714 -> 524288 bytes
+	18:13:52.714 -> 512 kilobytes
+	18:13:52.755 -> 4096 kilobits
+	18:13:52.755 -> 4 megabits
 
 And now we have a big 8080 computer system with:
 
-8080 CPU running very slowly
-UART for serial communication
-64 KB RAM
+	8080 CPU running very slowly
+	UART for serial communication
+	64 KB RAM
 
 Need to figure out now what can be done to speed things up if possible.
 
