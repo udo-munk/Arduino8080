@@ -60,7 +60,7 @@ keeps contents without power. And Adafruit provides the low level library
 to drive the FRAM's via SPI, no need yet to get into the low level stuff
 my self.
 
-Today my modules arived, soldered in the header for usage on a breadboard
+Today my modules arrived, soldered in the header for usage on a breadboard
 and connected it to the Arduino Nano. Adafruit also provides some example
 programs, so let's see if I got everything correct:
 
