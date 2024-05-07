@@ -54,7 +54,7 @@ Udo Munk, May 2024
 
 For going further with our litte machine we need to use external memory.
 After much reading what is available I decided to use Adafruit FRAM SPI
-memory. This are said to be fast, writable like normal RAM without tearing
+memory. These are said to be fast, writable like normal RAM without tearing
 it done like flash or EEPROM. And it even is persistent memory, which
 keeps contents without power. And Adafruit provides the low level library
 to drive the FRAM's via SPI, no need yet to get into the low level stuff
@@ -64,21 +64,16 @@ Today my modules arived, soldered in the header for usage on a breadboard
 and connected it to the Arduino Nano. Adafruit also provides some example
 programs, so let's see if I got everything correct:
 
+```
 18:13:51.136 -> FRAM Size = 0x80000
-
 18:13:51.136 -> Found SPI FRAM
-
 18:13:52.646 -> SPI FRAM address size is 3 bytes.
-
 18:13:52.680 -> SPI FRAM capacity appears to be..
-
 18:13:52.714 -> 524288 bytes
-
 18:13:52.714 -> 512 kilobytes
-
 18:13:52.755 -> 4096 kilobits
-
 18:13:52.755 -> 4 megabits
+```
 
 Very well, so I can go on, make use of it and see, what I can get out
 of this.
