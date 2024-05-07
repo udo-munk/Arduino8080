@@ -2792,7 +2792,7 @@ void loop()
   // variables for measuring the run time
   unsigned long start, stop;
 
-  Serial.println(F("Arduino Nano Intel 8080 emulator version 1.1"));
+  Serial.println(F("\fArduino Nano Intel 8080 emulator version 1.1"));
   Serial.println(F("Copyright (C) 2024 by Udo Munk"));
   Serial.println();
 
