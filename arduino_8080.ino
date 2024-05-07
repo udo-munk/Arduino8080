@@ -23,8 +23,9 @@
 typedef unsigned char BYTE;
 typedef unsigned int  WORD;
 
-// we want hardware SPI with 20 MHz clock frequency
-Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS, 20000000);
+// we want hardware SPI, the 2 and 4 MBit modules can be clocked
+// with 40 MHz, the smaller ones with 20 MHz
+Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS, 40000000);
 
 // project includes
 #include "simcore.h"
