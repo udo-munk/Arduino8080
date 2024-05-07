@@ -55,7 +55,7 @@ Udo Munk, May 2024
 For going further with our litte machine we need to use external memory.
 After much reading what is available I decided to use Adafruit FRAM SPI
 memory. These are said to be fast, writable like normal RAM without tearing
-it done like flash or EEPROM. And it even is persistent memory, which
+it down like flash or EEPROM. And it even is persistent memory, which
 keeps contents without power. And Adafruit provides the low level library
 to drive the FRAM's via SPI, no need yet to get into the low level stuff
 my self.
@@ -73,11 +73,12 @@ programs, so let's see if I got everything correct:
 	18:13:52.755 -> 4096 kilobits
 	18:13:52.755 -> 4 megabits
 
-And now we have a big 8080 computer system with:
+Looks good, and now we have a big 8080 computer system with:
 
-	8080 CPU running very slowly
+	8080 CPU running with 0.04 MHz
 	UART for serial communication
 	64 KB RAM
 
-Need to figure out now what can be done to speed things up if possible.
 
+While the FRAM chips can be clocked up to 40 Mhz, with the Arduino Nano
+we are limited to SPI clock frequency 8 MHz, so we have to live with it.

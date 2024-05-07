@@ -2795,6 +2795,7 @@ void setup()
   while (!Serial)
     ; // Wait for serial port to connect. Needed for native USB
   randomSeed(analogRead(UAP));
+  SPI.setClockDivider(SPI_CLOCK_DIV2);
   if (!fram.begin(FRAM_ADDR_SIZE)) {
     Serial.println(F("No SPI FRAM found"));
     exit(1);
