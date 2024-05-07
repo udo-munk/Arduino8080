@@ -5,15 +5,25 @@
 //
 // History:
 // 04-MAY-2024 Release 1.0
-// 06-MAY-2024 Release 1.1, add support for a ROM in flash
+// 06-MAY-2024 Release 1.1 add support for a ROM in flash
+// 07-MAY-2024 Release 1.2 move all 8080 memory into a FRAM
 //
+
+#include <SPI.h>
+#include "Adafruit_FRAM_SPI.h"
 
 // unused analog pin to seed random generator
 #define UAP 7
+// chips select pin for FRAM (default)
+#define FRAM_CS 10
+// FRAM address size, this is for the 512 KB module
+#define FRAM_ADDR_SIZE 3
 
 // data types for the 8080 CPU
 typedef unsigned char BYTE;
 typedef unsigned int  WORD;
+
+Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS);  // use hardware SPI
 
 // project includes
 #include "simcore.h"
@@ -2783,6 +2793,12 @@ void setup()
   while (!Serial)
     ; // Wait for serial port to connect. Needed for native USB
   randomSeed(analogRead(UAP));
+  if (!fram.begin(FRAM_ADDR_SIZE)) {
+    Serial.println(F("No SPI FRAM found"));
+    exit(1);
+  }
+  fram.writeEnable(true);
+  init_memory();
   init_cpu();
 }
 

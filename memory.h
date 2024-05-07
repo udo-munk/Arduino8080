@@ -6,32 +6,31 @@
 // History:
 // 04-MAY-2024 Release 1.0
 // 06-MAY-2024 Release 1.1 add support for a ROM in flash
+// 07-MAY-2024 Release 1.2 move all 8080 memory into a FRAM
 //
 
-#define ROMSIZE 2048
-#define RAMSIZE 1024
-#define MEMSIZE ROMSIZE
+#define MEMSIZE 2048
 
-// get preloaded ROM for the 8080 CPU
+// get preloaded code for the 8080 CPU
 #include "8080code.h"
 
-// and some RAM for the 8080 CPU
-unsigned char ram[RAMSIZE];
+// copy our code into FRAM
+void init_memory(void)
+{
+  register int i;
+
+  for (i = 0; i < code_length; i++)
+    fram.write8(i, pgm_read_byte(code + i));
+}
 
 // read a byte from 8080 CPU memory address addr
 static inline BYTE memrdr(WORD addr)
 {
-  if (addr < ROMSIZE)
-    return pgm_read_byte(code + addr);
-  else if (addr < ROMSIZE + RAMSIZE)
-    return (ram[addr - ROMSIZE]);
-  else
-    return (0xff);
+  return fram.read8(addr);
 }
 
 // write a byte data into 8080 CPU RAM at address addr 
 static inline void memwrt(WORD addr, BYTE data)
 {
-  if ((addr >= ROMSIZE) && (addr < ROMSIZE + RAMSIZE))
-    ram[addr - ROMSIZE] = data;
+  fram.write8(addr, data);
 }

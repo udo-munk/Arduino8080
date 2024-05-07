@@ -75,6 +75,11 @@ programs, so let's see if I got everything correct:
 18:13:52.755 -> 4 megabits
 ```
 
-Very well, so I can go on, make use of it and see, what I can get out
-of this.
+And now we have a big 8080 computer system with:
+
+8080 CPU running very slowly
+UART for serial communication
+64 KB RAM
+
+Need to figure out now what can be done to speed things up if possible.
 
