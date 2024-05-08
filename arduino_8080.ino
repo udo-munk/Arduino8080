@@ -14,7 +14,7 @@
 
 // unused analog pin to seed random generator
 #define UAP 7
-// chips select pin for FRAM (default)
+// chip select pin for FRAM (default)
 #define FRAM_CS 10
 // FRAM address size, this is for the 512 KB module
 #define FRAM_ADDR_SIZE 3
