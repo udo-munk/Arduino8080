@@ -15,7 +15,8 @@
 ;
 ;               THIS VERSION HAS I/O MODIFIED
 ;                    FOR Z80PACK MACHINES
-;                  UDO MUNK, 26 APRIL 2024
+;               ALSO MODIFIED TO HALT ON CTL-C
+;                    UDO MUNK, 8 MAY 2024
 ;
 ;*************************************************************
 ; 
@@ -1422,7 +1423,8 @@ CHKIO:  IN   0                          ;*** CHKIO ***
         JMP  CHKIO                      ;GET ANOTHER INPUT
 CI1:    CPI  3H                         ;IS IT CONTROL-C?
         RNZ                             ;NO, RETURN "NZ"
-        JMP  RSTART                     ;YES, RESTART TBI
+;       JMP  RSTART                     ;YES, RESTART TBI
+	HLT
 ;
 MSG1:   DB   'TINY '
         DB   'BASIC'
@@ -1572,14 +1574,14 @@ RANPNT: DS   2                          ;RANDOM NUMBER POINTER
 TXTUNF: DS   2                          ;->UNFILLED TEXT AREA
 TXTBGN: DS   2                          ;TEXT SAVE AREA BEGINS
 ;       ORG  1366H
-        ORG  0B40H
+        ORG  1F00H
 TXTEND: DS   0                          ;TEXT SAVE AREA ENDS
 VARBGN: DS   55                         ;VARIABLE @(0)
 BUFFER: DS   64                         ;INPUT BUFFER
 BUFEND: DS   1                          ;BUFFER ENDS
 STKLMT: DS   1                          ;TOP LIMIT FOR STACK
 ;       ORG  1400H
-        ORG  0C00H
+        ORG  2000H
 STACK:  DS   0                          ;STACK STARTS HERE
 ;
 CR      EQU  0DH
