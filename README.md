@@ -91,3 +91,4 @@ the FRAM only for data. This will give us the following:
 	 2 KB ROM for program code @ 0000H - 07FFH
 	62 KB RAM for data	   @ 0800H - FFFFH
 
+<><><><><><><><><><><><><><><><><><><><><><><>
