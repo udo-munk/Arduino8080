@@ -1,0 +1,11 @@
+I really have no time to draw schematics with some CAD program.
+Also I think that is not necessary, the circuit is very simple and
+I found lots of online documentation, how to wire such devices with
+an Arduino Nano.
+
+However, I'll leave a foto here with my breadboard setup, which should
+show the wiring. Please note that I power the FRAM from the Nano
+stabilized 5V, they will also work with 3.3V, just make sure you connect
+the correct one to your board's power line.
+
+MAY 2024, Udo Munk
