@@ -6,7 +6,7 @@
 // History:
 // 04-MAY-2024 Release 1.0
 // 06-MAY-2024 Release 1.1 add support for a ROM in flash
-// 07-MAY-2024 Release 1.2 move all 8080 memory into a FRAM
+// 07-MAY-2024 Release 1.2 move 8080 memory into a FRAM
 //
 
 #include <SPI.h>
