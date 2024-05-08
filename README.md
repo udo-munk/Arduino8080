@@ -56,9 +56,9 @@ For going further with our litte machine we need to use external memory.
 After much reading what is available I decided to use Adafruit FRAM SPI
 memory. These are said to be fast, writable like normal RAM without tearing
 it down like flash or EEPROM. And it even is persistent memory, which
-keeps contents without power. And Adafruit provides the low level library
-to drive the FRAM's via SPI, no need yet to get into the low level stuff
-my self.
+keeps contents without power. Also Adafruit provides a library to drive
+the FRAM via SPI, so we don't have to understand all the low level details
+of this.
 
 Today my modules arrived, soldered in the header for usage on a breadboard
 and connected it to the Arduino Nano. Adafruit also provides some example
@@ -79,6 +79,15 @@ Looks good, and now we have a big 8080 computer system with:
 	UART for serial communication
 	64 KB RAM
 
-
 While the FRAM chips can be clocked up to 40 Mhz, with the Arduino Nano
 we are limited to SPI clock frequency 8 MHz, so we have to live with it.
+
+Now, we still have a copy of our code in flash, so instead of copying
+the code into the FRAM, we still can execute it from flash and use
+the FRAM only for data. This will give us the following:
+
+	8080 CPU running with 0.14 MHz
+	UART for serial communication
+	 2 KB ROM for programm code @ 0000H - 07FFH
+	62 KB RAM for data          @ 0800H - FFFFH
+
