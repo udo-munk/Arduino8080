@@ -42,8 +42,8 @@ this as is. To summarize, now we have:
 
 	Intel 8080 CPU running at ca. 0.8 MHz
 	UART for serial communication
-	2 KB ROM for programm code @ 0000H - 07FFH
-	1 KB RAM for data	   @ 0800H - 0BFFH
+	2 KB ROM for program code @ 0000H - 07FFH
+	1 KB RAM for data	  @ 0800H - 0BFFH
 
 And all that on a tiny piece of hardware smaller than a 8080 CPU chip,
 leave alone a complete computer system.
@@ -88,6 +88,6 @@ the FRAM only for data. This will give us the following:
 
 	8080 CPU running with 0.14 MHz
 	UART for serial communication
-	 2 KB ROM for programm code @ 0000H - 07FFH
-	62 KB RAM for data          @ 0800H - FFFFH
+	 2 KB ROM for program code @ 0000H - 07FFH
+	62 KB RAM for data	   @ 0800H - FFFFH
 
