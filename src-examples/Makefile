@@ -4,7 +4,7 @@ all :		serial.c turnmon.c blink.c banner.c tb.c
 	@echo
 
 clean :
-	rm -f *.c
+	rm -f serial.c turnmon.c blink.c banner.c tb.c
 
 serial.c :	serial.asm
 	z80asm -fc -l -sn -p0 $?
