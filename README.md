@@ -92,10 +92,11 @@ the FRAM only for data. This will give us the following:
 	62 KB RAM for data	   @ 0800H - FFFFH
 
 Some final thoughts:
+
 I got a 512 MB FRAM module, just because one cannot have enough memory, right?
 Wrong, because for accessing a byte in this memory we must send it 3 bytes with
 the address. For a 64 KB module 2 byte addresses should improve performance by
-reducing the overhead. If somone is going to try this plese tell us what you
+reducing the overhead. If someone is going to try this plese tell us what you
 get.
 
 Udo Munk, May 2024
