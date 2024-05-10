@@ -5,7 +5,10 @@
 //
 // History:
 // 04-MAY-2024 Release 1.0
+// 10-MAY-2024 added frontpanel port, handle reads to UART ignoring status
 //
+
+static BYTE sio_last; // last byte read from the UART
 
 // I/O function port 0 read:
 // read status of the Arduino UART and return:
@@ -27,9 +30,12 @@ static BYTE p000_in(void)
 // Read byte from Arduino UART.
 static BYTE p001_in(void)
 {
-  while (!Serial.available())   // block until data available
-    ;                           // compatible with z80sim
-  return ((BYTE)Serial.read()); // read data
+  if (!Serial.available()) // someone reading without checking first
+    return sio_last;
+  else {
+    sio_last = Serial.read();
+    return sio_last;
+  }
 }
 
 // This array contains function pointers for every input
@@ -47,8 +53,10 @@ BYTE io_in(BYTE addrl, BYTE addrh)
 {
   if ((addrl <= 4) && (*port_in[addrl] != 0)) // for now we use 0-4
     return ((*port_in[addrl]) ());
+  else if (addrl == 255)                      // and 255, frontpanel port
+    return 0;
   else
-    return (0xff); // all other return 0xff
+    return (0xff);                            // all other return 0xff
 }
 
 // I/O function port 0 write:
@@ -65,7 +73,7 @@ static void p000_out(BYTE data)
 // Write byte to Arduino UART.
 static void p001_out(BYTE data)
 {
-  Serial.write(data);
+  Serial.write(data & 0x7f); // strip parity, some software won't
 }
 
 // This array contains function pointers for every output
@@ -81,6 +89,6 @@ const static void (*port_out[5]) (BYTE) = {
 // write a byte to 8080 CPU I/O
 void io_out(BYTE addrl, BYTE addrh, BYTE data)
 {
-  if ((addrl <= 4) && (*port_out[addrl] != 0)) // for now we use 0-4, all other do nothing
-    (*port_out[addrl]) (data);
+  if ((addrl <= 4) && (*port_out[addrl] != 0)) // for now we use 0-4
+      (*port_out[addrl]) (data);               // and all other do nothing
 }
