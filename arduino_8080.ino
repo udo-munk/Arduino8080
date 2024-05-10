@@ -12,6 +12,8 @@
 #include <SPI.h>
 #include "Adafruit_FRAM_SPI.h"
 
+//define DEBUG // enables some debug messages
+
 // unused analog pin to seed random generator
 #define UAP 7
 // chip select pin for FRAM (default)
@@ -143,9 +145,8 @@ static int op_hlt(void)                 /* HLT */
 {
   // cry and die, no interrupts yet
   Serial.println();
-  Serial.print(F("HLT instruction PC = 0x"));
+  Serial.print(F("HLT @ PC = 0x"));
   Serial.println(PC8, HEX);
-  //display_freeram();
   State = Halted;
   return (7);
 }
@@ -2771,6 +2772,7 @@ void cpu_8080(void)
   } while (State == Running);
 }
 
+#ifdef DEBUG
 // from the Arduino Memory Guide
 void display_freeram()
 {
@@ -2786,6 +2788,7 @@ int freeRam()
   return (int) &v - (__brkval == 0 ?  
          (int) &__heap_start : (int) __brkval);  
 }
+#endif
 
 void setup()
 {
@@ -2833,7 +2836,9 @@ void loop()
   Serial.print(F("Clock frequency "));
   Serial.print(float(tstates) / float(stop - start) / 1000.0, 2);
   Serial.println(F(" MHz"));
+#ifdef DEBUG
   display_freeram();
+#endif
   Serial.println();
   Serial.flush();
   exit(0);
