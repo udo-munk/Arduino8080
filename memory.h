@@ -9,9 +9,13 @@
 // 07-MAY-2024 Release 1.2 move 8080 memory into a FRAM
 //
 
-#define MEMSIZE 2048
+// 64 KB unbanked memory in FRAM
+// we want hardware SPI, the 2 and 4 MBit modules can be clocked
+// with 40 MHz, the smaller ones with 20 MHz
+Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS, 40000000);
 
 // get preloaded code for the 8080 CPU
+#define MEMSIZE 2048
 #include "8080code.h"
 
 #if 0
