@@ -4,7 +4,7 @@
 // Copyright 2024, Udo Munk
 //
 // History:
-// 04-MAY-2024 Release 1.0
+// 04-MAY-2024 Release 1.0 implements a very basic 8080 system
 // 10-MAY-2024 added frontpanel port, handle reads to UART ignoring status
 //
 
@@ -40,6 +40,7 @@ static BYTE p001_in(void)
 
 // This array contains function pointers for every input
 // I/O port (0 - 255), to do the required I/O.
+// To save memory we use the first 5 ports only.
 const static BYTE (*port_in[5]) (void) = {
   p000_in,                // port 0
   p001_in,                // port 1
@@ -78,6 +79,7 @@ static void p001_out(BYTE data)
 
 // This array contains function pointers for every output
 // I/O port (0 - 255), to do the required I/O.
+// To save memory we use the first 5 ports only.
 const static void (*port_out[5]) (BYTE) = {
   p000_out,               // port 0
   p001_out,               // port 1

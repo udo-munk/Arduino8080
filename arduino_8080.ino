@@ -4,7 +4,7 @@
 // Copyright 2024, Udo Munk
 //
 // History:
-// 04-MAY-2024 Release 1.0
+// 04-MAY-2024 Release 1.0 implements a very basic 8080 system
 // 06-MAY-2024 Release 1.1 add support for a ROM in flash
 // 07-MAY-2024 Release 1.2 move 8080 memory into a FRAM
 //
@@ -2804,7 +2804,7 @@ void setup()
     exit(1);
   }
   fram.writeEnable(true);
-  init_memory();
+  //init_memory();
   init_cpu();
 }
 
@@ -2814,8 +2814,8 @@ void loop()
   // variables for measuring the run time
   unsigned long start, stop;
 
-  Serial.println(F("\fArduino Nano Intel 8080 emulator version 1.2"));
-  Serial.println(F("Copyright (C) 2024 by Udo Munk"));
+  Serial.println(F("\fIntel 8080 emulator version 1.2"));
+  Serial.println(F("Copyright (C) 2024 Udo Munk"));
   Serial.println();
 
   // run the 8080 CPU with whatever code is in memory

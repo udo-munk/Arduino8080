@@ -4,7 +4,7 @@
 // Copyright 2024, Udo Munk
 //
 // History:
-// 04-MAY-2024 Release 1.0
+// 04-MAY-2024 Release 1.0 implements a very basic 8080 system
 // 06-MAY-2024 Release 1.1 add support for a ROM in flash
 // 07-MAY-2024 Release 1.2 move 8080 memory into a FRAM
 //
@@ -14,14 +14,16 @@
 // get preloaded code for the 8080 CPU
 #include "8080code.h"
 
+#if 0
 // copy our code into FRAM
 void init_memory(void)
 {
-//  register int i;
+  register int i;
 
-//  for (i = 0; i < code_length; i++)
-//    fram.write8(i, pgm_read_byte(code + i));
+  for (i = 0; i < code_length; i++)
+    fram.write8(i, pgm_read_byte(code + i));
 }
+#endif
 
 // read a byte from 8080 CPU memory address addr
 static inline BYTE memrdr(WORD addr)
