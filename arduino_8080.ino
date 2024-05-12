@@ -27,7 +27,7 @@ typedef unsigned int  WORD;
 
 // project includes
 #include "simcore.h"
-#include "memory.h"
+#include "memsim.h"
 #include "iosim.h"
 
 // 8080 CPU registers
