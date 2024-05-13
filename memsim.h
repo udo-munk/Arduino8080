@@ -18,22 +18,24 @@ Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS, 40000000);
 #define MEMSIZE 4096  // this much memory with 8080 code we can have in flash
 #include "8080code.h"
 
-// copy our 8080 code into FRAM
+// setup FRAM
 void init_memory(void)
 {
-  register int i;
+  long i;
 
+  // copy our 8080 code from flash into FRAM
   for (i = 0; i < code_length; i++)
     fram.write8(i, pgm_read_byte(code + i));
+
+  // fill top page of 8080 memory with 0xff, write protected ROM
+  for (i = 0xff00; i <= 0xffff; i++)
+    fram.write8(i, 0xff);
 }
 
 // read a byte from 8080 CPU memory address addr
 static inline BYTE memrdr(WORD addr)
 {
-  if (addr < 0xff00)
-    return fram.read8(addr);
-  else
-    return 0xff; // top memory page write protected for MITS BASIC
+  return fram.read8(addr);
 }
 
 // write a byte data into 8080 CPU RAM at address addr 
