@@ -1,19 +1,16 @@
-all :		serial.c turnmon.c blink.c banner.c tb.c
+all :		serial.c turnmon.c banner.c tb.c
 	@echo
 	@echo "Done."
 	@echo
 
 clean :
-	rm -f serial.c turnmon.c blink.c banner.c tb.c
+	rm -f serial.c turnmon.c banner.c tb.c
 
 serial.c :	serial.asm
 	z80asm -fc -l -sn -p0 $?
 
 turnmon.c :	turnmon.asm
 	z80asm -fc -l -sn -p0 -8 $?
-
-blink.c :	blink.asm
-	z80asm -fc -l -sn -p0 $?
 
 banner.c :	banner.asm
 	z80asm -fc -l -sn -p0 $?

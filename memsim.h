@@ -15,11 +15,10 @@
 Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS, 40000000);
 
 // get preloaded code for the 8080 CPU
-#define MEMSIZE 2048
+#define MEMSIZE 4096  // this much memory with 8080 code we can have in flash
 #include "8080code.h"
 
-#if 0
-// copy our code into FRAM
+// copy our 8080 code into FRAM
 void init_memory(void)
 {
   register int i;
@@ -27,20 +26,19 @@ void init_memory(void)
   for (i = 0; i < code_length; i++)
     fram.write8(i, pgm_read_byte(code + i));
 }
-#endif
 
 // read a byte from 8080 CPU memory address addr
 static inline BYTE memrdr(WORD addr)
 {
-  if (addr < MEMSIZE)
-    return pgm_read_byte(code + addr);
-  else
+  if (addr < 0xff00)
     return fram.read8(addr);
+  else
+    return 0xff; // top memory page write protected for MITS BASIC
 }
 
 // write a byte data into 8080 CPU RAM at address addr 
 static inline void memwrt(WORD addr, BYTE data)
 {
-  if (addr >= MEMSIZE)
+  if (addr < 0xff00) // top memory page write protected for MITS BASIC
     fram.write8(addr, data);
 }

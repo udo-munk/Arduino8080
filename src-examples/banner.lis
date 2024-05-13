@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0	Mon May  6 15:18:59 2024
+Z80/8080-Macro-Assembler  Release 2.0	Mon May 13 16:06:37 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;
@@ -18,7 +18,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
 0001  =               15     15 CONDA	EQU  1			; console data port
                       16     16 
 0000  f3              17     17 	DI			; disable interrupts
-0001  31 00 0c        18     18 	LXI  SP,0C00H		; set stack to top of RAM
+0001  31 00 fc        18     18 	LXI  SP,0FC00H		; set stack to top of RAM
                       19     19 
 0004  11 20 00        20     20 	LXI  D,BANNER		; DE points to the array with text to send
 0007  06 07           21     21 	MVI  B,7		; 7 lines to print

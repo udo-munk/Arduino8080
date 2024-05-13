@@ -7,6 +7,7 @@
 // 04-MAY-2024 Release 1.0 implements a very basic 8080 system
 // 06-MAY-2024 Release 1.1 add support for a ROM in flash
 // 07-MAY-2024 Release 1.2 move 8080 memory into a FRAM
+// 13-MAY-2024 Release 1.2.1 can run MITS Alatir BASIC
 //
 
 //#define DEBUG // enables some debug messages
@@ -2800,7 +2801,7 @@ void setup()
     exit(1);
   }
   fram.writeEnable(true);
-  //init_memory();
+  init_memory();
   init_cpu();
 }
 
@@ -2810,7 +2811,7 @@ void loop()
   // variables for measuring the run time
   unsigned long start, stop;
 
-  Serial.println(F("\fIntel 8080 emulator version 1.2"));
+  Serial.println(F("\fIntel 8080 emulator version 1.2.1"));
   Serial.println(F("Copyright (C) 2024 Udo Munk"));
   Serial.println();
 

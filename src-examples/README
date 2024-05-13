@@ -18,7 +18,6 @@ the application.
 The examples are:
 serial.c	- Show how serial I/O is done.
 banner.c	- Print a cool banner to the tty serial port and then halt CPU.
-blink.c		- Blink builtin LED with 8080.
 
 turnmon.c	- Very basic monitor program from "The Age Of The Altair",
 		  when users had very little memory, like we now also have.
@@ -26,3 +25,4 @@ turnmon.c	- Very basic monitor program from "The Age Of The Altair",
 		  Don't use with Arduino IDE Serial Monitor, won't work, use
 		  a terminal emulation like minicom, putty ...!
 tb.c		- Li-Chen Wang's famous TINY BASIC for 8080.
+basic4k32.c	- MITS Altair BASIC 4K V3.2
