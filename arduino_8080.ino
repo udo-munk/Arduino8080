@@ -9,10 +9,10 @@
 // 07-MAY-2024 Release 1.2 move 8080 memory into a FRAM
 //
 
+//#define DEBUG // enables some debug messages
+
 #include <SPI.h>
 #include "Adafruit_FRAM_SPI.h"
-
-//define DEBUG // enables some debug messages
 
 // unused analog pin to seed random generator
 #define UAP 7
