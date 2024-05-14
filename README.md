@@ -125,3 +125,9 @@ Got some more stuff delivered today and after some soldering and wiring:
 	DATEI2.TXT    2024-05-14 15:03:56 61
 
 Excellent, then let's see how to make use of this ...
+After adding the SD library and initializing the device we have:
+
+	Sketch uses 30028 bytes (97%) of program storage space. Maximum is 30720 bytes.
+	Global variables use 1555 bytes (75%) of dynamic memory, leaving 493 bytes for local variables. Maximum is 2048 bytes.
+
+Now it will get interesting, guess I'll need a while ;-)
