@@ -131,3 +131,9 @@ After adding the SD library and initializing the device we have:
 	Global variables use 1555 bytes (75%) of dynamic memory, leaving 493 bytes for local variables. Maximum is 2048 bytes.
 
 Now it will get interesting, guess I'll need a while ;-)
+Actually it es even worse than I thought already, just from trying to open
+one file on the SD card:
+
+	Sketch uses 32198 bytes (104%) of program storage space. Maximum is 30720 bytes.
+	Global variables use 1581 bytes (77%) of dynamic memory, leaving 467 bytes for local variables. Maximum is 2048 bytes.
+	Compilation error: text section exceeds available space in board
