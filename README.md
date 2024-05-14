@@ -105,7 +105,7 @@ Udo Munk, May 2024
 
 Got some more stuff delivered today and after some soldering and wiring:
 
-Initializing SD card...Wiring is correct and a card is present.
+	Initializing SD card...Wiring is correct and a card is present.
 
 	Card type:         SDHC
 	Clusters:          473504
