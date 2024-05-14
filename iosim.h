@@ -9,6 +9,7 @@
 //
 
 static BYTE sio_last; // last byte read from the UART
+       BYTE fp_value; // the value for port 255 read
 
 // I/O function port 0 read:
 // read status of the Arduino UART and return:
@@ -31,10 +32,10 @@ static BYTE p000_in(void)
 static BYTE p001_in(void)
 {
   if (!Serial.available()) // someone reading without checking first
-    return sio_last;
+    return (sio_last);
   else {
     sio_last = Serial.read();
-    return sio_last;
+    return (sio_last);
   }
 }
 
@@ -55,7 +56,7 @@ BYTE io_in(BYTE addrl, BYTE addrh)
   if ((addrl <= 4) && (*port_in[addrl] != 0)) // for now we use 0-4
     return ((*port_in[addrl]) ());
   else if (addrl == 255)                      // and 255, frontpanel port
-    return 0;
+    return (fp_value);
   else
     return (0xff);                            // all other return 0xff
 }
@@ -88,7 +89,7 @@ const static void (*port_out[5]) (BYTE) = {
   0                       // port 4
 };
 
-// write a byte to 8080 CPU I/O
+// Write a byte to 8080 CPU I/O
 void io_out(BYTE addrl, BYTE addrh, BYTE data)
 {
   if ((addrl <= 4) && (*port_out[addrl] != 0)) // for now we use 0-4

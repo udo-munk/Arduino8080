@@ -7,7 +7,7 @@
 // 04-MAY-2024 Release 1.0 implements a very basic 8080 system
 // 06-MAY-2024 Release 1.1 add support for a ROM in flash
 // 07-MAY-2024 Release 1.2 move 8080 memory into a FRAM
-// 13-MAY-2024 Release 1.2.1 can run MITS Alatir BASIC
+// 13-MAY-2024 Release 1.2.1 can run MITS Altair BASIC
 //
 
 //#define DEBUG // enables some debug messages
@@ -19,8 +19,6 @@
 #define UAP 7
 // chip select pin for FRAM (default)
 #define FRAM_CS 10
-// FRAM address size, this is for the 512 KB module
-#define FRAM_ADDR_SIZE 3
 
 // data types for the 8080 CPU
 typedef unsigned char BYTE;
@@ -2796,7 +2794,7 @@ void setup()
     ; // Wait for serial port to connect. Needed for native USB
   randomSeed(analogRead(UAP));
   SPI.setClockDivider(SPI_CLOCK_DIV2);
-  if (!fram.begin(FRAM_ADDR_SIZE)) {
+  if (!fram.begin()) {
     Serial.println(F("No FRAM found"));
     exit(1);
   }
