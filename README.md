@@ -107,21 +107,21 @@ Got some more stuff delivered today and after some soldering and wiring:
 
 Initializing SD card...Wiring is correct and a card is present.
 
-Card type:         SDHC
-Clusters:          473504
-Blocks x Cluster:  64
-Total Blocks:      30304256
+	Card type:         SDHC
+	Clusters:          473504
+	Blocks x Cluster:  64
+	Total Blocks:      30304256
 
-Volume type is:    FAT32
-Volume size (Kb):  15152128
-Volume size (Mb):  14797
-Volume size (Gb):  14.45
+	Volume type is:    FAT32
+	Volume size (Kb):  15152128
+	Volume size (Mb):  14797
+	Volume size (Gb):  14.45
 
-Files found on the card (name, date and size in bytes):
-SYSTEM~1/     2024-05-14 15:02:00
-  WPSETT~1.DAT  2024-05-14 15:02:00 12
-  INDEXE~1      2024-05-14 15:02:00 76
-DATEI1.TXT    2024-05-14 15:02:42 24
-DATEI2.TXT    2024-05-14 15:03:56 61
+	Files found on the card (name, date and size in bytes):
+	SYSTEM~1/     2024-05-14 15:02:00
+	  WPSETT~1.DAT  2024-05-14 15:02:00 12
+	  INDEXE~1      2024-05-14 15:02:00 76
+	DATEI1.TXT    2024-05-14 15:02:42 24
+	DATEI2.TXT    2024-05-14 15:03:56 61
 
 Excellent, then let's see how to make use of this ...
