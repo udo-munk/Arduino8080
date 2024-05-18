@@ -11,6 +11,10 @@ the correct one to your board's power line.
 Dito the MicoSD card module, you need to get one that is designed for
 5V, like the one from Adafruit I am using.
 
+Connect both GND pins of the Arduino Nano board to the GND rails on
+your board. The MicoSD module can draw 100 mA, and all current drawn
+from the 5V must flow to GND.
+
 Then SPI runs with a clock frequency in the radio bands. And the breadboard
 wiring of course makes a nice HF antenna. I have added two capacitators
 with 10 uF and 100 nF between the + and - rails, to shortcut most of the
