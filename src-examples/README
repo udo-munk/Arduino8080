@@ -11,3 +11,4 @@ filename /code80.bin.
 
 The examples are:
 tb.bin		- Li-Chen Wang's famous TINY BASIC for 8080.
+basicex.bin	- 16 KB Microsoft BASIC for Altair 8800
