@@ -45,17 +45,23 @@ static inline void memwrt(WORD addr, BYTE data)
 
 int load_file(char *name)
 {
-
   uint32_t i = 0;
+  int c;
   File sd_file;
 
   sd_file = SD.open(name);
   if (sd_file) {
-    while (sd_file.available())
-      fram.write8(i++, sd_file.read());
+    while (sd_file.available()) {
+      if ((c = sd_file.read()) != -1) {
+        fram.write8(i++, c);
+      } else {
+        Serial.println(F("File read error"));
+        exit(1);
+      }
+    }
     sd_file.close();
   } else {
-    Serial.println(F("File not found on SD"));
+    Serial.println(F("File not found"));
     exit(1);
   }
 }
