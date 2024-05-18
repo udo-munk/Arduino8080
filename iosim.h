@@ -9,7 +9,7 @@
 //
 
 static BYTE sio_last; // last byte read from the UART
-       BYTE fp_value; // the value for port 255 read
+       BYTE fp_value = 0x22; // the value for port 255 read
 
 // I/O function port 0 read:
 // read status of the Arduino UART and return:
