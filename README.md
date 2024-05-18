@@ -155,7 +155,7 @@ is even no error handling at all for opening and reading the file.
 I already threw out everything not absolutely necessary, but we are
 pretty much at the limit. Anyway, we have the following machine now:
 
-        8080 CPU running with 0.04 MHz
+	8080 CPU running with 0.04 MHz
 	MITS Altair 88-SIO Rev. 1 for serial communication
 	RAM @ 0000H - FEFFH
 	ROM @ FF00H - FFFFH
