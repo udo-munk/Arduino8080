@@ -3,9 +3,17 @@ Also I think that is not necessary, the circuit is very simple and
 I found lots of online documentation, how to wire such devices with
 an Arduino Nano.
 
-However, I'll leave a foto here with my breadboard setup, which should
+However, I'll leave pictures here with my breadboard setup, which should
 show the wiring. Please note that I power the FRAM from the Nano
 stabilized 5V, they will also work with 3.3V, just make sure you connect
 the correct one to your board's power line.
+
+Dito the MicoSD card module, you need to get one that is designed for
+5V, like the one from Adafruit I am using.
+
+Then SPI runs with a clock frequency in the radio bands. And the breadboard
+wiring of course makes a nice HF antenne. I have added two capacitators
+with 10 uF and 100 nF between the + and - rails, to shortcut most of the
+generated HF.
 
 MAY 2024, Udo Munk
