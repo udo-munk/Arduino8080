@@ -10,7 +10,7 @@
 // 18-MAY-2024 Release 1.4 read 8080 code from a file on SD into FRAM
 //
 
-int load_file(char *);
+void load_file(char *);
 
 // 64 KB unbanked memory in FRAM
 // we want hardware SPI, the 2 and 4 MBit modules can be clocked
@@ -43,7 +43,7 @@ static inline void memwrt(WORD addr, BYTE data)
     fram.write8((uint32_t) addr, data);
 }
 
-int load_file(char *name)
+void load_file(char *name)
 {
   uint32_t i = 0;
   int c;
