@@ -145,3 +145,18 @@ Udo Munk, May 2024
 In this version I have replaced the CPU implementation with a code size
 optimized one from Thomas Eberhardt, everything else is the same as before.
 Hopefully this will free enough memory to make use of the SD drive now.
+
+Success, we do not compile any 8080 code into the application anymore,
+instead we read our code from a MicroSD drive, and we are not limited
+to 4 KB code size. However, free memory left is very very little, so
+this machine will always read /code80.bin from the MicroSD and then
+run the 8080 with whatever stuff you put in there. Currently there
+is even no error handling at all for opening and reading the file.
+I already threw out everything not absolutely necessary, but we are
+pretty much at the limit. Anyway, we have the following machine now:
+
+        8080 CPU running with 0.04 MHz
+	MITS Altair 88-SIO Rev. 1 for serial communication
+	RAM @ 0000H - FEFFH
+	ROM @ FF00H - FFFFH
+	32 GB floppy disk drive

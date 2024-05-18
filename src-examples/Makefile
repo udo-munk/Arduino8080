@@ -1,19 +1,10 @@
-all :		serial.c turnmon.c banner.c tb.c
+all :		tb.c
 	@echo
 	@echo "Done."
 	@echo
 
 clean :
-	rm -f serial.c turnmon.c banner.c tb.c
-
-serial.c :	serial.asm
-	z80asm -fc -l -sn -p0 $?
-
-turnmon.c :	turnmon.asm
-	z80asm -fc -l -sn -p0 -8 $?
-
-banner.c :	banner.asm
-	z80asm -fc -l -sn -p0 $?
+	rm -f tb.bin
 
 tb.c :		tb.asm
-	z80asm -8 -fc -l -sn -p0 -x $?
+	z80asm -8 -fb -l -sn -p0 -x $?

@@ -1,7 +1,7 @@
 //
 // Intel 8080 CPU emulation on an Arduino Nano
 //            derived from Z80PACK
-// Copyright 2024, Udo Munk
+// Copyright 2024, Udo Munk & Thomas Eberhardt
 //
 // History:
 // 04-MAY-2024 Release 1.0 implements a very basic 8080 system
@@ -9,17 +9,21 @@
 // 07-MAY-2024 Release 1.2 move 8080 memory into a FRAM
 // 13-MAY-2024 Release 1.2.1 can run MITS Altair BASIC
 // 17-MAY-2024 Release 1.3 switch to code minimized CPU from Thomas Eberhardt
+// 18-MAY-2024 Release 1.4 read 8080 code from a file on SD into FRAM
 //
 
 //#define DEBUG // enables some debug messages
 
 #include <SPI.h>
 #include "Adafruit_FRAM_SPI.h"
+#include <SD.h>
 
 // unused analog pin to seed random generator
 #define UAP 7
 // chip select pin for FRAM (default)
 #define FRAM_CS 10
+// chip select pin for SD card
+#define SD_CS 9
 
 // data types for the 8080 CPU
 typedef unsigned char BYTE;
@@ -88,16 +92,9 @@ static const BYTE szp_flags[256] = {
 // state. Prevents assumptions about register contents
 // of a just powered CPU, like HL is always 0 in the
 // beginning, which is not the case with the silicon.
-//
-// At power on a 8080 CPU sets PC to 0, so even early
-// computer systems like the Altair 8800 and the IMSAI 8080
-// used a power on jump circuit, which forces the CPU
-// to jump somewhere to the ROM entry, usually in upper
-// memory. Here we simulate that by loading PC with the
-// code entry anywhere in the ROM.
 static void init_cpu(void)
 {
-  PC8 = code_start_addr;
+  PC8 = 0;
   SP8 = random(65535);
   A = random(255);
   B = random(255);
@@ -1934,12 +1931,18 @@ void setup()
   while (!Serial)
     ; // Wait for serial port to connect. Needed for native USB
   randomSeed(analogRead(UAP));
+
   SPI.setClockDivider(SPI_CLOCK_DIV2);
   if (!fram.begin()) {
     Serial.println(F("No FRAM found"));
     exit(1);
   }
   fram.writeEnable(true);
+  if (!SD.begin(SD_CS)) {
+    Serial.println(F("SD failed"));
+    exit(1);
+  }
+
   init_memory();
   init_cpu();
 }
@@ -1950,9 +1953,7 @@ void loop()
   // variables for measuring the run time
   unsigned long start, stop;
 
-  Serial.println(F("\fIntel 8080 emulator version 1.3"));
-  Serial.println(F("Copyright (C) 2024 Udo Munk & Thomas Eberhardt"));
-  Serial.println();
+  Serial.println(F("\f8080-SIM v1.4\n"));
 
   // run the 8080 CPU with whatever code is in memory
   start = millis();
