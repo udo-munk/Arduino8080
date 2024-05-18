@@ -51,10 +51,11 @@ int load_file(char *name)
 
   sd_file = SD.open(name);
   if (sd_file) {
-    while (sd_file.available()) {
-      fram.write8(i, sd_file.read());
-      i++;
-    }
+    while (sd_file.available())
+      fram.write8(i++, sd_file.read());
     sd_file.close();
+  } else {
+    Serial.println(F("File not found on SD"));
+    exit(1);
   }
 }
