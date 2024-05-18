@@ -10,5 +10,6 @@ Copy one of the "example".bin files to your MicroSD card with the
 filename /code80.bin.
 
 The examples are:
+test8080.bin	- Kelly Smith 8080 CPU test program
 tb.bin		- Li-Chen Wang's famous TINY BASIC for 8080.
 basicex.bin	- 16 KB Microsoft BASIC for Altair 8800
