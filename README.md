@@ -137,3 +137,11 @@ one file on the SD card:
 	Sketch uses 32198 bytes (104%) of program storage space. Maximum is 30720 bytes.
 	Global variables use 1581 bytes (77%) of dynamic memory, leaving 467 bytes for local variables. Maximum is 2048 bytes.
 	Compilation error: text section exceeds available space in board
+
+Udo Munk, May 2024
+
+<><><><><><><><><><><><><><><><><><><><><><><>
+
+In this version I have replaced the CPU implementation with a code size
+optimized one from Thomas Eberhardt, everything else is the same as before.
+Hopefully this will free enough memory to make use of the SD drive now.

@@ -5,17 +5,18 @@
 //
 // History:
 // 04-MAY-2024 Release 1.0, initial implementation
+// 17-MAY-2024 use X and Y as names for the undocumented flag bits
 //
 
 // bit definitions for the 8080 CPU flags
-#define S_FLAG          128
-#define Z_FLAG          64
-#define N2_FLAG         32
-#define H_FLAG          16
-#define N1_FLAG         8
-#define P_FLAG          4
-#define N_FLAG          2
-#define C_FLAG          1
+#define S_FLAG		128
+#define Z_FLAG		64
+#define Y_FLAG		32
+#define H_FLAG		16
+#define X_FLAG		8
+#define P_FLAG		4
+#define N_FLAG		2
+#define C_FLAG		1
 
 // possible states of the 8080 CPU
 enum CPUState { Running = 1, Halted = 2 };
