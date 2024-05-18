@@ -12,7 +12,7 @@ Dito the MicoSD card module, you need to get one that is designed for
 5V, like the one from Adafruit I am using.
 
 Then SPI runs with a clock frequency in the radio bands. And the breadboard
-wiring of course makes a nice HF antenne. I have added two capacitators
+wiring of course makes a nice HF antenna. I have added two capacitators
 with 10 uF and 100 nF between the + and - rails, to shortcut most of the
 generated HF.
 
