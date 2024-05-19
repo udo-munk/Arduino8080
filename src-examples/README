@@ -12,6 +12,8 @@ you can select which file to load, just enter the filename
 without the directory and without the extension.
 
 The examples are:
+serial.bin	- shows how to do serial I/O on the machine
+banner.bin	- print a cool banner on the terminal and then halt CPU
 test8080.bin	- Kelly Smith 8080 CPU test program
 tb.bin		- Li-Chen Wang's famous TINY BASIC for 8080.
 basicex.bin	- 16 KB Microsoft BASIC for Altair 8800

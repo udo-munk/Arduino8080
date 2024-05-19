@@ -1,0 +1,87 @@
+Z80/8080-Macro-Assembler  Release 2.0	Sun May 19 19:53:29 2024
+
+LOC   OBJECT CODE   LINE   STMT SOURCE CODE
+                       1      1 ;
+                       2      2 ; Example program for the Arduino 8080
+                       3      3 ; Do some serial I/O
+                       4      4 ;
+                       5      5 ; Udo Munk, April 2024
+                       6      6 ;
+                       7      7 
+                       8      8 	.8080		; we use 8080 syntax
+                       9      9 
+0000  =               10     10 TTYSTA	EQU  0		; tty status port
+0001  =               11     11 TTYDAT	EQU  1		; tty data port
+                      12     12 
+000d  =               13     13 CR	EQU  13		; carriage return
+000a  =               14     14 LF	EQU  10		; line feed
+                      15     15 
+                      16     16 	ORG  0000H	; starting at memory location 0 in ROM
+                      17     17 
+0000  f3              18     18 	DI		; disable interrupts
+0001  31 95 00        19     19 	LXI  SP,STACK	; set stack
+                      20     20 
+                      21     21 			; print instructions
+0004  21 3c 00        22     22 	LXI  H,TEXT	; HL points to text to send
+0007  7e              23     23 LOOP	MOV  A,M	; get next character into A
+0008  b7              24     24 	ORA  A		; is it 0 termination?
+0009  ca 13 00        25     25 	JZ   ECHO	; if yes done
+000c  cd 31 00        26     26 	CALL OUTCH	; output character to tty
+000f  23              27     27 	INX  H		; point to next character
+0010  c3 07 00        28     28 	JMP  LOOP	; and again
+                      29     29 
+                      30     30 			; now echo what is typed
+0013  db 00           31     31 ECHO	IN   TTYSTA	; get tty status
+0015  0f              32     32 	RRC		; is there any input?
+0016  da 13 00        33     33 	JC   ECHO	; wait if not
+0019  db 01           34     34 	IN   TTYDAT	; get character from tty into A
+001b  cd 31 00        35     35 	CALL OUTCH	; echo it
+001e  fe 58           36     36 	CPI  'X'	; is it a X?
+0020  ca 30 00        37     37 	JZ   DONE	; done if so
+0023  fe 0d           38     38 	CPI  CR		; is it a carriage return?
+0025  c2 13 00        39     39 	JNZ  ECHO	; no, go on
+0028  3e 0a           40     40 	MVI  A,LF	; else also send line feed
+002a  cd 31 00        41     41 	CALL OUTCH
+002d  c3 13 00        42     42 	JMP  ECHO	; repeat
+                      43     43 
+0030  76              44     44 DONE	HLT		; done
+                      45     45 
+                      46     46 			; output character in A to tty
+0031  f5              47     47 OUTCH	PUSH PSW	; save character in A
+0032  db 00           48     48 OUTCH1	IN   TTYSTA	; get tty status
+0034  07              49     49 	RLC		; output ready?
+0035  da 32 00        50     50 	JC   OUTCH1	; wait if not
+0038  f1              51     51 	POP  PSW	; get character back into A
+0039  d3 01           52     52 	OUT  TTYDAT	; send character to tty
+003b  c9              53     53 	RET
+                      54     54 
+003c  48 65 6c 6c     55     55 TEXT	DEFM "Hello from the 8080 CPU"
+0040  6f 20 66 72     55     56
+0044  6f 6d 20 74     55     57
+0048  68 65 20 38     55     58
+004c  30 38 30 20     55     59
+0050  43 50 55        55     60
+0053  0d 0a           56     61 	DEFB CR,LF
+0055  49 20 77 69     57     62 	DEFM "I will echo what you type, type X if done"
+0059  6c 6c 20 65     57     63
+005d  63 68 6f 20     57     64
+0061  77 68 61 74     57     65
+0065  20 79 6f 75     57     66
+0069  20 74 79 70     57     67
+006d  65 2c 20 74     57     68
+0071  79 70 65 20     57     69
+0075  58 20 69 66     57     70
+0079  20 64 6f 6e     57     71
+007d  65              57     72
+007e  0d 0a 00        58     73 	DEFB CR,LF,0
+                      59     74 
+0081                  60     75 	DS   20		; space for the stack
+0095                  61     76 STACK
+                      62     77 
+0095                  63     78 	END
+
+Symbol table
+
+CR     000d    DONE   0030    ECHO   0013    LF     000a    LOOP   0007 
+OUTCH  0031    OUTCH1 0032    STACK  0095    TEXT   003c    TTYDAT 0001 
+TTYSTA 0000    
