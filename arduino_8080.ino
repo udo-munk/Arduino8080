@@ -16,7 +16,6 @@
 
 #include <SPI.h>
 #include "Adafruit_FRAM_SPI.h"
-//#include <SD.h>
 #include "SdFat.h"
 
 // unused analog pin to seed random generator
