@@ -57,7 +57,7 @@ void load_file(char *name)
 #endif
 
   if (!sd_file.openExistingSFN(SFN)) {
-    Serial.println(F("File not found"));
+    Serial.println(F("File not found\n"));
     return;
   }
 

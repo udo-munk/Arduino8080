@@ -31,7 +31,6 @@ void get_cmdline(char *buf, int len)
       Serial.write(c);
       i++;
     } else {
-      Serial.write('\n');
       break;
     }
   }
