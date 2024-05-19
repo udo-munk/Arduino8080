@@ -43,7 +43,7 @@ WORD PC8, SP8; // funny names because SP already is a macro here
 CPUState State = Running;         // CPU state
 unsigned long tstates = 0;        // executed T-states
 
-// Insure FAT16/FAT32 only.
+// Insure FAT16/FAT32 only
 SdFat32 SD;
 
 // Precomputed table for fast sign, zero and parity flag calculation

@@ -40,7 +40,7 @@ static inline void memwrt(WORD addr, BYTE data)
 }
 
 // load a file name into FRAM
-int load_file(char *name)
+void load_file(char *name)
 {
   uint32_t i = 0;
   unsigned char c;
@@ -58,12 +58,11 @@ int load_file(char *name)
 
   if (!sd_file.openExistingSFN(SFN)) {
     Serial.println(F("File not found"));
-    return 1;
+    return;
   }
 
   while(sd_file.read(&c, 1))
     fram.write8(i++, c);
 
   sd_file.close();
-  return 0;
 }

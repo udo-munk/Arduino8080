@@ -6,8 +6,10 @@ With z80pack z80sim examples like these can be debugged under
 control of an In Circuit Emulator (debug probe), the serial
 port implemented in the latest release is identical.
 
-Copy one of the "example".bin files to your MicroSD card with the
-filename /code80.bin.
+On your MicroSD card create a directory with the name CODE80 and
+copy the "example".bin files into it. When you run the machine
+you can select which file to load, just enter the filename
+without the directory and without the extension.
 
 The examples are:
 test8080.bin	- Kelly Smith 8080 CPU test program
