@@ -47,21 +47,15 @@ void load_file(char *name)
 {
   uint32_t i = 0;
   int c;
-  File sd_file;
+  FatFile sd_file;
 
-  sd_file = SD.open(name);
-  if (sd_file) {
-    while (sd_file.available()) {
-      if ((c = sd_file.read()) != -1) {
-        fram.write8(i++, c);
-      } else {
-        Serial.println(F("File read error"));
-        exit(1);
-      }
-    }
-    sd_file.close();
-  } else {
+  if (!sd_file.openExistingSFN(name)) {
     Serial.println(F("File not found"));
     exit(1);
   }
+
+  while(sd_file.read(&c, 1))
+    fram.write8(i++, c);
+
+  sd_file.close();
 }

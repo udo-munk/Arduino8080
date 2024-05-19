@@ -16,7 +16,8 @@
 
 #include <SPI.h>
 #include "Adafruit_FRAM_SPI.h"
-#include <SD.h>
+//#include <SD.h>
+#include "SdFat.h"
 
 // unused analog pin to seed random generator
 #define UAP 7
@@ -41,6 +42,9 @@ WORD PC8, SP8; // funny names because SP already is a macro here
 // other global variables
 CPUState State = Running;         // CPU state
 unsigned long tstates = 0;        // executed T-states
+
+// Insure FAT16/FAT32 only.
+SdFat32 SD;
 
 // Precomputed table for fast sign, zero and parity flag calculation
 #define _ 0
@@ -1952,7 +1956,7 @@ void loop()
   // variables for measuring the run time
   unsigned long start, stop;
 
-  Serial.println(F("\f8080-SIM v1.4\n"));
+  Serial.println(F("\f8080-SIM v1.5\n"));
 
   init_cpu();
   init_memory();

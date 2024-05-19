@@ -162,3 +162,16 @@ Anyway, we have the following machine now:
 Udo Munk, May 2024
 
 <><><><><><><><><><><><><><><><><><><><><><><>
+
+Now that we have tweaked our CPU, the other component we can look at
+for code optimizations is the SD library. While this library is great,
+it includes lot's of stuff we don't need here, all we want is reading
+files with good old 8.3 filenames.
+
+Please install the following library in your Arduino IDE:
+
+	SdFat - Adafruit Fork
+
+This one can be better customisized for our needs here, and with doing
+this we save a few KB code, that we can use to improve our application
+now :-)
