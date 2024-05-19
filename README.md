@@ -158,3 +158,7 @@ Anyway, we have the following machine now:
 	RAM @ 0000H - FEFFH
 	ROM @ FF00H - FFFFH
 	32 GB floppy disk drive
+
+Udo Munk, May 2024
+
+<><><><><><><><><><><><><><><><><><><><><><><>
