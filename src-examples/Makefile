@@ -4,7 +4,7 @@ all :		tb.bin test8080.bin
 	@echo
 
 clean :
-	rm -f tb.bin
+	rm -f tb.bin test8080.bin
 
 tb.bin :	tb.asm
 	z80asm -8 -fb -l -sn -p0 -x $?
