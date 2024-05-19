@@ -1933,18 +1933,17 @@ void setup()
   randomSeed(analogRead(UAP));
 
   SPI.setClockDivider(SPI_CLOCK_DIV2);
+
   if (!fram.begin()) {
     Serial.println(F("No FRAM found"));
     exit(1);
   }
   fram.writeEnable(true);
+  
   if (!SD.begin(SD_CS)) {
     Serial.println(F("SD failed"));
     exit(1);
   }
-
-  init_memory();
-  init_cpu();
 }
 
 void loop()
@@ -1954,6 +1953,9 @@ void loop()
   unsigned long start, stop;
 
   Serial.println(F("\f8080-SIM v1.4\n"));
+
+  init_cpu();
+  init_memory();
 
   // run the 8080 CPU with whatever code is in memory
   start = millis();
