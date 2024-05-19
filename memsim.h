@@ -8,6 +8,7 @@
 // 06-MAY-2024 Release 1.1 add support for a ROM in flash
 // 07-MAY-2024 Release 1.2 move 8080 memory into a FRAM
 // 18-MAY-2024 Release 1.4 read 8080 code from a file on SD into FRAM
+// 19-MAY-2024 Release 1.5 use SdFat lib instead of SD lib to save memory
 //
 
 void load_file(char *);
