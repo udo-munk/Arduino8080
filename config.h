@@ -6,6 +6,9 @@
 // History:
 // 19-MAY-2024 implemented configuration dialog
 
+#define BS  0x08 // backspace
+#define DEL 0x7f // delete
+
 // read an config command line from the terminal
 void get_cmdline(char *buf, int len)
 {
@@ -16,7 +19,14 @@ void get_cmdline(char *buf, int len)
     while (!Serial.available())
       ;
     c = Serial.read();
-    if (c != '\r') {
+    if ((c == BS) || (c == DEL)) {
+      if (i >= 1) {
+        Serial.write(BS);
+        Serial.write(' ');
+        Serial.write(BS);
+        i--;
+      }
+    } else if (c != '\r') {
       buf[i] = c;
       Serial.write(c);
       i++;
