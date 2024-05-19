@@ -47,7 +47,7 @@ static inline void memwrt(WORD addr, BYTE data)
 void load_file(char *name)
 {
   uint32_t i = 0;
-  int c;
+  unsigned char c;
   FatFile sd_file;
 
   if (!sd_file.openExistingSFN(name)) {
