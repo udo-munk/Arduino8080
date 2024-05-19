@@ -11,8 +11,6 @@
 // 19-MAY-2024 Release 1.5 use SdFat lib instead of SD lib to save memory
 //
 
-void load_file(char *);
-
 // 64 KB unbanked memory in FRAM
 // we want hardware SPI, the 2 and 4 MBit modules can be clocked
 // with 40 MHz, the smaller ones with 20 MHz
@@ -26,9 +24,6 @@ void init_memory(void)
   // fill top page of 8080 memory with 0xff, write protected ROM
   for (i = 0xff00; i <= 0xffff; i++)
     fram.write8(i, 0xff);
-
-  // read a file from SD into FRAM
-  load_file("code80.bin");
 }
 
 // read a byte from 8080 CPU memory address addr
@@ -44,19 +39,31 @@ static inline void memwrt(WORD addr, BYTE data)
     fram.write8((uint32_t) addr, data);
 }
 
-void load_file(char *name)
+// load a file name into FRAM
+int load_file(char *name)
 {
   uint32_t i = 0;
   unsigned char c;
   FatFile sd_file;
+  char SFN[25];
+ 
+  strcpy(SFN, "/CODE80/");
+  strcat(SFN, name);
+  strcat(SFN, ".BIN");
 
-  if (!sd_file.openExistingSFN(name)) {
+#ifdef DEBUG
+  Serial.print(F("Filename: "));
+  Serial.println(SFN);
+#endif
+
+  if (!sd_file.openExistingSFN(SFN)) {
     Serial.println(F("File not found"));
-    exit(1);
+    return 1;
   }
 
   while(sd_file.read(&c, 1))
     fram.write8(i++, c);
 
   sd_file.close();
+  return 0;
 }

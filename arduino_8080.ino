@@ -33,6 +33,7 @@ typedef unsigned int  WORD;
 #include "simcore.h"
 #include "memsim.h"
 #include "iosim.h"
+#include "config.h"
 
 // 8080 CPU registers
 BYTE A, B, C, D, E, H, L, F, IFF;
@@ -1959,6 +1960,7 @@ void loop()
 
   init_cpu();
   init_memory();
+  config();
 
   // run the 8080 CPU with whatever code is in memory
   start = millis();
