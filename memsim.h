@@ -26,7 +26,7 @@ void init_memory(void)
     fram.write8(i, 0xff);
 }
 
-// read a byte from 8080 CPU memory address addr
+// read a byte from 8080 CPU memory at address addr
 static inline BYTE memrdr(WORD addr)
 {
   return fram.read8((uint32_t) addr);
@@ -39,7 +39,7 @@ static inline void memwrt(WORD addr, BYTE data)
     fram.write8((uint32_t) addr, data);
 }
 
-// load a file name into FRAM
+// load a file 'name' into FRAM
 void load_file(char *name)
 {
   uint32_t i = 0;

@@ -8,7 +8,7 @@
 // 10-MAY-2024 added frontpanel port, handle reads to UART ignoring status
 //
 
-static BYTE sio_last; // last byte read from the UART
+static BYTE sio_last;        // last byte read from the UART
        BYTE fp_value = 0x22; // the value for port 255 read
 
 // I/O function port 0 read:

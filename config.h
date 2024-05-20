@@ -5,6 +5,7 @@
 //
 // History:
 // 19-MAY-2024 implemented configuration dialog
+//
 
 #define BS  0x08 // backspace
 #define DEL 0x7f // delete
@@ -44,7 +45,7 @@ void config(void)
   int go_flag = 0;
 
   while (!go_flag) {
-    Serial.print(F("1 - set port 255 value, currently "));
+    Serial.print(F("1 - port 255 value, currently "));
     Serial.println(fp_value, HEX);
     Serial.println(F("2 - load file"));
     Serial.println(F("3 - run machine\n"));

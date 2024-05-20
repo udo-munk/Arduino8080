@@ -1936,13 +1936,14 @@ void setup()
     ; // Wait for serial port to connect. Needed for native USB
   randomSeed(analogRead(UAP));
 
+  // make sure we run with highest possible SPI clock
   SPI.setClockDivider(SPI_CLOCK_DIV2);
 
   if (!fram.begin()) {
     Serial.println(F("No FRAM found"));
     exit(1);
   }
-  fram.writeEnable(true);
+  fram.writeEnable(true); // always leave write enabled
   
   if (!SD.begin(SD_CS)) {
     Serial.println(F("SD failed"));
@@ -1956,8 +1957,10 @@ void loop()
   // variables for measuring the run time
   unsigned long start, stop;
 
+  // we have no memory for a fancy banner
   Serial.println(F("\f8080-SIM v1.5\n"));
 
+  // initialize and configure all virtuell hardware
   init_cpu();
   init_memory();
   config();
