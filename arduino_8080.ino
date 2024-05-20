@@ -149,7 +149,8 @@ void cpu_8080(struct cpu_state *cpu_state)
   SP8 = cpu_state->SP8;
 
   do {
-    t = 4;
+    t = 4; // minimum clock cycles for M1
+
     switch (memrdr(PC8++)) { // execute next opcode
 
     case 0x00:			/* NOP */
