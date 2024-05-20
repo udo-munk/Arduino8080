@@ -6,7 +6,7 @@
 ;
 
 	.8080			; we use Intel 8080 syntax
-	ORG  0000H		; starting at memory location 0 in ROM
+	ORG  0000H		; starting at memory location 0
 
 CR	EQU  13			; carriage return
 LF	EQU  10			; line feed

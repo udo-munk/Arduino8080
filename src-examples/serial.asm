@@ -13,7 +13,7 @@ TTYDAT	EQU  1		; tty data port
 CR	EQU  13		; carriage return
 LF	EQU  10		; line feed
 
-	ORG  0000H	; starting at memory location 0 in ROM
+	ORG  0000H	; starting at memory location 0
 
 	DI		; disable interrupts
 	LXI  SP,STACK	; set stack

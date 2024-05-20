@@ -1,4 +1,4 @@
-Z80/8080-Macro-Assembler  Release 2.0	Sun May 19 19:53:29 2024
+Z80/8080-Macro-Assembler  Release 2.0	Mon May 20 09:27:10 2024
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        1      1 ;
@@ -9,7 +9,7 @@ LOC   OBJECT CODE   LINE   STMT SOURCE CODE
                        6      6 ;
                        7      7 
                        8      8 	.8080			; we use Intel 8080 syntax
-                       9      9 	ORG  0000H		; starting at memory location 0 in ROM
+                       9      9 	ORG  0000H		; starting at memory location 0
                       10     10 
 000d  =               11     11 CR	EQU  13			; carriage return
 000a  =               12     12 LF	EQU  10			; line feed
