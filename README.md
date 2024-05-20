@@ -181,3 +181,6 @@ without the need to copy it to a fixed name. On your MicroSD card create
 a directory CODE80 and copy all your 8080 binaries into this directory.
 Filename to enter is just the name, without extension, which must be .bin.
 
+Udo Munk, May 2024
+
+<><><><><><><><><><><><><><><><><><><><><><><>
