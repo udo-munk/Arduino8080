@@ -56,6 +56,22 @@ void config(void)
 
     switch (*s) {
     case '1':
+again:
+      Serial.print(F("Value: "));
+      get_cmdline(s, 3);
+      Serial.println(F("\n"));
+      if ((*s >= 'a') && (*s <= 'f'))
+        *s = toupper(*s);
+      if ((*(s + 1) >= 'a') && (*(s + 1) <= 'f'))
+        *(s + 1) = toupper(*(s + 1));
+      if (!isxdigit(*s) || !isxdigit(*(s + 1))) {
+        Serial.println(F("What?"));
+        goto again;
+      }
+      fp_value = (*s <= '9') ? (*s - '0') : (*s - 'A' + 10);
+      fp_value <<= 4;
+      fp_value += (*(s + 1) <= '9') ? (*(s + 1) - '0') :
+                  (*(s + 1) - 'A' + 10);
       break;
 
     case '2':
