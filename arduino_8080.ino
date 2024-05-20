@@ -108,18 +108,24 @@ static void init_cpu(void)
   H = random(255);
   L = random(255);
   F = random(255);
-  F &= ~(X_FLAG | Y_FLAG);
-  F |= N_FLAG;
 }
 
 // This function builds the 8080 central processing unit.
 // The opcode where PC points to is fetched from the memory
 // and PC incremented by one. The opcode is then dispatched
 // to execute code, which emulates this 8080 opcode.
+
+// For a description of how the arithmetic flags calculation works see:
+// http://emulators.com/docs/lazyoverflowdetect_final.pdf
+//
+// The formula for subtraction carry outs was determined by staring
+// intently at some truth tables.
+//
+// cout contains the carry outs for every bit
+
 void cpu_8080(void)
 {
-  int t, i, carry, old_c_flag;
-  BYTE tmp, P, spl, sph;
+  BYTE t, res, cout, P;
   WORD addr;
 
   do {
@@ -136,27 +142,35 @@ void cpu_8080(void)
       break;
 
     case 0x02:			/* STAX B */
-      memwrt((B << 8) + C, A);
+      memwrt((B << 8) | C, A);
       t = 7;
       break;
 
     case 0x03:			/* INX B */
-      C++;
-      if (!C) B++;
+      addr = ((B << 8) | C) + 1;
+      B = (addr >> 8);
+      C = (addr & 0xff);
       t = 5;
       break;
 
     case 0x04:			/* INR B */
-      B++;
-      ((B & 0xf) == 0) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[B];
+      res = B + 1;
+      cout = ((B & 1) | ((B | 1) & ~res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      B = res;
       t = 5;
       break;
 
     case 0x05:			/* DCR B */
-      B--;
-      ((B & 0xf) == 0xf) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[B];
+      res = B - 1;
+      cout = ((~B & 1) | ((~B | 1) & res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      B = res;
       t = 5;
       break;
 
@@ -166,10 +180,9 @@ void cpu_8080(void)
       break;
 
     case 0x07:			/* RLC */
-      i = (A & 128) ? 1 : 0;
-      (i) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A <<= 1;
-      A |= i;
+      res = ((A & 128) >> 7) & 1;
+      F = (F & ~C_FLAG) | (res << C_SHIFT);
+      A = (A << 1) | res;
       t = 4;
       break;
 
@@ -178,35 +191,46 @@ void cpu_8080(void)
       break;
 
     case 0x09:			/* DAD B */
-      carry = (L + C > 255) ? 1 : 0;
-      L += C;
-      (H + B + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      H += B + carry;
+      addr = ((H << 8) | L);
+      addr += ((B << 8) | C);
+      cout = ((H & B) | ((H | B) & ~(addr >> 8)));
+      F = ((F & ~C_FLAG) |
+	   (((cout >> 7) & 1) << C_SHIFT));
+      H = (addr >> 8);
+      L = (addr & 0xff);
       t = 10;
       break;
 
     case 0x0a:			/* LDAX B */
-      A = memrdr((B << 8) + C);
+      A = memrdr((B << 8) | C);
       t = 7;
       break;
 
     case 0x0b:			/* DCX B */
-      C--;
-      if (C == 0xff) B--;
+      addr = ((B << 8) | C) - 1;
+      B = (addr >> 8);
+      C = (addr & 0xff);
       t = 5;
       break;
 
     case 0x0c:			/* INR C */
-      C++;
-      ((C & 0xf) == 0) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[C];
+      res = C + 1;
+      cout = ((C & 1) | ((C | 1) & ~res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      C = res;
       t = 5;
       break;
 
     case 0x0d:			/* DCR C */
-      C--;
-      ((C & 0xf) == 0xf) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[C];
+      res = C - 1;
+      cout = ((~C & 1) | ((~C | 1) & res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      C = res;
       t = 5;
       break;
 
@@ -216,10 +240,9 @@ void cpu_8080(void)
       break;
 
     case 0x0f:			/* RRC */
-      i = A & 1;
-      (i) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A >>= 1;
-      if (i) A |= 128;
+      res = A & 1;
+      F = (F & ~C_FLAG) | (res << C_SHIFT);
+      A = (A >> 1) | (res << 7);
       t = 4;
       break;
 
@@ -234,27 +257,35 @@ void cpu_8080(void)
       break;
 
     case 0x12:			/* STAX D */
-      memwrt((D << 8) + E, A);
+      memwrt((D << 8) | E, A);
       t = 7;
       break;
 
     case 0x13:			/* INX D */
-      E++;
-      if (!E) D++;
+      addr = ((D << 8) | E) + 1;
+      D = (addr >> 8);
+      E = (addr & 0xff);
       t = 5;
       break;
 
     case 0x14:			/* INR D */
-      D++;
-      ((D & 0xf) == 0) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[D];
+      res = D + 1;
+      cout = ((D & 1) | ((D | 1) & ~res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      D = res;
       t = 5;
       break;
 
     case 0x15:			/* DCR D */
-      D--;
-      ((D & 0xf) == 0xf) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[D];
+      res = D - 1;
+      cout = ((~D & 1) | ((~D | 1) & res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      D = res;
       t = 5;
       break;
 
@@ -264,10 +295,9 @@ void cpu_8080(void)
       break;
 
     case 0x17:			/* RAL */
-      old_c_flag = F & C_FLAG;
-      (A & 128) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A <<= 1;
-      if (old_c_flag) A |= 1;
+      res = (F >> C_SHIFT) & 1;
+      F = (F & ~C_FLAG) | ((((A & 128) >> 7) & 1) << C_SHIFT);
+      A = (A << 1) | res;
       t = 4;
       break;
 
@@ -276,35 +306,46 @@ void cpu_8080(void)
       break;
 
     case 0x19:			/* DAD D */
-      carry = (L + E > 255) ? 1 : 0;
-      L += E;
-      (H + D + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      H += D + carry;
+      addr = ((H << 8) | L);
+      addr += ((D << 8) | E);
+      cout = ((H & D) | ((H | D) & ~(addr >> 8)));
+      F = ((F & ~C_FLAG) |
+	   (((cout >> 7) & 1) << C_SHIFT));
+      H = (addr >> 8);
+      L = (addr & 0xff);
       t = 10;
       break;
 
     case 0x1a:			/* LDAX D */
-      A = memrdr((D << 8) + E);
+      A = memrdr((D << 8) | E);
       t = 7;
       break;
 
     case 0x1b:			/* DCX D */
-      E--;
-      if (E == 0xff) D--;
+      addr = ((D << 8) | E) - 1;
+      D = (addr >> 8);
+      E = (addr & 0xff);
       t = 5;
       break;
 
     case 0x1c:			/* INR E */
-      E++;
-      ((E & 0xf) == 0) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[E];
+      res = E + 1;
+      cout = ((E & 1) | ((E | 1) & ~res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      E = res;
       t = 5;
       break;
 
     case 0x1d:			/* DCR E */
-      E--;
-      ((E & 0xf) == 0xf) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[E];
+      res = E - 1;
+      cout = ((~E & 1) | ((~E | 1) & res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      E = res;
       t = 5;
       break;
 
@@ -314,11 +355,9 @@ void cpu_8080(void)
       break;
 
     case 0x1f:			/* RAR */
-      old_c_flag = F & C_FLAG;
-      i = A & 1;
-      (i) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A >>= 1;
-      if (old_c_flag) A |= 128;
+      res = (F >> C_SHIFT) & 1;
+      F = (F & ~C_FLAG) | ((A & 1) << C_SHIFT);
+      A = (A >> 1) | (res << 7);
       t = 4;
       break;
 
@@ -334,29 +373,37 @@ void cpu_8080(void)
 
     case 0x22:			/* SHLD nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       memwrt(addr, L);
       memwrt(addr + 1, H);
       t = 16;
       break;
 
     case 0x23:			/* INX H */
-      L++;
-      if (!L) H++;
+      addr = ((H << 8) | L) + 1;
+      H = (addr >> 8);
+      L = (addr & 0xff);
       t = 5;
       break;
 
     case 0x24:			/* INR H */
-      H++;
-      ((H & 0xf) == 0) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[H];
+      res = H + 1;
+      cout = ((H & 1) | ((H | 1) & ~res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      H = res;
       t = 5;
       break;
 
     case 0x25:			/* DCR H */
-      H--;
-      ((H & 0xf) == 0xf) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[H];
+      res = H - 1;
+      cout = ((~H & 1) | ((~H | 1) & res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      H = res;
       t = 5;
       break;
 
@@ -365,18 +412,25 @@ void cpu_8080(void)
       t = 7;
       break;
 
+// Rewrote DAA after looking at
+// https://zeptobars.com/en/read/KR580VM80A-intel-i8080-verilog-reverse-engineering
+// in the verilog file.
+// It is just a normal addition with a special operand setup and the carry flag
+// is set to the same value as the condition of the second "if". That is what
+// makes DAA a bit strange.
+
     case 0x27:			/* DAA */
-      i = A;
-      if (((A & 0xf) > 9) || (F & H_FLAG)) {
-        ((A & 0xf) > 9) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-        i += 6;
-      }
-      if (((i & 0x1f0) > 0x90) || (F & C_FLAG)) {
-        i += 0x60;
-      }
-      if (i & 0x100) (F |= C_FLAG);
-      A = i & 0xff;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      P = 0;
+      if (((A & 0xf) > 9) || (F & H_FLAG))
+        P |= 0x06;
+      if ((A > 0x99) || (F & C_FLAG))
+        P |= 0x60;
+      res = A + P;
+      cout = ((A & P) | ((A | P) & ~res));
+      F = (((A > 0x99) << C_SHIFT) | (F & C_FLAG) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
@@ -385,38 +439,48 @@ void cpu_8080(void)
       break;
 
     case 0x29:			/* DAD H */
-      carry = (L << 1 > 255) ? 1 : 0;
-      L <<= 1;
-      (H + H + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      H += H + carry;
+      addr = ((H << 8) | L) << 1;
+      cout = (H | (H & ~(addr >> 8)));
+      F = ((F & ~C_FLAG) |
+	   (((cout >> 7) & 1) << C_SHIFT));
+      H = (addr >> 8);
+      L = (addr & 0xff);
       t = 10;
       break;
 
     case 0x2a:			/* LHLD nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       L = memrdr(addr);
       H = memrdr(addr + 1);
       t = 16;
       break;
 
     case 0x2b:			/* DCX H */
-      L--;
-      if (L == 0xff) H--;
+      addr = ((H << 8) | L) - 1;
+      H = (addr >> 8);
+      L = (addr & 0xff);
       t = 5;
       break;
 
     case 0x2c:			/* INR L */
-      L++;
-      ((L & 0xf) == 0) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[L];
+      res = L + 1;
+      cout = ((L & 1) | ((L | 1) & ~res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      L = res;
       t = 5;
       break;
 
     case 0x2d:			/* DCR L */
-      L--;
-      ((L & 0xf) == 0xf) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[L];
+      res = L - 1;
+      cout = ((~L & 1) | ((~L | 1) & res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      L = res;
       t = 5;
       break;
 
@@ -436,13 +500,13 @@ void cpu_8080(void)
 
     case 0x31:			/* LXI SP,nn */
       SP8 = memrdr(PC8++);
-      SP8 += memrdr(PC8++) << 8;
+      SP8 |= memrdr(PC8++) << 8;
       t = 10;
       break;
 
     case 0x32:			/* STA nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       memwrt(addr, A);
       t = 13;
       break;
@@ -453,27 +517,32 @@ void cpu_8080(void)
       break;
 
     case 0x34:			/* INR M */
-      addr = (H << 8) + L;
+      addr = (H << 8) | L;
       P = memrdr(addr);
-      P++;
-      memwrt(addr, P);
-      ((P & 0xf) == 0) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[P];
+      res = P + 1;
+      cout = ((P & 1) | ((P | 1) & ~res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      memwrt(addr, res);
       t = 10;
       break;
 
     case 0x35:			/* DCR M */
-      addr = (H << 8) + L;
+      addr = (H << 8) | L;
       P = memrdr(addr);
-      P--;
-      memwrt(addr, P);
-      ((P & 0xf) == 0xf) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[P];
+      res = P - 1;
+      cout = ((~P & 1) | ((~P | 1) & res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      memwrt(addr, res);
       t = 10;
       break;
 
     case 0x36:			/* MVI M,n */
-      memwrt((H << 8) + L, memrdr(PC8++));
+      memwrt((H << 8) | L, memrdr(PC8++));
       t = 10;
       break;
 
@@ -487,18 +556,18 @@ void cpu_8080(void)
       break;
 
     case 0x39:			/* DAD SP */
-      spl = SP8 & 0xff;
-      sph = SP8 >> 8;
-      carry = (L + spl > 255) ? 1 : 0;
-      L += spl;
-      (H + sph + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      H += sph + carry;
+      addr = ((H << 8) | L) + SP8;
+      cout = ((H & (SP8 >> 8)) | ((H | (SP8 >> 8)) & ~(addr >> 8)));
+      F = ((F & ~C_FLAG) |
+	   (((cout >> 7) & 1) << C_SHIFT));
+      H = (addr >> 8);
+      L = (addr & 0xff);
       t = 10;
       break;
 
     case 0x3a:			/* LDA nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       A = memrdr(addr);
       t = 13;
       break;
@@ -509,16 +578,23 @@ void cpu_8080(void)
       break;
 
     case 0x3c:			/* INR A */
-      A++;
-      ((A & 0xf) == 0) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + 1;
+      cout = ((A & 1) | ((A | 1) & ~res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 5;
       break;
 
     case 0x3d:			/* DCR A */
-      A--;
-      ((A & 0xf) == 0xf) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - 1;
+      cout = ((~A & 1) | ((~A | 1) & res));
+      F = ((F & C_FLAG) |
+	   (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 5;
       break;
 
@@ -528,8 +604,7 @@ void cpu_8080(void)
       break;
 
     case 0x3f:			/* CMC */
-      if (F & C_FLAG) F &= ~C_FLAG;
-      else F |= C_FLAG;
+      F ^= C_FLAG;
       t = 4;
       break;
 
@@ -563,7 +638,7 @@ void cpu_8080(void)
       break;
 
     case 0x46:			/* MOV B,M */
-      B = memrdr((H << 8) + L);
+      B = memrdr((H << 8) | L);
       t = 7;
       break;
 
@@ -602,7 +677,7 @@ void cpu_8080(void)
       break;
 
     case 0x4e:			/* MOV C,M */
-      C = memrdr((H << 8) + L);
+      C = memrdr((H << 8) | L);
       t = 7;
       break;
 
@@ -641,7 +716,7 @@ void cpu_8080(void)
       break;
 
     case 0x56:			/* MOV D,M */
-      D = memrdr((H << 8) + L);
+      D = memrdr((H << 8) | L);
       t = 7;
       break;
 
@@ -680,7 +755,7 @@ void cpu_8080(void)
       break;
 
     case 0x5e:			/* MOV E,M */
-      E = memrdr((H << 8) + L);
+      E = memrdr((H << 8) | L);
       t = 7;
       break;
 
@@ -719,7 +794,7 @@ void cpu_8080(void)
       break;
 
     case 0x66:			/* MOV H,M */
-      H = memrdr((H << 8) + L);
+      H = memrdr((H << 8) | L);
       t = 7;
       break;
 
@@ -758,7 +833,7 @@ void cpu_8080(void)
       break;
 
     case 0x6e:			/* MOV L,M */
-      L = memrdr((H << 8) + L);
+      L = memrdr((H << 8) | L);
       t = 7;
       break;
 
@@ -768,32 +843,32 @@ void cpu_8080(void)
       break;
 
     case 0x70:			/* MOV M,B */
-      memwrt((H << 8) + L, B);
+      memwrt((H << 8) | L, B);
       t = 7;
       break;
 
     case 0x71:			/* MOV M,C */
-      memwrt((H << 8) + L, C);
+      memwrt((H << 8) | L, C);
       t = 7;
       break;
 
     case 0x72:			/* MOV M,D */
-      memwrt((H << 8) + L, D);
+      memwrt((H << 8) | L, D);
       t = 7;
       break;
 
     case 0x73:			/* MOV M,E */
-      memwrt((H << 8) + L, E);
+      memwrt((H << 8) | L, E);
       t = 7;
       break;
 
     case 0x74:			/* MOV M,H */
-      memwrt((H << 8) + L, H);
+      memwrt((H << 8) | L, H);
       t = 7;
       break;
 
     case 0x75:			/* MOV M,L */
-      memwrt((H << 8) + L, L);
+      memwrt((H << 8) | L, L);
       t = 7;
       break;
 
@@ -807,7 +882,7 @@ void cpu_8080(void)
       break;
 
     case 0x77:			/* MOV M,A */
-      memwrt((H << 8) + L, A);
+      memwrt((H << 8) | L, A);
       t = 7;
       break;
 
@@ -842,7 +917,7 @@ void cpu_8080(void)
       break;
 
     case 0x7e:			/* MOV A,M */
-      A = memrdr((H << 8) + L);
+      A = memrdr((H << 8) | L);
       t = 7;
       break;
 
@@ -851,530 +926,610 @@ void cpu_8080(void)
       break;
 
     case 0x80:			/* ADD B */
-      ((A & 0xf) + (B & 0xf) > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + B > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + B;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + B;
+      cout = ((A & B) | ((A | B) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x81:			/* ADD C */
-      ((A & 0xf) + (C & 0xf) > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + C > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + C;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + C;
+      cout = ((A & C) | ((A | C) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x82:			/* ADD D */
-      ((A & 0xf) + (D & 0xf) > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + D > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + D;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + D;
+      cout = ((A & D) | ((A | D) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x83:			/* ADD E */
-      ((A & 0xf) + (E & 0xf) > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + E > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + E;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + E;
+      cout = ((A & E) | ((A | E) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x84:			/* ADD H */
-      ((A & 0xf) + (H & 0xf) > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + H > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + H;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + H;
+      cout = ((A & H) | ((A | H) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x85:			/* ADD L */
-      ((A & 0xf) + (L & 0xf) > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + L > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + L;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + L;
+      cout = ((A & L) | ((A | L) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x86:			/* ADD M */
-      P = memrdr((H << 8) + L);
-      ((A & 0xf) + (P & 0xf) > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + P > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + P;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      P = memrdr((H << 8) | L);
+      res = A + P;
+      cout = ((A & P) | ((A | P) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 7;
       break;
 
     case 0x87:			/* ADD A */
-      ((A & 0xf) + (A & 0xf) > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      ((A << 1) > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A << 1;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A << 1;
+      cout = (A | (A & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x88:			/* ADC B */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((A & 0xf) + (B & 0xf) + carry > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + B + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + B + carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + B + ((F >> C_SHIFT) & 1);
+      cout = ((A & B) | ((A | B) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x89:			/* ADC C */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((A & 0xf) + (C & 0xf) + carry > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + C + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + C + carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + C + ((F >> C_SHIFT) & 1);
+      cout = ((A & C) | ((A | C) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x8a:			/* ADC D */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((A & 0xf) + (D & 0xf) + carry > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + D + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + D + carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + D + ((F >> C_SHIFT) & 1);
+      cout = ((A & D) | ((A | D) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x8b:			/* ADC E */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((A & 0xf) + (E & 0xf) + carry > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + E + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + E + carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + E + ((F >> C_SHIFT) & 1);
+      cout = ((A & E) | ((A | E) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x8c:			/* ADC H */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((A & 0xf) + (H & 0xf) + carry > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + H + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + H + carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + H + ((F >> C_SHIFT) & 1);
+      cout = ((A & H) | ((A | H) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x8d:			/* ADC L */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((A & 0xf) + (L & 0xf) + carry > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + L + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + L + carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + L + ((F >> C_SHIFT) & 1);
+      cout = ((A & L) | ((A | L) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x8e:			/* ADC M */
-      P = memrdr((H << 8) + L);
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((A & 0xf) + (P & 0xf) + carry > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + P + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + P + carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      P = memrdr((H << 8) | L);
+      res = A + P + ((F >> C_SHIFT) & 1);
+      cout = ((A & P) | ((A | P) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 7;
       break;
 
     case 0x8f:			/* ADC A */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((A & 0xf) + (A & 0xf) + carry > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      ((A << 1) + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = (A << 1) + carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = (A << 1) + ((F >> C_SHIFT) & 1);
+      cout = (A | (A & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 4;
       break;
 
     case 0x90:			/* SUB B */
-      ((B & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (B > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - B;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - B;
+      cout = ((~A & B) | ((~A | B) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x91:			/* SUB C */
-      ((C & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (C > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - C;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - C;
+      cout = ((~A & C) | ((~A | C) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x92:			/* SUB D */
-      ((D & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (D > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - D;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - D;
+      cout = ((~A & D) | ((~A | D) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x93:			/* SUB E */
-      ((E & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (E > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - E;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - E;
+      cout = ((~A & E) | ((~A | E) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x94:			/* SUB H */
-      ((H & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (H > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - H;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - H;
+      cout = ((~A & H) | ((~A | H) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x95:			/* SUB L */
-      ((L & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (L > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - L;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - L;
+      cout = ((~A & L) | ((~A | L) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x96:			/* SUB M */
-      P = memrdr((H << 8) + L);
-      ((P & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (P > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - P;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      P = memrdr((H << 8) | L);
+      res = A - P;
+      cout = ((~A & P) | ((~A | P) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 7;
       break;
 
     case 0x97:			/* SUB A */
+      F = Z_FLAG | H_FLAG | P_FLAG;
+      // S_FLAG and C_FLAG cleared
       A = 0;
-      F &= ~(S_FLAG | C_FLAG);
-      F |= Z_FLAG | H_FLAG | P_FLAG;
       t = 4;
       break;
 
     case 0x98:			/* SBB B */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((B & 0xf) + carry > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (B + carry > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - B - carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - B - ((F >> C_SHIFT) & 1);
+      cout = ((~A & B) | ((~A | B) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x99:			/* SBB C */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((C & 0xf) + carry > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (C + carry > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - C - carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - C - ((F >> C_SHIFT) & 1);
+      cout = ((~A & C) | ((~A | C) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x9a:			/* SBB D */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((D & 0xf) + carry > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (D + carry > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - D - carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - D - ((F >> C_SHIFT) & 1);
+      cout = ((~A & D) | ((~A | D) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x9b:			/* SBB E */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((E & 0xf) + carry > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (E + carry > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - E - carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - E - ((F >> C_SHIFT) & 1);
+      cout = ((~A & E) | ((~A | E) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x9c:			/* SBB H */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((H & 0xf) + carry > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (H + carry > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - H - carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - H - ((F >> C_SHIFT) & 1);
+      cout = ((~A & H) | ((~A | H) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x9d:			/* SBB L */
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((L & 0xf) + carry > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (L + carry > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - L - carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - L - ((F >> C_SHIFT) & 1);
+      cout = ((~A & L) | ((~A | L) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0x9e:			/* SBB M */
-      P = memrdr((H << 8) + L);
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((P & 0xf) + carry > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (P + carry > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - P - carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      P = memrdr((H << 8) | L);
+      res = A - P - ((F >> C_SHIFT) & 1);
+      cout = ((~A & P) | ((~A | P) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 7;
       break;
 
     case 0x9f:			/* SBB A */
-      if (F & C_FLAG) {
-        A = 255;
-        F |= S_FLAG | C_FLAG | P_FLAG;
-        F &= ~(Z_FLAG | H_FLAG);
-      } else {
-        A = 0;
-        F |= Z_FLAG | H_FLAG | P_FLAG;
-        F &= ~(S_FLAG | C_FLAG);
-      }
+      res = -((F >> C_SHIFT) & 1);
+      F = ((((res >> 7) & 1) << C_SHIFT) |
+           (((res >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 4;
       break;
 
     case 0xa0:			/* ANA B */
-      ((A | B) & 8) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      A &= B;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~C_FLAG;
+      res = A & B;
+      F = (((((A | B) >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      // C_FLAG cleared
+      A = res;
       t = 4;
       break;
 
     case 0xa1:			/* ANA C */
-      ((A | C) & 8) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      A &= C;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~C_FLAG;
+      res = A & C;
+      F = (((((A | C) >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      // C_FLAG cleared
+      A = res;
       t = 4;
       break;
 
     case 0xa2:			/* ANA D */
-      ((A | D) & 8) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      A &= D;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~C_FLAG;
+      res = A & D;
+      F = (((((A | D) >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      // C_FLAG cleared
+      A = res;
       t = 4;
       break;
 
     case 0xa3:			/* ANA E */
-      ((A | E) & 8) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      A &= E;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~C_FLAG;
+      res = A & E;
+      F = (((((A | E) >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      // C_FLAG cleared
+      A = res;
       t = 4;
       break;
 
     case 0xa4:			/* ANA H */
-      ((A | H) & 8) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      A &= H;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~C_FLAG;
+      res = A & H;
+      F = (((((A | H) >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      // C_FLAG cleared
+      A = res;
       t = 4;
       break;
 
     case 0xa5:			/* ANA L */
-      ((A | L) & 8) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      A &= L;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~C_FLAG;
+      res = A & L;
+      F = (((((A | L) >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      // C_FLAG cleared
+      A = res;
       t = 4;
       break;
 
     case 0xa6:			/* ANA M */
-      P = memrdr((H << 8) + L);
-      ((A | P) & 8) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      A &= P;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~C_FLAG;
+      P = memrdr((H << 8) | L);
+      res = A & P;
+      F = (((((A | P) >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      // C_FLAG cleared
+      A = res;
       t = 7;
       break;
 
     case 0xa7:			/* ANA A */
-      (A & 8) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~C_FLAG;
+      // Stupid compiler won't optimize this:
+      // F = ((((A >> 3) & 1) << H_SHIFT) |
+      //      szp_flags[A]);
+      F = (((A & 8) << (H_SHIFT - 3)) |
+           szp_flags[A]);
+      // C_FLAG cleared
       t = 4;
       break;
 
     case 0xa8:			/* XRA B */
       A ^= B;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(H_FLAG | C_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xa9:			/* XRA C */
       A ^= C;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(H_FLAG | C_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xaa:			/* XRA D */
       A ^= D;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(H_FLAG | C_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xab:			/* XRA E */
       A ^= E;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(H_FLAG | C_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xac:			/* XRA H */
       A ^= H;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(H_FLAG | C_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xad:			/* XRA L */
       A ^= L;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(H_FLAG | C_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xae:			/* XRA M */
-      A ^= memrdr((H << 8) + L);
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(H_FLAG | C_FLAG);
+      A ^= memrdr((H << 8) | L);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 7;
       break;
 
     case 0xaf:			/* XRA A */
       A = 0;
-      F &= ~(S_FLAG | H_FLAG | C_FLAG);
-      F |= Z_FLAG | P_FLAG;
+      F = Z_FLAG | P_FLAG;
+      // S_FLAG, H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xb0:			/* ORA B */
       A |= B;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(C_FLAG | H_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xb1:			/* ORA C */
       A |= C;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(C_FLAG | H_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xb2:			/* ORA D */
       A |= D;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(C_FLAG | H_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xb3:			/* ORA E */
       A |= E;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(C_FLAG | H_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xb4:			/* ORA H */
       A |= H;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(C_FLAG | H_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xb5:			/* ORA L */
       A |= L;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(C_FLAG | H_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xb6:			/* ORA M */
-      A |= memrdr((H << 8) + L);
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(C_FLAG | H_FLAG);
+      A |= memrdr((H << 8) | L);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 7;
       break;
 
     case 0xb7:			/* ORA A */
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(C_FLAG | H_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xb8:			/* CMP B */
-      ((B & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (B > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      tmp = A - B;
-      F = (F & ~SZP_FLAGS) | szp_flags[tmp];
+      res = A - B;
+      cout = ((~A & B) | ((~A | B) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
       t = 4;
       break;
 
     case 0xb9:			/* CMP C */
-      ((C & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (C > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      tmp = A - C;
-      F = (F & ~SZP_FLAGS) | szp_flags[tmp];
+      res = A - C;
+      cout = ((~A & C) | ((~A | C) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
       t = 4;
       break;
 
     case 0xba:			/* CMP D */
-      ((D & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (D > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      tmp = A - D;
-      F = (F & ~SZP_FLAGS) | szp_flags[tmp];
+      res = A - D;
+      cout = ((~A & D) | ((~A | D) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
       t = 4;
       break;
 
     case 0xbb:			/* CMP E */
-      ((E & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (E > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      tmp = A - E;
-      F = (F & ~SZP_FLAGS) | szp_flags[tmp];
+      res = A - E;
+      cout = ((~A & E) | ((~A | E) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
       t = 4;
       break;
 
     case 0xbc:			/* CMP H */
-      ((H & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (H > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      tmp = A - H;
-      F = (F & ~SZP_FLAGS) | szp_flags[tmp];
+      res = A - H;
+      cout = ((~A & H) | ((~A | H) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
       t = 4;
       break;
 
     case 0xbd:			/* CMP L */
-      ((L & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (L > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      tmp = A - L;
-      F = (F & ~SZP_FLAGS) | szp_flags[tmp];
+      res = A - L;
+      cout = ((~A & L) | ((~A | L) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
       t = 4;
       break;
 
     case 0xbe:			/* CMP M */
-      P = memrdr((H << 8) + L);
-      ((P & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (P > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      tmp = A - P;
-      F = (F & ~SZP_FLAGS) | szp_flags[tmp];
+      P = memrdr((H << 8) | L);
+      res = A - P;
+      cout = ((~A & P) | ((~A | P) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
       t = 7;
       break;
 
     case 0xbf:			/* CMP A */
-      F &= ~(S_FLAG | C_FLAG);
-      F |= Z_FLAG | H_FLAG | P_FLAG;
+      F = Z_FLAG | H_FLAG | P_FLAG;
+      // S_FLAG and C_FLAG cleared
       t = 4;
       break;
 
     case 0xc0:			/* RNZ */
-      t = 5;
       if (!(F & Z_FLAG)) {
         addr = memrdr(SP8++);
-        addr += memrdr(SP8++) << 8;
+        addr |= memrdr(SP8++) << 8;
         PC8 = addr;
-        t += 6;
-      }
+        t = 11;
+      } else
+        t = 5;
       break;
 
     case 0xc1:			/* POP B */
@@ -1385,7 +1540,7 @@ void cpu_8080(void)
 
     case 0xc2:			/* JNZ nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (!(F & Z_FLAG))
         PC8 = addr;
       t = 10;
@@ -1393,21 +1548,21 @@ void cpu_8080(void)
 
     case 0xc3:			/* JMP nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8) << 8;
+      addr |= memrdr(PC8) << 8;
       PC8 = addr;
       t = 10;
       break;
 
     case 0xc4:			/* CNZ nn */
-      t = 11;
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (!(F & Z_FLAG)) {
         memwrt(--SP8, PC8 >> 8);
         memwrt(--SP8, PC8);
         PC8 = addr;
-        t += 6;
-      }
+        t = 17;
+      } else
+        t = 11;
       break;
 
     case 0xc5:			/* PUSH B */
@@ -1418,14 +1573,16 @@ void cpu_8080(void)
 
     case 0xc6:			/* ADI n */
       P = memrdr(PC8++);
-      ((A & 0xf) + (P & 0xf) > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + P > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + P;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + P;
+      cout = ((A & P) | ((A | P) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 7;
       break;
 
-    case 0xc7:			/* RST 0 */
+     case 0xc7:			/* RST 0 */
       memwrt(--SP8, PC8 >> 8);
       memwrt(--SP8, PC8);
       PC8 = 0;
@@ -1433,25 +1590,25 @@ void cpu_8080(void)
       break;
 
     case 0xc8:			/* RZ */
-      t = 5;
       if (F & Z_FLAG) {
         addr = memrdr(SP8++);
-        addr += memrdr(SP8++) << 8;
+        addr |= memrdr(SP8++) << 8;
         PC8 = addr;
-        t += 6;
-      }
+        t = 11;
+      } else
+        t = 5;
       break;
 
     case 0xc9:			/* RET */
       addr = memrdr(SP8++);
-      addr += memrdr(SP8++) << 8;
+      addr |= memrdr(SP8++) << 8;
       PC8 = addr;
       t = 10;
       break;
 
     case 0xca:			/* JZ nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (F & Z_FLAG)
         PC8 = addr;
       t = 10;
@@ -1459,26 +1616,26 @@ void cpu_8080(void)
 
     case 0xcb:			/* JMP* nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8) << 8;
+      addr |= memrdr(PC8) << 8;
       PC8 = addr;
       t = 10;
       break;
 
     case 0xcc:			/* CZ nn */
-      t = 11;
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (F & Z_FLAG) {
         memwrt(--SP8, PC8 >> 8);
         memwrt(--SP8, PC8);
         PC8 = addr;
-        t += 6;
-      }
+        t = 17;
+      } else
+        t = 11;
       break;
 
     case 0xcd:			/* CALL nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       memwrt(--SP8, PC8 >> 8);
       memwrt(--SP8, PC8);
       PC8 = addr;
@@ -1486,12 +1643,13 @@ void cpu_8080(void)
       break;
 
     case 0xce:			/* ACI n */
-      carry = (F & C_FLAG) ? 1 : 0;
       P = memrdr(PC8++);
-      ((A & 0xf) + (P & 0xf) + carry > 0xf) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      (A + P + carry > 255) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A + P + carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A + P + ((F >> C_SHIFT) & 1);
+      cout = ((A & P) | ((A | P) & ~res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      A = res;
       t = 7;
       break;
 
@@ -1503,13 +1661,13 @@ void cpu_8080(void)
       break;
 
     case 0xd0:			/* RNC */
-      t = 5;
       if (!(F & C_FLAG)) {
         addr = memrdr(SP8++);
-        addr += memrdr(SP8++) << 8;
+        addr |= memrdr(SP8++) << 8;
         PC8 = addr;
-        t += 6;
-      }
+        t = 11;
+      } else
+        t = 5;
       break;
 
     case 0xd1:			/* POP D */
@@ -1520,7 +1678,7 @@ void cpu_8080(void)
 
     case 0xd2:			/* JNC nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (!(F & C_FLAG))
         PC8 = addr;
       t = 10;
@@ -1533,15 +1691,15 @@ void cpu_8080(void)
       break;
 
     case 0xd4:			/* CNC nn */
-      t = 11;
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (!(F & C_FLAG)) {
         memwrt(--SP8, PC8 >> 8);
         memwrt(--SP8, PC8);
         PC8 = addr;
-        t += 6;
-      }
+        t = 17;
+      } else
+        t = 11;
       break;
 
     case 0xd5:			/* PUSH D */
@@ -1552,10 +1710,13 @@ void cpu_8080(void)
 
     case 0xd6:			/* SUI n */
       P = memrdr(PC8++);
-      ((P & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (P > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - P;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - P;
+      cout = ((~A & P) | ((~A | P) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 7;
       break;
 
@@ -1567,25 +1728,25 @@ void cpu_8080(void)
       break;
 
     case 0xd8:			/* RC */
-      t = 5;
       if (F & C_FLAG) {
         addr = memrdr(SP8++);
-        addr += memrdr(SP8++) << 8;
+        addr |= memrdr(SP8++) << 8;
         PC8 = addr;
-        t += 6;
-      }
+        t = 11;
+      } else
+        t = 5;
       break;
 
     case 0xd9:			/* RET* */
       addr = memrdr(SP8++);
-      addr += memrdr(SP8++) << 8;
+      addr |= memrdr(SP8++) << 8;
       PC8 = addr;
       t = 10;
       break;
 
     case 0xda:			/* JC nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (F & C_FLAG)
         PC8 = addr;
       t = 10;
@@ -1598,20 +1759,20 @@ void cpu_8080(void)
       break;
 
     case 0xdc:			/* CC nn */
-      t = 11;
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (F & C_FLAG) {
         memwrt(--SP8, PC8 >> 8);
         memwrt(--SP8, PC8);
         PC8 = addr;
-        t += 6;
-      }
+        t = 17;
+      } else
+        t = 11;
       break;
 
     case 0xdd:			/* CALL* nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       memwrt(--SP8, PC8 >> 8);
       memwrt(--SP8, PC8);
       PC8 = addr;
@@ -1620,11 +1781,13 @@ void cpu_8080(void)
 
     case 0xde:			/* SBI n */
       P = memrdr(PC8++);
-      carry = (F & C_FLAG) ? 1 : 0;
-      ((P & 0xf) + carry > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (P + carry > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      A = A - P - carry;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
+      res = A - P - ((F >> C_SHIFT) & 1);
+      cout = ((~A & P) | ((~A | P) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
+      A = res;
       t = 7;
       break;
 
@@ -1636,13 +1799,13 @@ void cpu_8080(void)
       break;
 
     case 0xe0:			/* RPO */
-      t = 5;
       if (!(F & P_FLAG)) {
         addr = memrdr(SP8++);
-        addr += memrdr(SP8++) << 8;
+        addr |= memrdr(SP8++) << 8;
         PC8 = addr;
-        t += 6;
-      }
+        t = 11;
+      } else
+        t = 5;
       break;
 
     case 0xe1:			/* POP H */
@@ -1653,7 +1816,7 @@ void cpu_8080(void)
 
     case 0xe2:			/* JPO nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (!(F & P_FLAG))
         PC8 = addr;
       t = 10;
@@ -1670,15 +1833,15 @@ void cpu_8080(void)
       break;
 
     case 0xe4:			/* CPO nn */
-      t = 11;
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (!(F & P_FLAG)) {
         memwrt(--SP8, PC8 >> 8);
         memwrt(--SP8, PC8);
         PC8 = addr;
-        t += 6;
-      }
+        t = 17;
+      } else
+        t = 11;
       break;
 
     case 0xe5:			/* PUSH H */
@@ -1689,10 +1852,11 @@ void cpu_8080(void)
 
     case 0xe6:			/* ANI n */
       P = memrdr(PC8++);
-      ((A | P) & 8) ? (F |= H_FLAG) : (F &= ~H_FLAG);
-      A &= P;
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~C_FLAG;
+      res = A & P;
+      F = (((((A | P) & 8) >> 3) << H_SHIFT) |
+           szp_flags[res]);
+      // C_FLAG cleared
+      A = res;
       t = 7;
       break;
 
@@ -1704,23 +1868,23 @@ void cpu_8080(void)
       break;
 
     case 0xe8:			/* RPE */
-      t = 5;
       if (F & P_FLAG) {
         addr = memrdr(SP8++);
-        addr += memrdr(SP8++) << 8;
+        addr |= memrdr(SP8++) << 8;
         PC8 = addr;
-        t += 6;
-      }
+        t = 11;
+      } else
+        t = 5;
       break;
 
     case 0xe9:			/* PCHL */
-      PC8 = (H << 8) + L;
+      PC8 = (H << 8) | L;
       t = 5;
       break;
 
     case 0xea:			/* JPE nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (F & P_FLAG)
         PC8 = addr;
       t = 10;
@@ -1737,20 +1901,20 @@ void cpu_8080(void)
       break;
 
     case 0xec:			/* CPE nn */
-      t = 11;
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (F & P_FLAG) {
         memwrt(--SP8, PC8 >> 8);
         memwrt(--SP8, PC8);
         PC8 = addr;
-        t += 6;
-      }
+        t = 17;
+      } else
+        t = 11;
       break;
 
     case 0xed:			/* CALL* nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       memwrt(--SP8, PC8 >> 8);
       memwrt(--SP8, PC8);
       PC8 = addr;
@@ -1759,8 +1923,8 @@ void cpu_8080(void)
 
     case 0xee:			/* XRI n */
       A ^= memrdr(PC8++);
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(H_FLAG | C_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 7;
       break;
 
@@ -1772,26 +1936,24 @@ void cpu_8080(void)
       break;
 
     case 0xf0:			/* RP */
-      t = 5;
       if (!(F & S_FLAG)) {
         addr = memrdr(SP8++);
-        addr += memrdr(SP8++) << 8;
+        addr |= memrdr(SP8++) << 8;
         PC8 = addr;
-        t += 6;
-      }
+        t = 11;
+      } else
+        t = 5;
       break;
 
     case 0xf1:			/* POP PSW */
       F = memrdr(SP8++);
-      F &= ~(Y_FLAG | X_FLAG);
-      F |= N_FLAG;
       A = memrdr(SP8++);
       t = 10;
       break;
 
     case 0xf2:			/* JP nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (!(F & S_FLAG))
         PC8 = addr;
       t = 10;
@@ -1803,27 +1965,27 @@ void cpu_8080(void)
       break;
 
     case 0xf4:			/* CP nn */
-      t = 11;
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (!(F & S_FLAG)) {
         memwrt(--SP8, PC8 >> 8);
         memwrt(--SP8, PC8);
         PC8 = addr;
-        t += 6;
-      }
+        t = 17;
+      } else
+        t = 11;
       break;
 
     case 0xf5:			/* PUSH PSW */
       memwrt(--SP8, A);
-      memwrt(--SP8, F);
+      memwrt(--SP8, ((F & ~(Y_FLAG | X_FLAG)) | N_FLAG));
       t = 11;
       break;
 
     case 0xf6:			/* ORI n */
       A |= memrdr(PC8++);
-      F = (F & ~SZP_FLAGS) | szp_flags[A];
-      F &= ~(C_FLAG | H_FLAG);
+      F = szp_flags[A];
+      // H_FLAG and C_FLAG cleared
       t = 7;
       break;
 
@@ -1835,23 +1997,23 @@ void cpu_8080(void)
       break;
 
     case 0xf8:			/* RM */
-      t = 5;
       if (F & S_FLAG) {
         addr = memrdr(SP8++);
-        addr += memrdr(SP8++) << 8;
+        addr |= memrdr(SP8++) << 8;
         PC8 = addr;
-        t += 6;
-      }
+        t = 11;
+      } else
+        t = 5;
       break;
 
     case 0xf9:			/* SPHL */
-      SP8 = (H << 8) + L;
+      SP8 = (H << 8) | L;
       t = 5;
       break;
 
     case 0xfa:			/* JM nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (F & S_FLAG)
         PC8 = addr;
       t = 10;
@@ -1863,20 +2025,20 @@ void cpu_8080(void)
       break;
 
     case 0xfc:			/* CM nn */
-      t = 11;
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       if (F & S_FLAG) {
         memwrt(--SP8, PC8 >> 8);
         memwrt(--SP8, PC8);
         PC8 = addr;
-        t += 6;
-      }
+        t = 17;
+      } else
+        t = 11;
       break;
 
     case 0xfd:			/* CALL* nn */
       addr = memrdr(PC8++);
-      addr += memrdr(PC8++) << 8;
+      addr |= memrdr(PC8++) << 8;
       memwrt(--SP8, PC8 >> 8);
       memwrt(--SP8, PC8);
       PC8 = addr;
@@ -1885,10 +2047,12 @@ void cpu_8080(void)
 
     case 0xfe:			/* CPI n */
       P = memrdr(PC8++);
-      ((P & 0xf) > (A & 0xf)) ? (F &= ~H_FLAG) : (F |= H_FLAG);
-      (P > A) ? (F |= C_FLAG) : (F &= ~C_FLAG);
-      tmp = A - P;
-      F = (F & ~SZP_FLAGS) | szp_flags[tmp];
+      res = A - P;
+      cout = ((~A & P) | ((~A | P) & res));
+      F = ((((cout >> 7) & 1) << C_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
+           szp_flags[res]);
+      F ^= H_FLAG;
       t = 7;
       break;
 
