@@ -184,3 +184,10 @@ Filename to enter is just the name, without extension, which must be .bin.
 Udo Munk, May 2024
 
 <><><><><><><><><><><><><><><><><><><><><><><>
+
+Now that we can load any code from the huge disk drive into the 8080
+computer system we have a problem, when the software isn't working,
+runs away and the whole machine seems to be stuck.
+For this I added an interrupt key, which will stop the 8080 from
+whatever it is doing. And then a register dump also is printed
+to the terminal, so that we might get an idea what it was doing.

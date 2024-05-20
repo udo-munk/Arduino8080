@@ -28,4 +28,4 @@
 #define C_SHIFT		0
 
 // possible states of the 8080 CPU
-enum CPUState { Running = 1, Halted = 2 };
+enum CPUState { Running = 1, Halted = 2, Interrupted = 3 };

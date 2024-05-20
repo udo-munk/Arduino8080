@@ -20,4 +20,8 @@ wiring of course makes a nice HF antenna. I have added two capacitators
 with 10 uF and 100 nF between the + and - rails, to shortcut most of the
 generated HF.
 
+In the picture nanoboard3 I added a switch connected to GND and D3 at
+the Arduino Nano. Pressing the switch will cause an interrupt, which
+stops the 8080 CPU at next M1 from whatever it is doing.
+
 MAY 2024, Udo Munk

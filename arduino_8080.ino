@@ -10,6 +10,7 @@
 // 13-MAY-2024 Release 1.2.1 can run MITS Altair BASIC
 // 17-MAY-2024 Release 1.3 switch to code minimized CPU from Thomas Eberhardt
 // 18-MAY-2024 Release 1.4 read 8080 code from a file on SD into FRAM
+// 20-MAY-2024 Release 1.5.1 added interrupt key and register dump for debugging
 //
 
 //#define DEBUG // enables some debug messages
@@ -24,6 +25,9 @@
 #define FRAM_CS 10
 // chip select pin for SD card
 #define SD_CS 9
+// interrupt pin, interrupt 0 is already used by the SPI stuff
+// so we use interrupt 1 at the D3 pin
+#define USERINT 3
 
 // data types for the 8080 CPU
 typedef unsigned char BYTE;
@@ -870,9 +874,6 @@ void cpu_8080(void)
 
     case 0x76:			/* HLT */
       // cry and die, no interrupts yet
-      Serial.println();
-      Serial.print(F("HLT @ PC = 0x"));
-      Serial.println(PC8, HEX);
       State = Halted;
       t = 7;
       break;
@@ -2069,6 +2070,12 @@ void cpu_8080(void)
   } while (State == Running);
 }
 
+// interrupt handler for break switch, stops CPU
+void user_int(void)
+{
+  State = Interrupted;
+}
+
 #ifdef DEBUG
 // from the Arduino Memory Guide
 void display_freeram()
@@ -2091,9 +2098,14 @@ void setup()
 {
   // put your setup code here, to run once:
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(USERINT, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(USERINT), user_int, FALLING);
+
   Serial.begin(9600);
   while (!Serial)
     ; // Wait for serial port to connect. Needed for native USB
+
+  // if this analog pin is not wired the value is unpredictable
   randomSeed(analogRead(UAP));
 
   // make sure we run with highest possible SPI clock
@@ -2118,7 +2130,7 @@ void loop()
   unsigned long start, stop;
 
   // we have no memory for a fancy banner
-  Serial.println(F("\f8080-SIM v1.5\n"));
+  Serial.println(F("\f8080-SIM v1.5.1\n"));
 
   // initialize and configure all virtual hardware
   init_cpu();
@@ -2132,6 +2144,41 @@ void loop()
   
   // 8080 CPU stopped working, signal this on builtin LED
   digitalWrite(LED_BUILTIN, true);
+
+  // tell us why it stopped running
+  Serial.println();
+  Serial.print(F("CPU was "));
+  if (State == Halted)
+    Serial.println(F("halted"));
+  else if (State == Interrupted)
+    Serial.println(F("interrupted"));
+  
+  // print register dump
+  Serial.println(F("PC\tA\tSZHPC\tB:C\tD:E\tH:L\tSP"));
+  Serial.print(PC8, HEX);
+  Serial.print(F("\t"));
+  Serial.print(A, HEX);
+  Serial.print(F("\t"));
+  Serial.print(F & S_FLAG ? 1 : 0, DEC);
+  Serial.print(F & Z_FLAG ? 1 : 0, DEC);
+  Serial.print(F & H_FLAG ? 1 : 0, DEC);
+  Serial.print(F & P_FLAG ? 1 : 0, DEC);
+  Serial.print(F & C_FLAG ? 1 : 0, DEC);
+  Serial.print(F("\t"));
+  Serial.print(B, HEX);
+  Serial.print(F(":"));
+  Serial.print(C, HEX);
+  Serial.print(F("\t"));
+  Serial.print(D, HEX);
+  Serial.print(F(":"));
+  Serial.print(E, HEX);
+  Serial.print(F("\t"));
+  Serial.print(H, HEX);
+  Serial.print(F(":"));
+  Serial.print(L, HEX);
+  Serial.print(F("\t"));
+  Serial.print(SP8, HEX);
+  Serial.println();
 
   // print some execution statistics
   Serial.println();
