@@ -61,7 +61,7 @@ void load_file(char *name)
     return;
   }
 
-  while(sd_file.read(&c, 1))
+  while (sd_file.read(&c, 1))
     fram.write8(i++, c);
 
   sd_file.close();
