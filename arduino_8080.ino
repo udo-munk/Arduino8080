@@ -52,38 +52,38 @@ SdFat32 SD;
 #define Z Z_FLAG
 #define P P_FLAG
 static const BYTE szp_flags[256] = {
-/*00*/	Z | P,    _,    _,    P,    _,    P,    P,    _,
-/*08*/	    _,    P,  	P,    _,    P,    _,    _,    P,
-/*10*/	    _,    P,    P,    _,    P,    _,    _,    P,
-/*18*/	    P,    _,    _,    P,    _,    P,    P,    _,
-/*20*/	    _,    P,    P,    _,    P,    _,    _,    P,
-/*28*/	    P,    _,    _,    P,    _,    P,    P,    _,
-/*30*/	    P,    _,    _,    P,    _,    P,    P,    _,
-/*38*/	    _,    P,    P,    _,    P,    _,    _,    P,
-/*40*/	    _,    P,    P,    _,    P,    _,    _,    P,
-/*48*/	    P,    _,    _,    P,    _,    P,    P,    _,
-/*50*/	    P,    _,    _,    P,    _,    P,    P,    _,
-/*58*/	    _,    P,    P,    _,    P,    _,    _,    P,
-/*60*/	    P,    _,    _,    P,    _,    P,    P,    _,
-/*68*/	    _,    P,    P,    _,    P,    _,    _,    P,
-/*70*/	    _,    P,    P,    _,    P,    _,    _,    P,
-/*78*/	    P,    _,    _,    P,    _,    P,    P,    _,
-/*80*/	    S,S | P,S | P,    S,S | P,    S,    S,S | P,
-/*88*/	S | P,    S,    S,S | P,    S,S | P,S | P,    S,
-/*90*/	S | P,    S,    S,S | P,    S,S | P,S | P,    S,
-/*98*/	    S,S | P,S | P,    S,S | P,    S,    S,S | P,
-/*a0*/	S | P,    S,    S,S | P,    S,S | P,S | P,    S,
-/*a8*/	    S,S | P,S | P,    S,S | P,    S,    S,S | P,
-/*b0*/	    S,S | P,S | P,    S,S | P,    S,    S,S | P,
-/*b8*/	S | P,    S,    S,S | P,    S,S | P,S | P,    S,
-/*c0*/	S | P,    S,    S,S | P,    S,S | P,S | P,    S,
-/*c8*/	    S,S | P,S | P,    S,S | P,    S,    S,S | P,
-/*d0*/	    S,S | P,S | P,    S,S | P,    S,    S,S | P,
-/*d8*/	S | P,    S,    S,S | P,    S,S | P,S | P,    S,
-/*e0*/	    S,S | P,S | P,    S,S | P,    S,    S,S | P,
-/*e8*/	S | P,    S,    S,S | P,    S,S | P,S | P,    S,
-/*f0*/	S | P,    S,    S,S | P,    S,S | P,S | P,    S,
-/*f8*/	    S,S | P,S | P,    S,S | P,    S,    S,S | P
+/*00*/ Z | P,     _,     _,     P,     _,     P,     P,     _,
+/*08*/     _,     P,     P,     _,     P,     _,     _,     P,
+/*10*/     _,     P,     P,     _,     P,     _,     _,     P,
+/*18*/     P,     _,     _,     P,     _,     P,     P,     _,
+/*20*/     _,     P,     P,     _,     P,     _,     _,     P,
+/*28*/     P,     _,     _,     P,     _,     P,     P,     _,
+/*30*/     P,     _,     _,     P,     _,     P,     P,     _,
+/*38*/     _,     P,     P,     _,     P,     _,     _,     P,
+/*40*/     _,     P,     P,     _,     P,     _,     _,     P,
+/*48*/     P,     _,     _,     P,     _,     P,     P,     _,
+/*50*/     P,     _,     _,     P,     _,     P,     P,     _,
+/*58*/     _,     P,     P,     _,     P,     _,     _,     P,
+/*60*/     P,     _,     _,     P,     _,     P,     P,     _,
+/*68*/     _,     P,     P,     _,     P,     _,     _,     P,
+/*70*/     _,     P,     P,     _,     P,     _,     _,     P,
+/*78*/     P,     _,     _,     P,     _,     P,     P,     _,
+/*80*/     S, S | P, S | P,     S, S | P,     S,     S, S | P,
+/*88*/ S | P,     S,     S, S | P,     S, S | P, S | P,     S,
+/*90*/ S | P,     S,     S, S | P,     S, S | P, S | P,     S,
+/*98*/     S, S | P, S | P,     S, S | P,     S,     S, S | P,
+/*a0*/ S | P,     S,     S, S | P,     S, S | P, S | P,     S,
+/*a8*/     S, S | P, S | P,     S, S | P,     S,     S, S | P,
+/*b0*/     S, S | P, S | P,     S, S | P,     S,     S, S | P,
+/*b8*/ S | P,     S,     S, S | P,     S, S | P, S | P,     S,
+/*c0*/ S | P,     S,     S, S | P,     S, S | P, S | P,     S,
+/*c8*/     S, S | P, S | P,     S, S | P,     S,     S, S | P,
+/*d0*/     S, S | P, S | P,     S, S | P,     S,     S, S | P,
+/*d8*/ S | P,     S,     S, S | P,     S, S | P, S | P,     S,
+/*e0*/     S, S | P, S | P,     S, S | P,     S,     S, S | P,
+/*e8*/ S | P,     S,     S, S | P,     S, S | P, S | P,     S,
+/*f0*/ S | P,     S,     S, S | P,     S, S | P, S | P,     S,
+/*f8*/     S, S | P, S | P,     S, S | P,     S,     S, S | P
 };
 #undef _
 #undef S
@@ -157,7 +157,7 @@ void cpu_8080(void)
       res = B + 1;
       cout = ((B & 1) | ((B | 1) & ~res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       B = res;
       t = 5;
@@ -167,7 +167,7 @@ void cpu_8080(void)
       res = B - 1;
       cout = ((~B & 1) | ((~B | 1) & res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       F ^= H_FLAG;
       B = res;
@@ -194,8 +194,7 @@ void cpu_8080(void)
       addr = ((H << 8) | L);
       addr += ((B << 8) | C);
       cout = ((H & B) | ((H | B) & ~(addr >> 8)));
-      F = ((F & ~C_FLAG) |
-	   (((cout >> 7) & 1) << C_SHIFT));
+      F = ((F & ~C_FLAG) | (((cout >> 7) & 1) << C_SHIFT));
       H = (addr >> 8);
       L = (addr & 0xff);
       t = 10;
@@ -217,7 +216,7 @@ void cpu_8080(void)
       res = C + 1;
       cout = ((C & 1) | ((C | 1) & ~res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       C = res;
       t = 5;
@@ -227,7 +226,7 @@ void cpu_8080(void)
       res = C - 1;
       cout = ((~C & 1) | ((~C | 1) & res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       F ^= H_FLAG;
       C = res;
@@ -272,7 +271,7 @@ void cpu_8080(void)
       res = D + 1;
       cout = ((D & 1) | ((D | 1) & ~res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       D = res;
       t = 5;
@@ -282,7 +281,7 @@ void cpu_8080(void)
       res = D - 1;
       cout = ((~D & 1) | ((~D | 1) & res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       F ^= H_FLAG;
       D = res;
@@ -309,8 +308,7 @@ void cpu_8080(void)
       addr = ((H << 8) | L);
       addr += ((D << 8) | E);
       cout = ((H & D) | ((H | D) & ~(addr >> 8)));
-      F = ((F & ~C_FLAG) |
-	   (((cout >> 7) & 1) << C_SHIFT));
+      F = ((F & ~C_FLAG) | (((cout >> 7) & 1) << C_SHIFT));
       H = (addr >> 8);
       L = (addr & 0xff);
       t = 10;
@@ -332,7 +330,7 @@ void cpu_8080(void)
       res = E + 1;
       cout = ((E & 1) | ((E | 1) & ~res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       E = res;
       t = 5;
@@ -342,7 +340,7 @@ void cpu_8080(void)
       res = E - 1;
       cout = ((~E & 1) | ((~E | 1) & res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       F ^= H_FLAG;
       E = res;
@@ -390,7 +388,7 @@ void cpu_8080(void)
       res = H + 1;
       cout = ((H & 1) | ((H | 1) & ~res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       H = res;
       t = 5;
@@ -400,7 +398,7 @@ void cpu_8080(void)
       res = H - 1;
       cout = ((~H & 1) | ((~H | 1) & res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       F ^= H_FLAG;
       H = res;
@@ -441,8 +439,7 @@ void cpu_8080(void)
     case 0x29:			/* DAD H */
       addr = ((H << 8) | L) << 1;
       cout = (H | (H & ~(addr >> 8)));
-      F = ((F & ~C_FLAG) |
-	   (((cout >> 7) & 1) << C_SHIFT));
+      F = ((F & ~C_FLAG) | (((cout >> 7) & 1) << C_SHIFT));
       H = (addr >> 8);
       L = (addr & 0xff);
       t = 10;
@@ -467,7 +464,7 @@ void cpu_8080(void)
       res = L + 1;
       cout = ((L & 1) | ((L | 1) & ~res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       L = res;
       t = 5;
@@ -477,7 +474,7 @@ void cpu_8080(void)
       res = L - 1;
       cout = ((~L & 1) | ((~L | 1) & res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       F ^= H_FLAG;
       L = res;
@@ -522,7 +519,7 @@ void cpu_8080(void)
       res = P + 1;
       cout = ((P & 1) | ((P | 1) & ~res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       memwrt(addr, res);
       t = 10;
@@ -534,7 +531,7 @@ void cpu_8080(void)
       res = P - 1;
       cout = ((~P & 1) | ((~P | 1) & res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       F ^= H_FLAG;
       memwrt(addr, res);
@@ -558,8 +555,7 @@ void cpu_8080(void)
     case 0x39:			/* DAD SP */
       addr = ((H << 8) | L) + SP8;
       cout = ((H & (SP8 >> 8)) | ((H | (SP8 >> 8)) & ~(addr >> 8)));
-      F = ((F & ~C_FLAG) |
-	   (((cout >> 7) & 1) << C_SHIFT));
+      F = ((F & ~C_FLAG) | (((cout >> 7) & 1) << C_SHIFT));
       H = (addr >> 8);
       L = (addr & 0xff);
       t = 10;
@@ -581,7 +577,7 @@ void cpu_8080(void)
       res = A + 1;
       cout = ((A & 1) | ((A | 1) & ~res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       A = res;
       t = 5;
@@ -591,7 +587,7 @@ void cpu_8080(void)
       res = A - 1;
       cout = ((~A & 1) | ((~A | 1) & res));
       F = ((F & C_FLAG) |
-	   (((cout >> 3) & 1) << H_SHIFT) |
+           (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       F ^= H_FLAG;
       A = res;
@@ -1582,7 +1578,7 @@ void cpu_8080(void)
       t = 7;
       break;
 
-     case 0xc7:			/* RST 0 */
+    case 0xc7:			/* RST 0 */
       memwrt(--SP8, PC8 >> 8);
       memwrt(--SP8, PC8);
       PC8 = 0;
