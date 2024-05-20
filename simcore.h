@@ -18,5 +18,14 @@
 #define N_FLAG		2
 #define C_FLAG		1
 
+#define S_SHIFT		7
+#define Z_SHIFT		6
+#define Y_SHIFT		5
+#define H_SHIFT		4
+#define X_SHIFT		3
+#define P_SHIFT		2
+#define N_SHIFT		1
+#define C_SHIFT		0
+
 // possible states of the 8080 CPU
 enum CPUState { Running = 1, Halted = 2 };
