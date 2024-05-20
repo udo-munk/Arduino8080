@@ -114,7 +114,7 @@ static void init_cpu(void)
 // The opcode where PC points to is fetched from the memory
 // and PC incremented by one. The opcode is then dispatched
 // to execute code, which emulates this 8080 opcode.
-
+//
 // For a description of how the arithmetic flags calculation works see:
 // http://emulators.com/docs/lazyoverflowdetect_final.pdf
 //
@@ -2124,7 +2124,7 @@ void loop()
   // we have no memory for a fancy banner
   Serial.println(F("\f8080-SIM v1.5\n"));
 
-  // initialize and configure all virtuell hardware
+  // initialize and configure all virtual hardware
   init_cpu();
   init_memory();
   config();
