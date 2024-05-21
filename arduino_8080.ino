@@ -1563,6 +1563,7 @@ void loop()
   config();
 
   // run the 8080 CPU with whatever code is in memory
+  State = Running;
   start = millis();
   cpu_8080(&cpu_state);
   stop = millis();
