@@ -163,6 +163,16 @@ void cpu_8080(struct cpu_state *cpu_state)
     case 0x38:			/* NOP* */
       break;
 
+    case 0x7f:			/* MOV A,A */
+    case 0x40:			/* MOV B,B */
+    case 0x49:			/* MOV C,C */
+    case 0x52:			/* MOV D,D */
+    case 0x5b:			/* MOV E,E */
+    case 0x64:			/* MOV H,H */
+    case 0x6d:			/* MOV L,L */
+      t++;
+      break;
+
     case 0x01:			/* LXI B,nn */
       C = memrdr(PC8++);
       B = memrdr(PC8++);
@@ -512,10 +522,6 @@ void cpu_8080(struct cpu_state *cpu_state)
       F ^= C_FLAG;
       break;
 
-    case 0x40:			/* MOV B,B */
-      t++;
-      break;
-
     case 0x41:			/* MOV B,C */
       B = C;
       t++;
@@ -553,10 +559,6 @@ void cpu_8080(struct cpu_state *cpu_state)
 
     case 0x48:			/* MOV C,B */
       C = B;
-      t++;
-      break;
-
-    case 0x49:			/* MOV C,C */
       t++;
       break;
 
@@ -600,10 +602,6 @@ void cpu_8080(struct cpu_state *cpu_state)
       t++;
       break;
 
-    case 0x52:			/* MOV D,D */
-      t++;
-      break;
-
     case 0x53:			/* MOV D,E */
       D = E;
       t++;
@@ -641,10 +639,6 @@ void cpu_8080(struct cpu_state *cpu_state)
 
     case 0x5a:			/* MOV E,D */
       E = D;
-      t++;
-      break;
-
-    case 0x5b:			/* MOV E,E */
       t++;
       break;
 
@@ -688,10 +682,6 @@ void cpu_8080(struct cpu_state *cpu_state)
       t++;
       break;
 
-    case 0x64:			/* MOV H,H */
-      t++;
-      break;
-
     case 0x65:			/* MOV H,L */
       H = L;
       t++;
@@ -729,10 +719,6 @@ void cpu_8080(struct cpu_state *cpu_state)
 
     case 0x6c:			/* MOV L,H */
       L = H;
-      t++;
-      break;
-
-    case 0x6d:			/* MOV L,L */
       t++;
       break;
 
@@ -820,10 +806,6 @@ void cpu_8080(struct cpu_state *cpu_state)
     case 0x7e:			/* MOV A,M */
       A = memrdr((H << 8) | L);
       t += 3;
-      break;
-
-    case 0x7f:			/* MOV A,A */
-      t++;
       break;
 
     case 0x80:			/* ADD B */
