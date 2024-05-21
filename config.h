@@ -10,7 +10,7 @@
 #define BS  0x08 // backspace
 #define DEL 0x7f // delete
 
-// read an config command line from the terminal
+// read a config command line from the terminal
 void get_cmdline(char *buf, int len)
 {
   int i = 0;
