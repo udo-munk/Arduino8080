@@ -5,7 +5,7 @@ LDFLAGS= -s
 
 Z80ASMDIR = ~/work/z80pack/z80asm
 Z80ASM = $(Z80ASMDIR)/z80asm
-Z80ASMFLAGS = -l -T -sn -p0
+Z80ASMFLAGS = -8 -l -T -sn -p0
 
 all: putsys bios.bin boot.bin
 
