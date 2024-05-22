@@ -163,13 +163,13 @@ void cpu_8080(struct cpu_state *cpu_state)
     case 0x38:			/* NOP* */
       break;
 
-    case 0x7f:			/* MOV A,A */
     case 0x40:			/* MOV B,B */
     case 0x49:			/* MOV C,C */
     case 0x52:			/* MOV D,D */
     case 0x5b:			/* MOV E,E */
     case 0x64:			/* MOV H,H */
     case 0x6d:			/* MOV L,L */
+    case 0x7f:			/* MOV A,A */
       t++;
       break;
 
@@ -387,18 +387,21 @@ void cpu_8080(struct cpu_state *cpu_state)
 // https://zeptobars.com/en/read/KR580VM80A-intel-i8080-verilog-reverse-engineering
 // in the verilog file.
 // It is just a normal addition with a special operand setup and the carry flag
-// is set to the same value as the condition of the second "if". That is what
-// makes DAA a bit strange.
+// is set to "A > 0x99 or carry was set". That is what makes DAA a bit strange.
+//
+// Thomas Eberhardt
 
     case 0x27:			/* DAA */
       P = 0;
       if (((A & 0xf) > 9) || (F & H_FLAG))
         P |= 0x06;
-      if ((A > 0x99) || (F & C_FLAG))
+      if ((A > 0x99) || (F & C_FLAG)) {
+        F |= C_FLAG;
         P |= 0x60;
+      }
       res = A + P;
       cout = ((A & P) | ((A | P) & ~res));
-      F = (((A > 0x99) << C_SHIFT) | (F & C_FLAG) |
+      F = ((F & C_FLAG) |
            (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       A = res;
