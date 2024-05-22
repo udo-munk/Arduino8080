@@ -1,0 +1,31 @@
+Z80/8080-Macro-Assembler  Release 2.0
+
+LOC   OBJECT CODE   LINE   STMT SOURCE CODE
+                       1      1 ;	CP/M 2.2 boot-loader for Arduino 8080
+                       2      2 ;
+                       3      3 ;	Copyright (C) 2024 by Udo Munk
+                       4      4 ;
+                       5      5 	ORG	0		;mem base of boot
+                       6      6 ;
+0040  =                7      7 MSIZE	EQU	64		;mem size in kbytes
+                       8      8 ;
+b000  =                9      9 BIAS	EQU	(MSIZE-20)*1024	;offset from 20k system
+e400  =               10     10 CCP	EQU	3400H+BIAS	;base of the ccp
+fa00  =               11     11 BIOS	EQU	CCP+1600H	;base of the bios
+0300  =               12     12 BIOSL	EQU	0300H		;length of the bios
+fa00  =               13     13 BOOT	EQU	BIOS
+1900  =               14     14 SIZE	EQU	BIOS+BIOSL-CCP	;size of cp/m system
+0032  =               15     15 SECTS	EQU	SIZE/128	;# of sectors to load
+                      16     16 ;
+                      17     17 ;	I/O ports
+                      18     18 ;
+                      19     19 
+                      20     20 
+                      21     21 
+                      22     22 
+0000                  23     23 	END			;of boot loader
+
+Symbol table
+
+BIAS  b000    BIOS  fa00    BIOSL 0300    BOOT  fa00*   CCP   e400 
+MSIZE 0040    SECTS 0032*   SIZE  1900    

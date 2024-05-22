@@ -1,0 +1,33 @@
+Z80/8080-Macro-Assembler  Release 2.0
+
+LOC   OBJECT CODE   LINE   STMT SOURCE CODE
+                       1      1 ;	8080 CBIOS for Arduino 8080
+                       2      2 ;
+                       3      3 ;	Copyright (C) 2024 by Udo Munk
+                       4      4 ;
+0040  =                5      5 MSIZE	EQU	64		;cp/m version memory size in kilobytes
+                       6      6 ;
+                       7      7 ;	"bias" is address offset from 3400H for memory systems
+                       8      8 ;	than 16K (referred to as "b" throughout the text).
+                       9      9 ;
+b000  =               10     10 BIAS	EQU	(MSIZE-20)*1024
+e400  =               11     11 CCP	EQU	3400H+BIAS	;base of ccp
+ec06  =               12     12 BDOS	EQU	CCP+806H	;base of bdos
+fa00  =               13     13 BIOS	EQU	CCP+1600H	;base of bios
+002c  =               14     14 NSECTS	EQU	(BIOS-CCP)/128	;warm start sector count
+0004  =               15     15 CDISK	EQU	0004H		;current disk number 0=A,...,15=P
+0003  =               16     16 IOBYTE	EQU	0003H		;intel i/o byte
+                      17     17 ;
+                      18     18 ;	I/O ports
+                      19     19 ;
+                      20     20 
+                      21     21 
+                      22     22 
+                      23     23 
+                      24     24 
+0000                  25     25 	END			;of CBIOS
+
+Symbol table
+
+BDOS   ec06*   BIAS   b000    BIOS   fa00    CCP    e400    CDISK  0004*
+IOBYTE 0003*   MSIZE  0040    NSECTS 002c*   
