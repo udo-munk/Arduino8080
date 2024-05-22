@@ -18,7 +18,7 @@ static BYTE sio_last;        // last byte read from the UART
 // read status of the Arduino UART and return:
 // bit 0 = 0, character available for input from tty
 // bit 7 = 0, transmitter ready to write character to tty
-static BYTE p000_in(void)
+const static BYTE p000_in(void)
 {
   register BYTE stat = 0b10000001;  // initially not ready
 
@@ -32,7 +32,7 @@ static BYTE p000_in(void)
 
 // I/O function port 1 read:
 // Read byte from Arduino UART.
-static BYTE p001_in(void)
+const static BYTE p001_in(void)
 {
   if (!Serial.available()) // someone reading without checking first
     return (sio_last);
@@ -66,7 +66,7 @@ BYTE io_in(BYTE addrl, BYTE addrh)
 
 // I/O function port 0 write:
 // Switch builtin LED on/off.
-static void p000_out(BYTE data)
+const static void p000_out(BYTE data)
 {
   if (!data)
     digitalWrite(LED_BUILTIN, false); // 0 switches LED off
@@ -76,7 +76,7 @@ static void p000_out(BYTE data)
 
 // I/O function port 1 write:
 // Write byte to Arduino UART.
-static void p001_out(BYTE data)
+const static void p001_out(BYTE data)
 {
   Serial.write(data & 0x7f); // strip parity, some software won't
 }

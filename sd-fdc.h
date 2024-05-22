@@ -24,12 +24,12 @@
 #define FDC_WRITE	0x40  // write sector to disk
 
 // FDC status codes
-#define FDC_OK      0 // command executed successfull
-#define FDC_NODISK  1 // disk file open error
-#define FDC_SEEK    2 // disk file seek error
-#define FDC_READ    3 // disk file read error
-#define FDC_WRITE   4 // disk file write error
-#define FDC_DMA     5 // DMA memory read/write error
+#define FDC_STAT_OK      0 // command executed successfull
+#define FDC_STAT_NODISK  1 // disk file open error
+#define FDC_STAT_SEEK    2 // disk file seek error
+#define FDC_STAT_READ    3 // disk file read error
+#define FDC_STAT_WRITE   4 // disk file write error
+#define FDC_STAT_DMA     5 // DMA memory read/write error
 
 // floppy disk definition
 #define SEC_SZ    128   // sector size
@@ -42,7 +42,7 @@ static BYTE fdc_state = 0; // state of the fdc state machine
 static WORD fdc_dd_addr;   // address of the disk descriptor
 
 // I/O out interface to the 8080 CPU
-void fdc_out(BYTE data)
+const void fdc_out(BYTE data)
 {
   switch (data & 0xf0) {
   case FDC_SETDD:
@@ -57,7 +57,7 @@ void fdc_out(BYTE data)
 }
 
 // I/O in interface to the 8080 CPU
-BYTE fdc_in(void)
+const BYTE fdc_in(void)
 {
   return fdc_stat;
 }

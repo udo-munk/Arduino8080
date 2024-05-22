@@ -22,9 +22,8 @@
 //
 
 // 64 KB unbanked memory in FRAM
-// we want hardware SPI, the 2 and 4 MBit modules can be clocked
-// with 40 MHz, the smaller ones with 20 MHz
-Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS, 40000000);
+// we want hardware SPI
+Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS);
 
 // setup FRAM
 void init_memory(void)
@@ -110,32 +109,32 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
 
   // open file with the disk image
   if (!sd_file.openExistingSFN(disks[drive])) {
-	  fdc_stat = FDC_NODISK;
+	  fdc_stat = FDC_STAT_NODISK;
 	  goto DONE;
   }
 
   // seek to track/sector
   if (!sd_file.seekSet(((track * SPT + sector - 1) * SEC_SZ))) {
     sd_file.close();
-    fdc_stat = FDC_SEEK;
+    fdc_stat = FDC_STAT_SEEK;
     goto DONE;
   }
 
   // read sector into buffer
   if (sd_file.read(buf, SPT) != SPT) {
     sd_file.close();
-    fdc_stat = FDC_READ;
+    fdc_stat = FDC_STAT_READ;
     goto DONE;
   }
   sd_file.close();
   
   // write sector into FRAM
   if (!fram.write(addr, buf, SPT)) {
-    fdc_stat = FDC_DMA;
+    fdc_stat = FDC_STAT_DMA;
     goto DONE;
   }
 
-  fdc_stat = FDC_OK;
+  fdc_stat = FDC_STAT_OK;
 
 DONE:
   return fdc_stat;
