@@ -1,0 +1,5 @@
+Note to my self:
+
+save machine configuration (FRAM not EEPROM)
+when enough memory left in the end dump memory in config dialog
+when enough memory left in the end list files on the CD card
