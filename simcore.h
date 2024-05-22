@@ -29,3 +29,20 @@
 
 // possible states of the 8080 CPU
 enum CPUState { Running = 1, Halted = 2, Interrupted = 3 };
+
+// floppy disk definition
+#define SEC_SZ    128   // sector size
+#define SPT       26    // sectors per track
+#define TRK       77    // number of tracks
+
+// path name for 2 disk immages /DISKS80/filename.BIN
+char disks[2][22];
+
+// FDC status codes
+#define FDC_STAT_OK      0 // command executed successfull
+#define FDC_STAT_NODISK  1 // disk file open error
+#define FDC_STAT_SEEK    2 // disk file seek error
+#define FDC_STAT_READ    3 // disk file read error
+#define FDC_STAT_WRITE   4 // disk file write error
+#define FDC_STAT_DMA     5 // DMA memory read/write error
+

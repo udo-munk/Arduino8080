@@ -36,9 +36,9 @@ typedef unsigned int  WORD;
 
 // project includes
 #include "simcore.h"
+#include "memsim.h"
 #include "sd-fdc.h"
 #include "iosim.h"
-#include "memsim.h"
 #include "config.h"
 
 // 8080 CPU state
