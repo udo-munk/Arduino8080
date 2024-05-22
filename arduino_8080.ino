@@ -1567,9 +1567,9 @@ void loop()
 
   // if there is a disk in drive 0 try to boot from it
   if (strlen(disks[0]) != 0) {
-    stat = read_sec(0, 0, 1, 0);// read sector 1, track 0 into memory addr. 0
+    stat = read_sec(0, 0, 1, 0); // read sector 1, track 0 into memory addr. 0
     if (stat != 0) {
-      Serial.print(F("disk 0 read error: "));
+      Serial.print(F("Disk 0 read error: "));
       Serial.println(stat, DEC);
       Serial.println();
       Serial.flush();

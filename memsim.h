@@ -111,29 +111,32 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
   // open file with the disk image
   if (!sd_file.openExistingSFN(disks[drive])) {
 	  fdc_stat = FDC_NODISK;
-	  return fdc_stat;
+	  goto DONE;
   }
 
   // seek to track/sector
   if (!sd_file.seekSet(((track * SPT + sector - 1) * SEC_SZ))) {
+    sd_file.close();
     fdc_stat = FDC_SEEK;
-    return fdc_stat;
+    goto DONE;
   }
 
   // read sector into buffer
   if (sd_file.read(buf, SPT) != SPT) {
-    fdc_stat = FDC_READ;
     sd_file.close();
-    return fdc_stat;
+    fdc_stat = FDC_READ;
+    goto DONE;
   }
   sd_file.close();
   
   // write sector into FRAM
   if (!fram.write(addr, buf, SPT)) {
     fdc_stat = FDC_DMA;
-    return fdc_stat;
+    goto DONE;
   }
 
   fdc_stat = FDC_OK;
+
+DONE:
   return fdc_stat;
 }
