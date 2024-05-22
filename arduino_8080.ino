@@ -11,6 +11,7 @@
 // 17-MAY-2024 Release 1.3 switch to code minimized CPU from Thomas Eberhardt
 // 18-MAY-2024 Release 1.4 read 8080 code from a file on SD into FRAM
 // 20-MAY-2024 Release 1.5.1 added interrupt key and register dump for debugging
+// 22-MAY-2024 Release 1.6 boot from a disk image on SD
 //
 
 //#define DEBUG // enables some debug messages
@@ -35,8 +36,9 @@ typedef unsigned int  WORD;
 
 // project includes
 #include "simcore.h"
-#include "memsim.h"
+#include "sd-fdc.h"
 #include "iosim.h"
+#include "memsim.h"
 #include "config.h"
 
 // 8080 CPU state
@@ -1553,14 +1555,27 @@ void loop()
   // put your main code here, to run repeatedly:
   // variables for measuring the run time
   unsigned long start, stop;
+  int stat;
 
   // we have no memory for a fancy banner
-  Serial.println(F("\f8080-SIM v1.5.1\n"));
+  Serial.println(F("\f8080-SIM v1.6\n"));
 
   // initialize and configure all virtual hardware
   init_cpu(&cpu_state);
   init_memory();
   config();
+
+  // if there is a disk in drive 0 try to boot from it
+  if (strlen(disks[0]) != 0) {
+    stat = read_sec(0, 0, 1, 0);// read sector 1, track 0 into memory addr. 0
+    if (stat != 0) {
+      Serial.print(F("disk 0 read error: "));
+      Serial.println(stat, DEC);
+      Serial.println();
+      Serial.flush();
+      exit(1);
+    }
+  }
 
   // run the 8080 CPU with whatever code is in memory
   State = Running;

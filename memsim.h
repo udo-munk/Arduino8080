@@ -3,12 +3,22 @@
 //            derived from Z80PACK
 // Copyright 2024, Udo Munk
 //
+// This module implements the low level functions to access external
+// SPI memory. Supported is Adafruit FRAM, min 64 KByte for 8080 memory,
+// and Adafruit MicroSD for standalone programms and disk images.
+//
+// Needed Arduino libraries:
+// Adafruit BusIO
+// Adafruit_FRAM_SPI
+// SdFat - Adafruit Fork
+//
 // History:
 // 04-MAY-2024 Release 1.0 implements a very basic 8080 system
 // 06-MAY-2024 Release 1.1 add support for a ROM in flash
 // 07-MAY-2024 Release 1.2 move 8080 memory into a FRAM
 // 18-MAY-2024 Release 1.4 read 8080 code from a file on SD into FRAM
 // 19-MAY-2024 Release 1.5 use SdFat lib instead of SD lib to save memory
+// 21-MAY-2024 Release 1.6 added low level functions for disk images on SD
 //
 
 // 64 KB unbanked memory in FRAM
@@ -65,4 +75,65 @@ void load_file(char *name)
     fram.write8(i++, c);
 
   sd_file.close();
+  Serial.println();
+}
+
+// mount a disk image 'name' on disk 'drive'
+void mount_disk(int8_t drive, char *name)
+{
+  FatFile sd_file;
+  char SFN[25];
+
+  strcpy(SFN, "/DISKS80/");
+  strcat(SFN, name);
+  strcat(SFN, ".DSK");
+
+#ifdef DEBUG
+  Serial.print(F("Filename: "));
+  Serial.println(SFN);
+#endif
+
+  if (!sd_file.openExistingSFN(SFN)) {
+    Serial.println(F("File not found\n"));
+    return;
+  }
+
+  sd_file.close();
+  strcpy(disks[drive], SFN);
+}
+
+// read from drive a sector on track into FRAM addr
+int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
+{
+  FatFile sd_file;
+  BYTE buf[SPT];
+
+  // open file with the disk image
+  if (!sd_file.openExistingSFN(disks[drive])) {
+	  fdc_stat = FDC_NODISK;
+	  return fdc_stat;
+  }
+
+  // seek to track/sector
+  if (!sd_file.seekSet(((track * SPT + sector - 1) * SEC_SZ))) {
+    fdc_stat = FDC_SEEK;
+    return fdc_stat;
+  }
+
+  // read sector into buffer
+  if (sd_file.read(buf, SPT) != SPT) {
+    fdc_stat = FDC_READ;
+    sd_file.close();
+    return fdc_stat;
+  }
+  sd_file.close();
+  
+  // write sector into FRAM
+  if (!fram.write(addr, buf, SPT)) {
+    fdc_stat = FDC_DMA;
+    return fdc_stat;
+  }
+
+  fdc_stat = FDC_OK;
+  return fdc_stat;
 }

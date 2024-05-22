@@ -3,8 +3,13 @@
 //            derived from Z80PACK
 // Copyright 2024, Udo Munk
 //
+// With this module the machine can be configured to run standalone
+// software loaded from a file. Also allows to mount/unmount disk
+// images with OS's and application software.
+//
 // History:
 // 19-MAY-2024 implemented configuration dialog
+// 21-MAY-2024 added mount/unmount of disk images
 //
 
 #define BS  0x08 // backspace
@@ -48,7 +53,11 @@ void config(void)
     Serial.print(F("1 - port 255 value: 0x"));
     Serial.println(fp_value, HEX);
     Serial.println(F("2 - load file"));
-    Serial.println(F("3 - run machine\n"));
+    Serial.print(F("3 - Disk 0: "));
+    Serial.println(disks[0]);
+    Serial.print(F("4 - Disk 1: "));
+    Serial.println(disks[1]);
+    Serial.println(F("5 - run machine\n"));
     Serial.print(F("Command: "));
 
     get_cmdline(s, 2);
@@ -82,6 +91,28 @@ again:
       break;
 
     case '3':
+      Serial.print(F("Filename: "));
+      get_cmdline(s, 9);
+      Serial.println();
+      if (strlen(s) == 0) {
+        disks[0][0] = 0x0;
+      } else {
+        mount_disk(0, s);
+      }
+      break;
+
+    case '4':
+      Serial.print(F("Filename: "));
+      get_cmdline(s, 9);
+      Serial.println();
+      if (strlen(s) == 0) {
+        disks[1][0] = 0x0;
+      } else {
+        mount_disk(1, s);
+      }
+      break;
+
+    case '5':
       go_flag = 1;
       break;
 

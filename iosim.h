@@ -3,9 +3,12 @@
 //            derived from Z80PACK
 // Copyright 2024, Udo Munk
 //
+// This module implements the I/O functions for the 8080 CPU.
+//
 // History:
 // 04-MAY-2024 Release 1.0 implements a very basic 8080 system
 // 10-MAY-2024 added frontpanel port, handle reads to UART ignoring status
+// 21-MAY-2024 added FDC port
 //
 
 static BYTE sio_last;        // last byte read from the UART
@@ -47,7 +50,7 @@ const static BYTE (*port_in[5]) (void) = {
   p001_in,                // port 1
   0,                      // port 2
   0,                      // port 3
-  0                       // port 4
+  fdc_in                  // port 4
 };
 
 // read a byte from 8080 CPU I/O
@@ -86,7 +89,7 @@ const static void (*port_out[5]) (BYTE) = {
   p001_out,               // port 1
   0,                      // port 2
   0,                      // port 3
-  0                       // port 4
+  fdc_out                 // port 4
 };
 
 // Write a byte to 8080 CPU I/O
