@@ -45,4 +45,3 @@ char disks[2][22];
 #define FDC_STAT_READ    3 // disk file read error
 #define FDC_STAT_WRITE   4 // disk file write error
 #define FDC_STAT_DMA     5 // DMA memory read/write error
-

@@ -133,6 +133,7 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
   return FDC_STAT_OK;
 }
 
+// get FDC command from FRAM
 void get_fdccmd(BYTE *cmd, WORD addr)
 {
   fram.read(addr, cmd, 4);
