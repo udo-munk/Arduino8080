@@ -13,7 +13,7 @@ BDOS	EQU	CCP+806H	;base of bdos
 BIOS	EQU	CCP+1600H	;base of bios
 NSECTS	EQU	(BIOS-CCP)/128	;warm start sector count
 CDISK	EQU	0004H		;current disk number 0=A,...,15=P
-IOBYTE	EQU	0003H		;intel i/o byte
+IOBYTE	EQU	0003H		;Intel I/O byte
 FDCCMD	EQU	0040H		;FDC command bytes
 DDTRK	EQU	0		;offset for track
 DDSEC	EQU	1		;offset for sector
@@ -26,6 +26,7 @@ CONSTA	EQU	0		;console status port
 CONDAT	EQU	1		;console data port
 FDC	EQU	4		;port for the FDC
 ;
+	.8080
 	ORG	BIOS		;origin of BIOS
 ;
 ;	jump vector for individual subroutines
@@ -192,19 +193,29 @@ CONOUT	IN	CONSTA		;get status
 	MOV	A,C		;get character into accumulator
 	OUT	CONDAT		;send to console
 	RET
-
-
-LIST
-PUNCH
-READER
-	RET
-
+;
+;	printer status, return 0FFH if character ready, 00H if not
+;
+LISTST	XRA	A		;we have no printer
+	RET			;so never ready
+;
+;	line printer output
+;
+LIST	RET			;we have no printer
+;
+;	punch character from register C
+;
+PUNCH	RET			;we have no puncher
+;
+;	read character into register A from reader
+;
+READER	MVI	A,01AH		;we have no reader
+	RET			;so return CTL-Z
 ;
 ;	move to track 0 position on current disk
 ;
 HOME	MVI	C,0		;select track 0
 	JMP	SETTRK
-
 ;
 ;	select disk given by register C
 ;
@@ -256,7 +267,6 @@ READ	LDA     CDISK		;get disk #
 WRITE	LDA	CDISK		;get disk #
 	ORI	40H		;mask in write command
 	JMP	DOIO		;do I/O operation
-
 ;
 ;	perform read/write I/O
 ;
@@ -274,13 +284,6 @@ SECTRAN	XCHG			;HL=.TRANS
 	MOV	L,A		;L=TRANS(SECTOR)
 	MVI	H,0		;HL=TRANS(SECTOR)
 	RET			;with value in HL
-
-
-
-LISTST
-	RET
-
-
 ;
 ;	The remainder of the CBIOS is reserved uninitialized
 ;	data area, and does not need to be part of the system
