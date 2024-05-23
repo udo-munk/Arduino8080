@@ -1566,11 +1566,16 @@ void loop()
   // initialize and configure all virtual hardware
   init_cpu(&cpu_state);
   init_memory();
-  config();
+  NOPE: config();
 
   // if there is a disk in drive 0 try to boot from it
   if (strlen(disks[0]) != 0) {
-    stat = read_sec(0, 0, 1, 0); // read sector 1, track 0 into memory addr. 0
+    // they will try this for sure, so ...
+    if (!strcmp(disks[0], disks[1])) {
+      Serial.println(F("Not with this configuration dude\n"));
+      goto NOPE;
+    }
+    stat = read_sec(0, 0, 1, 0); // read track 0 sector 1 into memory addr. 0
     if (stat != FDC_STAT_OK) {
       Serial.print(F("Disk 0 read error: "));
       Serial.println(stat, DEC);

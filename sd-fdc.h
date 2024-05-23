@@ -4,8 +4,7 @@
 // Copyright 2024, Udo Munk
 //
 // FDC for bare metal with disk images on SD drive
-// Work in progress, don't try to use yet
-// Needed for research what can be done with the memory left
+// Work in progress, not working yet
 //
 // History:
 // ??-MAY-2024
@@ -32,8 +31,13 @@ static WORD fdc_dma_addr;  // address for a DMA transfer
 // I/O out interface to the 8080 CPU
 const void fdc_out(BYTE data)
 {
+  fdc_stat = FDC_STAT_OK;
+
+  // FDC state machine
   switch (fdc_state) {
   case 0:	// start of command phase
+ 
+    // FDC command dispatcher, command in MSB, drive in LSB
     switch (data & 0xf0) {
     case FDC_SETDD:
       fdc_state++;
@@ -48,6 +52,9 @@ const void fdc_out(BYTE data)
 
     case FDC_WRITE:
       break;
+
+    default:
+      break;
     }
     break;
 
@@ -59,6 +66,9 @@ const void fdc_out(BYTE data)
   case 2:	// MSB of disk command address
     fdc_cmd_addr += data << 8;
     fdc_state = 0;
+    break;
+
+  default:
     break;
   }
 }
