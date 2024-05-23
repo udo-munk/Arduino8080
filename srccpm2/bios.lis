@@ -48,8 +48,8 @@ fa21  c3 6d fb        44     44 	JMP	SETSEC		;set sector number
 fa24  c3 72 fb        45     45 	JMP	SETDMA		;set dma address
 fa27  c3 7b fb        46     46 	JMP	READ		;read disk sector
 fa2a  c3 83 fb        47     47 	JMP	WRITE		;write disk sector
-fa2d  c3 91 fb        48     48 	JMP	LISTST		;list status
-fa30  c3 89 fb        49     49 	JMP	SECTRAN		;sector translate
+fa2d  c3 98 fb        48     48 	JMP	LISTST		;list status
+fa30  c3 90 fb        49     49 	JMP	SECTRAN		;sector translate
                       50     50 ;
                       51     51 ;	data tables
                       52     52 ;
@@ -64,13 +64,13 @@ fa49  0a 00           54     59
                       56     61 ;	disk parameter header for disk 0
 fa4b  6b fa 00 00     57     62 DPBASE	DW	TRANS,0000H
 fa4f  00 00 00 00     58     63 	DW	0000H,0000H
-fa53  92 fb 85 fa     59     64 	DW	DIRBF,DPBLK
-fa57  50 fc 12 fc     60     65 	DW	CHK00,ALL00
+fa53  99 fb 85 fa     59     64 	DW	DIRBF,DPBLK
+fa57  57 fc 19 fc     60     65 	DW	CHK00,ALL00
                       61     66 ;	disk parameter header for disk 1
 fa5b  6b fa 00 00     62     67 	DW	TRANS,0000H
 fa5f  00 00 00 00     63     68 	DW	0000H,0000H
-fa63  92 fb 85 fa     64     69 	DW	DIRBF,DPBLK
-fa67  60 fc 31 fc     65     70 	DW	CHK01,ALL01
+fa63  99 fb 85 fa     64     69 	DW	DIRBF,DPBLK
+fa67  67 fc 38 fc     65     70 	DW	CHK01,ALL01
                       66     71 ;
                       67     72 ;	sector translate table for IBM 8" SD disks
 fa6b  01 07 0d 13     68     73 TRANS	DB	1,7,13,19	;sectors 1,2,3,4
@@ -257,64 +257,67 @@ fb7a  c9             246    251         RET
                      249    254 ;
 fb7b  3a 04 00       250    255 READ	LDA     CDISK		;get disk #
 fb7e  f6 20          251    256 	ORI	20H		;mask in read command
-fb80  c3 84 fb       252    257         JMP     DOIO            ;DO I/O OPERATION
-                     253    258 
-fb83                 254    259 WRITE
-fb83  c9             255    260 	RET
-                     256    261 
-                     257    262 ;
-                     258    263 ;	perform read/write I/O
-                     259    264 ;
-fb84  d3 04          260    265 DOIO	OUT	FDC		;ask FDC to execute the command
-fb86  db 04          261    266 	IN	FDC		;get status from FDC
-fb88  c9             262    267         RET
-                     263    268 ;
-                     264    269 ;	translate the sector given by BC using
-                     265    270 ;	the translation table given by DE
+fb80  c3 8b fb       252    257         JMP     DOIO            ;do I/O operation
+                     253    258 ;
+                     254    259 ;	perform write operation
+                     255    260 ;
+fb83  3a 04 00       256    261 WRITE	LDA	CDISK		;get disk #
+fb86  f6 40          257    262 	ORI	40H		;mask in write command
+fb88  c3 8b fb       258    263 	JMP	DOIO		;do I/O operation
+                     259    264 
+                     260    265 ;
+                     261    266 ;	perform read/write I/O
+                     262    267 ;
+fb8b  d3 04          263    268 DOIO	OUT	FDC		;ask FDC to execute the command
+fb8d  db 04          264    269 	IN	FDC		;get status from FDC
+fb8f  c9             265    270         RET
                      266    271 ;
-fb89  eb             267    272 SECTRAN	XCHG			;HL=.TRANS
-fb8a  09             268    273 	DAD	B               ;HL=.TRANS(SECTOR)
-fb8b  eb             269    274 	XCHG
-fb8c  1a             270    275 	LDAX	D
-fb8d  6f             271    276 	MOV	L,A		;L=TRANS(SECTOR)
-fb8e  26 00          272    277 	MVI	H,0		;HL=TRANS(SECTOR)
-fb90  c9             273    278 	RET			;with value in HL
-                     274    279 
-                     275    280 
-                     276    281 
-fb91                 277    282 LISTST
-fb91  c9             278    283 	RET
+                     267    272 ;	translate the sector given by BC using
+                     268    273 ;	the translation table given by DE
+                     269    274 ;
+fb90  eb             270    275 SECTRAN	XCHG			;HL=.TRANS
+fb91  09             271    276 	DAD	B               ;HL=.TRANS(SECTOR)
+fb92  eb             272    277 	XCHG
+fb93  1a             273    278 	LDAX	D
+fb94  6f             274    279 	MOV	L,A		;L=TRANS(SECTOR)
+fb95  26 00          275    280 	MVI	H,0		;HL=TRANS(SECTOR)
+fb97  c9             276    281 	RET			;with value in HL
+                     277    282 
+                     278    283 
                      279    284 
-                     280    285 
-                     281    286 ;
-                     282    287 ;	The remainder of the CBIOS is reserved uninitialized
-                     283    288 ;	data area, and does not need to be part of the system
-                     284    289 ;	memory image. The space must be available, however,
-                     285    290 ;	between "BEGDAT" and "ENDDAT".
-                     286    291 ;
-fb92  =              287    292 BEGDAT	EQU	$		;begin of data area
-                     288    293 ;
-fb92                 289    294 DIRBF	DS	128		;scratch directory area
-fc12                 290    295 ALL00	DS	31		;allocation vector 0
-fc31                 291    296 ALL01	DS	31		;allocation vector 1
-fc50                 292    297 CHK00	DS	16		;check vector 0
-fc60                 293    298 CHK01	DS	16		;check vector 1
-                     294    299 ;
-fc70  =              295    300 ENDDAT	EQU	$		;end of data area
-00de  =              296    301 DATSIZ	EQU	$-BEGDAT	;size of data area
+fb98                 280    285 LISTST
+fb98  c9             281    286 	RET
+                     282    287 
+                     283    288 
+                     284    289 ;
+                     285    290 ;	The remainder of the CBIOS is reserved uninitialized
+                     286    291 ;	data area, and does not need to be part of the system
+                     287    292 ;	memory image. The space must be available, however,
+                     288    293 ;	between "BEGDAT" and "ENDDAT".
+                     289    294 ;
+fb99  =              290    295 BEGDAT	EQU	$		;begin of data area
+                     291    296 ;
+fb99                 292    297 DIRBF	DS	128		;scratch directory area
+fc19                 293    298 ALL00	DS	31		;allocation vector 0
+fc38                 294    299 ALL01	DS	31		;allocation vector 1
+fc57                 295    300 CHK00	DS	16		;check vector 0
+fc67                 296    301 CHK01	DS	16		;check vector 1
                      297    302 ;
-fc70                 298    303 	END			;of CBIOS
+fc77  =              298    303 ENDDAT	EQU	$		;end of data area
+00de  =              299    304 DATSIZ	EQU	$-BEGDAT	;size of data area
+                     300    305 ;
+fc77                 301    306 	END			;of CBIOS
 
 Symbol table
 
-ALL00   fc12    ALL01   fc31    BDOS    ec06    BEGDAT  fb92    BIAS    b000 
-BIOS    fa00    BOOT    fa9f    CCP     e400    CDISK   0004    CHK00   fc50 
-CHK01   fc60    CONDAT  0001    CONIN   fb33    CONOUT  fb3c    CONST   fb28 
+ALL00   fc19    ALL01   fc38    BDOS    ec06    BEGDAT  fb99    BIAS    b000 
+BIOS    fa00    BOOT    fa9f    CCP     e400    CDISK   0004    CHK00   fc57 
+CHK01   fc67    CONDAT  0001    CONIN   fb33    CONOUT  fb3c    CONST   fb28 
 CONST1  fb31    CONSTA  0000    DATSIZ  00de*   DDHDMA  0003    DDLDMA  0002 
-DDSEC   0001    DDTRK   0000    DIRBF   fb92    DOIO    fb84    DPBASE  fa4b 
-DPBLK   fa85    ENDDAT  fc70*   FDC     0004    FDCCMD  0040    GOCPM   fb04 
-HOME    fb47    IOBYTE  0003    LIST    fb46    LISTST  fb91    LOAD1   fad4 
+DDSEC   0001    DDTRK   0000    DIRBF   fb99    DOIO    fb8b    DPBASE  fa4b 
+DPBLK   fa85    ENDDAT  fc77*   FDC     0004    FDCCMD  0040    GOCPM   fb04 
+HOME    fb47    IOBYTE  0003    LIST    fb46    LISTST  fb98    LOAD1   fad4 
 LOAD2   fae8    MSIZE   0040    NSECTS  002c    PRTMSG  fa94    PUNCH   fb46 
-READ    fb7b    READER  fb46    SECTRAN fb89    SEL1    fb5b    SELDSK  fb4c 
+READ    fb7b    READER  fb46    SECTRAN fb90    SEL1    fb5b    SELDSK  fb4c 
 SETDMA  fb72    SETSEC  fb6d    SETTRK  fb68    SIGNON  fa33    TRANS   fa6b 
 WBE     fa03    WBOOT   fac0    WRITE   fb83    

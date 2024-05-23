@@ -4,10 +4,9 @@
 // Copyright 2024, Udo Munk
 //
 // FDC for bare metal with disk images on SD drive
-// Work in progress, not working yet
 //
 // History:
-// ??-MAY-2024
+// 23-MAY-2024 implemented FDC, CP/M boot code & CBIOS
 //
 
 // offsets in disk command descriptor
@@ -51,6 +50,10 @@ const void fdc_out(BYTE data)
       break;
 
     case FDC_WRITE:
+      get_fdccmd(&fdc_cmd[0], fdc_cmd_addr);
+      fdc_dma_addr = fdc_cmd[DD_DMAL] + (fdc_cmd[DD_DMAH] << 8);
+      fdc_stat = write_sec(data & 0x0f, fdc_cmd[DD_TRACK], fdc_cmd[DD_SECTOR],
+                          fdc_dma_addr);
       break;
 
     default:

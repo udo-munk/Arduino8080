@@ -249,10 +249,13 @@ SETDMA	MOV	A,C		;low order address
 ;
 READ	LDA     CDISK		;get disk #
 	ORI	20H		;mask in read command
-        JMP     DOIO            ;DO I/O OPERATION
-
-WRITE
-	RET
+        JMP     DOIO            ;do I/O operation
+;
+;	perform write operation
+;
+WRITE	LDA	CDISK		;get disk #
+	ORI	40H		;mask in write command
+	JMP	DOIO		;do I/O operation
 
 ;
 ;	perform read/write I/O

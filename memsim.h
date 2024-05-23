@@ -138,7 +138,6 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
   pos = (((uint32_t) track * (uint32_t) SPT) + sector - 1) * SEC_SZ;
   if (!sd_file.seekSet(pos)) {
     sd_file.close();
-    Serial.print(F("seek error"));
     return FDC_STAT_SEEK;
   }
 
@@ -149,6 +148,40 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
       return FDC_STAT_READ;
     }
     fram.write8(a++, c);
+  }
+
+  sd_file.close();
+  return FDC_STAT_OK;
+}
+
+// write to drive a sector on track from FRAM addr
+int write_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
+{
+  FatFile sd_file;
+  WORD a = addr;
+  BYTE c;
+  uint32_t pos;
+  int i;
+
+  // open file with the disk image
+  if (!sd_file.openExistingSFN(disks[drive])) {
+	  return FDC_STAT_NODISK;
+  }
+
+  // seek to track/sector
+  pos = (((uint32_t) track * (uint32_t) SPT) + sector - 1) * SEC_SZ;
+  if (!sd_file.seekSet(pos)) {
+    sd_file.close();
+    return FDC_STAT_SEEK;
+  }
+
+  // write sector to disk image
+  for (i = 0; i < SEC_SZ; i++) {
+    c = fram.read8(a++);
+    if (sd_file.write(&c, 1) != 1) {
+      sd_file.close();
+      return FDC_STAT_WRITE;
+    }
   }
 
   sd_file.close();
