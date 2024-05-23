@@ -129,9 +129,14 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
   uint32_t pos;
   int i;
 
+  // check if disk in drive
+  if (!strlen(disks[drive])) {
+    return FDC_STAT_NODISK;
+  }
+
   // open file with the disk image
   if (!sd_file.openExistingSFN(disks[drive])) {
-	  return FDC_STAT_NODISK;
+    return FDC_STAT_NODISK;
   }
 
   // seek to track/sector
@@ -162,6 +167,11 @@ int write_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
   BYTE c;
   uint32_t pos;
   int i;
+
+  // check if disk in drive
+  if (!strlen(disks[drive])) {
+    return FDC_STAT_NODISK;
+  }
 
   // open file with the disk image
   if (!sd_file.openExistingSFN(disks[drive])) {
