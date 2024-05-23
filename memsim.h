@@ -126,6 +126,7 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
   FatFile sd_file;
   WORD a = addr;
   BYTE c;
+  uint32_t pos;
   int i;
 
   // open file with the disk image
@@ -134,8 +135,10 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
   }
 
   // seek to track/sector
-  if (!sd_file.seekSet(((track * SPT + sector - 1) * SEC_SZ))) {
+  pos = (((uint32_t) track * (uint32_t) SPT) + sector - 1) * SEC_SZ;
+  if (!sd_file.seekSet(pos)) {
     sd_file.close();
+    Serial.print(F("seek error"));
     return FDC_STAT_SEEK;
   }
 
