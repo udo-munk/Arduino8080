@@ -7,7 +7,7 @@
 // SPI memory. Supported is Adafruit FRAM, min 64 KByte for 8080 memory,
 // and Adafruit MicroSD for standalone programms and disk images.
 //
-// Needed Arduino libraries:
+// Uses Arduino libraries:
 // Adafruit BusIO
 // Adafruit_FRAM_SPI
 // SdFat - Adafruit Fork
@@ -46,6 +46,25 @@ static inline void memwrt(WORD addr, BYTE data)
 {
   if (addr < 0xff00) // top memory page write protected for MITS BASIC
     fram.write8((uint32_t) addr, data);
+}
+
+// memory dump
+void mem_dump(WORD addr)
+{
+  uint32_t i, j;
+  WORD a = addr;
+  BYTE c;
+
+  for (j = 1; j <= 16; j++) {
+    for (i = 1; i <= 16; i++) {
+      c = fram.read8(a++);
+      if (c < 0x10)
+        Serial.print(F("0"));
+      Serial.print(c, HEX);
+      Serial.print(F(" "));
+    }
+    Serial.println();
+  }
 }
 
 // load a file 'name' into FRAM
@@ -105,7 +124,9 @@ void mount_disk(int8_t drive, char *name)
 int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
 {
   FatFile sd_file;
-  BYTE buf[SPT];
+  WORD a = addr;
+  BYTE c;
+  int i;
 
   // open file with the disk image
   if (!sd_file.openExistingSFN(disks[drive])) {
@@ -118,18 +139,16 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
     return FDC_STAT_SEEK;
   }
 
-  // read sector into buffer
-  if (sd_file.read(buf, SPT) != SPT) {
-    sd_file.close();
-    return FDC_STAT_READ;
-  }
-  sd_file.close();
-  
-  // write sector into FRAM
-  if (!fram.write(addr, buf, SPT)) {
-    return FDC_STAT_DMA;
+  // read sector into FRAM
+  for (i = 0; i < SEC_SZ; i++) {
+    if (sd_file.read(&c, 1) != 1) {
+      sd_file.close();
+      return FDC_STAT_READ;
+    }
+    fram.write8(a++, c);
   }
 
+  sd_file.close();
   return FDC_STAT_OK;
 }
 

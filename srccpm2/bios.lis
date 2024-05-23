@@ -20,14 +20,98 @@ fa00  =               13     13 BIOS	EQU	CCP+1600H	;base of bios
                       17     17 ;
                       18     18 ;	I/O ports
                       19     19 ;
-                      20     20 
-                      21     21 
+0000  =               20     20 CONSTA	EQU  0		; console status port
+0001  =               21     21 CONDAT	EQU  1		; console data port
                       22     22 
-                      23     23 
-                      24     24 
-0000                  25     25 	END			;of CBIOS
+                      23     23 	ORG     BIOS            ;origin of BIOS
+                      24     24 ;
+                      25     25 ;	jump vector for individual subroutines
+                      26     26 ;
+fa00  c3 56 fa        27     27 	JMP	BOOT		;cold boot
+fa03  c3 60 fa        28     28 WBE	JMP	WBOOT		;warm start
+fa06  c3 60 fa        29     29 	JMP	CONST		;console status
+fa09  c3 60 fa        30     30 	JMP	CONIN		;console character in
+fa0c  c3 61 fa        31     31 	JMP	CONOUT		;console character out
+fa0f  c3 6b fa        32     32 	JMP	LIST		;list character out
+fa12  c3 6b fa        33     33 	JMP	PUNCH		;punch character out
+fa15  c3 6b fa        34     34 	JMP	READER		;reader character in
+fa18  c3 6b fa        35     35 	JMP	HOME		;move disk head to home position
+fa1b  c3 6b fa        36     36 	JMP	SELDSK		;select disk drive
+fa1e  c3 6b fa        37     37 	JMP	SETTRK		;set track number
+fa21  c3 6b fa        38     38 	JMP	SETSEC		;set sector number
+fa24  c3 6b fa        39     39 	JMP	SETDMA		;set dma address
+fa27  c3 6b fa        40     40 	JMP	READ		;read disk sector
+fa2a  c3 6b fa        41     41 	JMP	WRITE		;write disk sector
+fa2d  c3 6b fa        42     42 	JMP	LISTST		;list status
+fa30  c3 6b fa        43     43 	JMP	SECTRAN		;sector translate
+                      44     44 ;
+                      45     45 ;	data tables
+                      46     46 ;
+fa33  36 34           47     47 SIGNON	DB	MSIZE / 10 + '0',MSIZE MOD 10 + '0'
+fa35  4b 20 43 50     48     48 	DB	'K CP/M 2.2 VERS B01',13,10,0
+fa39  2f 4d 20 32     48     49
+fa3d  2e 32 20 56     48     50
+fa41  45 52 53 20     48     51
+fa45  42 30 31 0d     48     52
+fa49  0a 00           48     53
+                      49     54 ;
+                      50     55 ;	print a message to the console
+                      51     56 ;	pointer to string in hl
+                      52     57 ;
+fa4b  7e              53     58 PRTMSG	MOV	A,M		;get next message byte
+fa4c  b7              54     59 	ORA	A		;is it zero?
+fa4d  c8              55     60 	RZ			;yes, done
+fa4e  4f              56     61 	MOV	C,A		;no, print character on console
+fa4f  cd 61 fa        57     62 	CALL	CONOUT
+fa52  23              58     63 	INX	H		;and do next
+fa53  c3 4b fa        59     64 	JMP	PRTMSG
+                      60     65 ;
+                      61     66 ;	cold start
+fa56  31 80 00        62     67 BOOT	LXI	SP,80H		;use space below buffer for stack
+fa59  21 33 fa        63     68 	LXI     H,SIGNON        ;print signon
+fa5c  cd 4b fa        64     69 	CALL	PRTMSG
+                      65     70 
+fa5f  76              66     71 	HLT
+                      67     72 
+                      68     73 
+                      69     74 
+fa60                  70     75 WBOOT
+fa60                  71     76 CONST
+fa60                  72     77 CONIN
+fa60  c9              73     78 	RET
+                      74     79 ;
+                      75     80 ;	console output
+                      76     81 ;
+fa61  db 00           77     82 CONOUT	IN	CONSTA		;get status
+fa63  07              78     83 	RLC			;test bit 7
+fa64  da 61 fa        79     84 	JC	CONOUT		;wait until transmitter ready
+fa67  79              80     85 	MOV	A,C		;get character into accumulator
+fa68  d3 01           81     86 	OUT	CONDAT		;send to console
+fa6a  c9              82     87 	RET
+                      83     88 
+                      84     89 
+                      85     90 
+fa6b                  86     91 LIST
+fa6b                  87     92 PUNCH
+fa6b                  88     93 READER
+fa6b                  89     94 HOME
+fa6b                  90     95 SELDSK
+fa6b                  91     96 SETTRK
+fa6b                  92     97 SETSEC
+fa6b                  93     98 SETDMA
+fa6b                  94     99 READ
+fa6b                  95    100 WRITE
+fa6b                  96    101 LISTST
+fa6b                  97    102 SECTRAN
+fa6b  c9              98    103 	RET
+                      99    104 
+fa6c                 100    105 	END			;of CBIOS
 
 Symbol table
 
-BDOS   ec06*   BIAS   b000    BIOS   fa00    CCP    e400    CDISK  0004*
-IOBYTE 0003*   MSIZE  0040    NSECTS 002c*   
+BDOS    ec06*   BIAS    b000    BIOS    fa00    BOOT    fa56    CCP     e400 
+CDISK   0004*   CONDAT  0001    CONIN   fa60    CONOUT  fa61    CONST   fa60 
+CONSTA  0000    HOME    fa6b    IOBYTE  0003*   LIST    fa6b    LISTST  fa6b 
+MSIZE   0040    NSECTS  002c*   PRTMSG  fa4b    PUNCH   fa6b    READ    fa6b 
+READER  fa6b    SECTRAN fa6b    SELDSK  fa6b    SETDMA  fa6b    SETSEC  fa6b 
+SETTRK  fa6b    SIGNON  fa33    WBE     fa03*   WBOOT   fa60    WRITE   fa6b 
