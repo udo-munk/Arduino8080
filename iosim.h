@@ -64,16 +64,6 @@ BYTE io_in(BYTE addrl, BYTE addrh)
     return (0xff);                            // all other return 0xff
 }
 
-// I/O function port 0 write:
-// Switch builtin LED on/off.
-const static void p000_out(BYTE data)
-{
-  if (!data)
-    digitalWrite(LED_BUILTIN, false); // 0 switches LED off
-  else
-    digitalWrite(LED_BUILTIN, true);  // everything else on
-}
-
 // I/O function port 1 write:
 // Write byte to Arduino UART.
 const static void p001_out(BYTE data)
@@ -85,7 +75,7 @@ const static void p001_out(BYTE data)
 // I/O port (0 - 255), to do the required I/O.
 // To save memory we use the first 5 ports only.
 const static void (*port_out[5]) (BYTE) = {
-  p000_out,               // port 0
+  0,                      // port 0
   p001_out,               // port 1
   0,                      // port 2
   0,                      // port 3

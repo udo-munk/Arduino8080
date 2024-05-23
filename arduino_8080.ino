@@ -1527,7 +1527,6 @@ int freeRam()
 void setup()
 {
   // put your setup code here, to run once:
-  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(USERINT, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(USERINT), user_int, FALLING);
 
@@ -1591,9 +1590,6 @@ void loop()
   cpu_8080(&cpu_state);
   stop = millis();
   
-  // 8080 CPU stopped working, signal this on builtin LED
-  digitalWrite(LED_BUILTIN, true);
-
   // tell us why it stopped running
   Serial.println();
   Serial.print(F("CPU was "));
