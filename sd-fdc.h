@@ -44,7 +44,7 @@ const void fdc_out(BYTE data)
       break;
 
     case FDC_READ:
-      get_fdccmd(fdc_cmd, fdc_cmd_addr);
+      get_fdccmd(&fdc_cmd[0], fdc_cmd_addr);
       fdc_dma_addr = fdc_cmd[DD_DMAL] + (fdc_cmd[DD_DMAH] << 8);
       fdc_stat = read_sec(data & 0x0f, fdc_cmd[DD_TRACK], fdc_cmd[DD_SECTOR],
                           fdc_dma_addr);
