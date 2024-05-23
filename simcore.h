@@ -6,6 +6,7 @@
 // History:
 // 04-MAY-2024 Release 1.0, initial implementation
 // 17-MAY-2024 use X and Y as names for the undocumented flag bits
+// 22-MAY-2024 added disk definitions
 //
 
 // bit definitions for the 8080 CPU flags
