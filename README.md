@@ -227,4 +227,5 @@ Udo Munk, May 2024
 	A>
 
 Long live the Intel 8080!
-Long live Digital Research CP/M
+
+Long live Digital Research CP/M!
