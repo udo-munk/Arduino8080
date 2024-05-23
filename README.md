@@ -191,3 +191,40 @@ runs away and the whole machine seems to be stuck.
 For this I added an interrupt key, which will stop the 8080 from
 whatever it is doing. And then a register dump also is printed
 to the terminal, so that we might get an idea what it was doing.
+
+Udo Munk, May 2024
+
+<><><><><><><><><><><><><><><><><><><><><><><>
+
+	8080-SIM v1.6
+
+	1 - port 255 value: 0x22
+	2 - load file
+	3 - Disk 0:
+	4 - Disk 1:
+	5 - run machine
+
+	Command: 3
+
+	Filename: cpm22
+	1 - port 255 value: 0x22
+	2 - load file
+	3 - Disk 0: /DISKS80/cpm22.DSK
+	4 - Disk 1:
+	5 - run machine
+
+	Command: 5
+
+	64K CP/M 2.2 VERS B01
+
+	A>dir
+	A: ASM      COM : DDT      COM : ED       COM : MOVCPM   COM
+	A: DUMP     COM : LOAD     COM : PIP      COM : STAT     COM
+	A: SYSGEN   COM : XSUB     COM : WM       HLP : WM       COM
+	A: BYE      COM : CLS      COM : SURVEY   MAC : SURVEY   COM
+	A: XDIR     COM : SDIR     COM : VIEW     COM : SID      COM
+	A: MAC      COM : MEMMAP   COM : SUBMIT   COM
+	A>
+
+Long live the Intel 8080!
+Long live Digital Research CP/M
