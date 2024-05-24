@@ -1,0 +1,16 @@
+You need the Adafruit IDE to compile the software and upload it
+into the Arduino Nano board. The software requires the following
+libraries, which need to get installed in the IDE:
+
+	Adafruit BusIO
+	Adafruit_FRAM_SPI
+	SdFat - Adafruit Fork
+
+The Adafruit FRAM library prints debug messages to the terminal,
+which needs memory. I have disabled this with #ifdef DEBUG .. #endif
+in Adafruit_FRAM_SPI.cpp, a fork with the modification also is here:
+
+	https://github.com/udo-munk/Adafruit_FRAM_SPI.git
+
+Without this the Z80 CPU will not compile anymore because board
+flash memory size is exceeded.
