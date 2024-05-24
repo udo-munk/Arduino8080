@@ -43,6 +43,14 @@ void get_cmdline(char *buf, int len)
   buf[i] = '\0';
 }
 
+// promt for a filename
+static void prompt_fn(char *s)
+{
+      Serial.print(F("Filename: "));
+      get_cmdline(s, 9);
+      Serial.println();
+}
+
 // configuration dialog for the machine
 void config(void)
 {
@@ -84,16 +92,12 @@ again:
       break;
 
     case '2':
-      Serial.print(F("Filename: "));
-      get_cmdline(s, 9);
-      Serial.println();
+      prompt_fn(s);
       load_file(s);
       break;
 
     case '3':
-      Serial.print(F("Filename: "));
-      get_cmdline(s, 9);
-      Serial.println();
+      prompt_fn(s);
       if (strlen(s) == 0) {
         disks[0][0] = 0x0;
       } else {
@@ -103,9 +107,7 @@ again:
       break;
 
     case '4':
-      Serial.print(F("Filename: "));
-      get_cmdline(s, 9);
-      Serial.println();
+      prompt_fn(s);
       if (strlen(s) == 0) {
         disks[1][0] = 0x0;
       } else {
