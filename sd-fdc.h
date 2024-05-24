@@ -3,7 +3,16 @@
 //            derived from Z80PACK
 // Copyright 2024, Udo Munk
 //
-// FDC for bare metal with disk images on SD drive
+// This FDC does not emulate any existing hardware,
+// special not these with some LSI chip, it is designed
+// for bare metal with disk images on MicroSD and such.
+// It needs one single I/O port, send command to the port,
+// read result what it did, done. It does DMA transfer of
+// a complete sector. It has a rock solid state engine,
+// that can not get stuck by some software sending random
+// data, is all ignored. It is platform independend, the
+// platform must provide the low level functions, which
+// depend on what storage hardware actually is used.
 //
 // History:
 // 23-MAY-2024 implemented FDC, CP/M boot code & CBIOS
