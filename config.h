@@ -103,7 +103,6 @@ again:
       } else {
         mount_disk(0, s);
       }
-      Serial.println();
       break;
 
     case '4':
@@ -113,7 +112,6 @@ again:
       } else {
         mount_disk(1, s);
       }
-      Serial.println();
       break;
 
     case '5':

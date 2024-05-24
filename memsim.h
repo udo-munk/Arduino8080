@@ -72,6 +72,11 @@ void mem_dump(WORD addr)
 }
 #endif
 
+void complain(void)
+{
+  Serial.println(F("File not found\n"));
+}
+
 // load a file 'name' into FRAM
 void load_file(char *name)
 {
@@ -90,7 +95,7 @@ void load_file(char *name)
 #endif
 
   if (!sd_file.openExistingSFN(SFN)) {
-    Serial.println(F("File not found\n"));
+    complain();
     return;
   }
 
@@ -117,12 +122,13 @@ void mount_disk(int8_t drive, char *name)
 #endif
 
   if (!sd_file.openExistingSFN(SFN)) {
-    Serial.println(F("File not found\n"));
+    complain();
     return;
   }
 
   sd_file.close();
   strcpy(disks[drive], SFN);
+  Serial.println();
 }
 
 // read from drive a sector on track into FRAM addr
