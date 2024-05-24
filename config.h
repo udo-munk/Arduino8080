@@ -50,7 +50,7 @@ void config(void)
   int go_flag = 0;
 
   while (!go_flag) {
-    Serial.print(F("1 - port 255 value: 0x"));
+    Serial.print(F("1 - port 255: 0x"));
     Serial.println(fp_value, HEX);
     Serial.println(F("2 - load file"));
     Serial.print(F("3 - Disk 0: "));
