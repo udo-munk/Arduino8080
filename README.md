@@ -229,3 +229,25 @@ Udo Munk, May 2024
 Long live the Intel 8080!
 
 Long live Digital Research CP/M!
+
+--------------------------------------
+
+No one is going to  believe this, but see your self ...
+Thomas just released a code optimized Z80 CPU implementation,
+that still fits into the 32 KB flash memory of the Arduino Nano.
+This Z80 is tested on UNIX workstations inside the z80pack framework
+with code exercisers, to make sure it works the same as Zilog/Mostek
+silicon with regards to the documented behaviour.
+
+There are now two project files:
+	arduino_8080.ino.8080
+	arduino_8080.ino.z80
+and arduino_8080.ino is a link to one of them. Currently the
+project is setup to use the new Z80 CPU, but please be aware
+that Microsoft BASIC only runs on a 8080 CPU, will get stuck
+on a Z80.
+
+Of course now the comfort features from my TODO list won't fit
+anymore, but one can't have it all I guess.
+
+Long live the Zilog Z80 !

@@ -51,7 +51,7 @@ static inline void memwrt(WORD addr, BYTE data)
 // memory dump
 void mem_dump(WORD addr)
 {
-  uint32_t i, j;
+  int i, j;
   WORD a = addr;
   BYTE c;
 
@@ -100,7 +100,7 @@ void load_file(char *name)
 void mount_disk(int8_t drive, char *name)
 {
   FatFile sd_file;
-  char SFN[25];
+  char SFN[22];
 
   strcpy(SFN, "/DISKS80/");
   strcat(SFN, name);
