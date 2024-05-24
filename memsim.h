@@ -25,6 +25,9 @@
 // we want hardware SPI
 Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS);
 
+// transfer buffer for disk/memory transfers
+static BYTE dsk_buf[SEC_SZ];
+
 // setup FRAM
 void init_memory(void)
 {
@@ -48,6 +51,7 @@ static inline void memwrt(WORD addr, BYTE data)
     fram.write8((uint32_t) addr, data);
 }
 
+#if 0	// for debugging, not enough memory left
 // memory dump
 void mem_dump(WORD addr)
 {
@@ -66,6 +70,7 @@ void mem_dump(WORD addr)
     Serial.println();
   }
 }
+#endif
 
 // load a file 'name' into FRAM
 void load_file(char *name)
@@ -124,10 +129,7 @@ void mount_disk(int8_t drive, char *name)
 int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
 {
   FatFile sd_file;
-  WORD a = addr;
-  BYTE c;
   uint32_t pos;
-  int i;
 
   // check if disk in drive
   if (!strlen(disks[drive])) {
@@ -147,12 +149,13 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
   }
 
   // read sector into FRAM
-  for (i = 0; i < SEC_SZ; i++) {
-    if (sd_file.read(&c, 1) != 1) {
-      sd_file.close();
-      return FDC_STAT_READ;
-    }
-    fram.write8(a++, c);
+  if (sd_file.read(&dsk_buf[0], SEC_SZ) != SEC_SZ) {
+    sd_file.close();
+    return FDC_STAT_READ;
+  }
+  if (!fram.write(addr, &dsk_buf[0], SEC_SZ)) {
+    sd_file.close();
+    return FDC_STAT_DMA;
   }
 
   sd_file.close();
@@ -163,10 +166,7 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
 int write_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
 {
   FatFile sd_file;
-  WORD a = addr;
-  BYTE c;
   uint32_t pos;
-  int i;
 
   // check if disk in drive
   if (!strlen(disks[drive])) {
@@ -186,12 +186,13 @@ int write_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
   }
 
   // write sector to disk image
-  for (i = 0; i < SEC_SZ; i++) {
-    c = fram.read8(a++);
-    if (sd_file.write(&c, 1) != 1) {
-      sd_file.close();
-      return FDC_STAT_WRITE;
-    }
+  if (!fram.read(addr, &dsk_buf[0], SEC_SZ)) {
+    sd_file.close();
+    return FDC_STAT_DMA;
+  }
+  if (sd_file.write(&dsk_buf[0], SEC_SZ) != SEC_SZ) {
+    sd_file.close();
+    return FDC_STAT_WRITE;
   }
 
   sd_file.close();
