@@ -1,4 +1,4 @@
-You need the Adafruit IDE to compile the software and upload it
+You need the Arduino IDE to compile the software and upload it
 into the Arduino Nano board. The software requires the following
 additional libraries, which need to get installed in the IDE:
 
