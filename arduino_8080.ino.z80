@@ -1454,7 +1454,8 @@ finish_ret:
                 F = ((P & 0x80) >> 7) << C_SHIFT;
                 break;
               case 3:		/* RR */
-                res = ((P >> 1) | (((F & C_FLAG) >> C_SHIFT) << 7));
+                res = ((P >> 1) |
+		       (((F & C_FLAG) >> C_SHIFT) << 7));
                 F = (P & 1) << C_SHIFT;
                 break;
               case 4:		/* SLA */
@@ -1811,7 +1812,8 @@ finish_sbchl:
             break;
 
           case 0x4a:		/* ADC HL,BC */
-            W = (((H << 8) | L) + ((B << 8) | C) + ((F >> C_SHIFT) & 1));
+            W = (((H << 8) | L) + ((B << 8) | C) +
+		 ((F >> C_SHIFT) & 1));
             cout = (H & B) | ((H | B) & ~(W >> 8));
 finish_adchl:
             F = ((((cout >> 7) & 1) << C_SHIFT) |
@@ -1861,7 +1863,8 @@ finish_adchl:
             break;
 
           case 0x52:		/* SBC HL,DE */
-            W = (((H << 8) | L) - ((D << 8) | E) - ((F >> C_SHIFT) & 1));
+            W = (((H << 8) | L) - ((D << 8) | E) -
+		 ((F >> C_SHIFT) & 1));
             cout = (~H & D) | ((~H | D) & (W >> 8));
             goto finish_sbchl;
 
@@ -1900,7 +1903,8 @@ finish_adchl:
             break;
 
           case 0x5a:		/* ADC HL,DE */
-            W = (((H << 8) | L) + ((D << 8) | E) + ((F >> C_SHIFT) & 1));
+            W = (((H << 8) | L) + ((D << 8) | E) +
+		 ((F >> C_SHIFT) & 1));
             cout = (H & D) | ((H | D) & ~(W >> 8));
             goto finish_adchl;
 
@@ -2010,7 +2014,8 @@ finish_adchl:
 
           case 0x72:		/* SBC HL,SP */
             W = ((H << 8) | L) - SP8 - ((F >> C_SHIFT) & 1);
-            cout = ((~H & (SP8 >> 8)) | ((~H | (SP8 >> 8)) & (W >> 8)));
+            cout = ((~H & (SP8 >> 8)) |
+		    ((~H | (SP8 >> 8)) & (W >> 8)));
             goto finish_sbchl;
 
           case 0x73:		/* LD (nn),SP */
