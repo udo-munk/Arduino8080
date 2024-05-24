@@ -240,8 +240,10 @@ with code exercisers, to make sure it works the same as Zilog/Mostek
 silicon with regards to the documented behaviour.
 
 There are now two project files:
+
 	arduino_8080.ino.8080
 	arduino_8080.ino.z80
+
 and arduino_8080.ino is a link to one of them. Currently the
 project is setup to use the new Z80 CPU, but please be aware
 that Microsoft BASIC only runs on a 8080 CPU, will get stuck
