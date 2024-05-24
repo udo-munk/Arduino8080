@@ -196,7 +196,7 @@ next_opcode:
 
     t += 4;
 
-    switch (memrdr(PC8++)) { // execute next opcode
+    switch (memrdr(PC8++)) {	/* execute next opcode */
 
       case 0x00:		/* NOP */
       case 0x40:		/* LD B,B */
@@ -1401,10 +1401,14 @@ finish_ret:
         if (curr_ir != IR_HL) {
           W += (signed char) memrdr(PC8++);
           t += 8;
-        } else
+        } else {
           R++;			/* increment refresh register */
+	}
+
         t += 4;
+
         res = 0;		/* silence compiler */
+
         op = memrdr(PC8++);
         n = (op >> 3) & 7;
         if (curr_ir != IR_HL)
@@ -1635,6 +1639,7 @@ finish_call:
 
       case 0xdd:		/* 0xdd prefix */
         R++;			/* increment refresh register */
+
         curr_ir = IR_IX;
         IR = IX;
         goto next_opcode;
@@ -1719,7 +1724,9 @@ finish_call:
 
       case 0xed:		/* 0xed prefix */
         R++;			/* increment refresh register */
+
         t += 4;
+
         switch (memrdr(PC8++)) {
           case 0x40:		/* IN B,(C) */
             B = io_in(C, B);
@@ -2474,6 +2481,7 @@ finish_ioidr:
 
       case 0xfd:		/* 0xfd prefix */
         R++;			/* increment refresh register */
+
         curr_ir = IR_IY;
         IR = IY;
         goto next_opcode;
