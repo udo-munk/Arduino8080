@@ -3,8 +3,3 @@ Note to my self:
 save machine configuration (FRAM or SD, not EEPROM)
 when enough memory left in the end dump memory in config dialog
 when enough memory left in the end list files on the SD card
-
-Currently disk/memory data transfer is one byte, with 128 byte
-transfers that should be much faster, but needs a 128 byte
-transfer buffer in SRAM. Need to figure if that is available,
-maybe use global buffer.
