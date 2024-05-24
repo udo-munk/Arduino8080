@@ -1571,7 +1571,7 @@ void loop()
   if (strlen(disks[0]) != 0) {
     // they will try this for sure, so ...
     if (!strcmp(disks[0], disks[1])) {
-      Serial.println(F("Not with this configuration dude\n"));
+      Serial.println(F("Not with this config dude\n"));
       goto NOPE;
     }
     stat = read_sec(0, 0, 1, 0); // read track 0 sector 1 into memory addr. 0
