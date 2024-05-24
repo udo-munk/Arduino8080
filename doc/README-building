@@ -1,6 +1,6 @@
 You need the Adafruit IDE to compile the software and upload it
 into the Arduino Nano board. The software requires the following
-libraries, which need to get installed in the IDE:
+additional libraries, which need to get installed in the IDE:
 
 	Adafruit BusIO
 	Adafruit_FRAM_SPI
