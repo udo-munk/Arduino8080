@@ -233,7 +233,7 @@ Long live Digital Research CP/M!
 --------------------------------------
 
 No one is going to  believe this, but see your self ...
-Thomas just released a code optimized Z80 CPU implementation,
+Thomas just released a code size optimized Z80 CPU implementation,
 that still fits into the 32 KB flash memory of the Arduino Nano.
 This Z80 is tested on UNIX workstations inside the z80pack framework
 with code exercisers, to make sure it works the same as Zilog/Mostek
