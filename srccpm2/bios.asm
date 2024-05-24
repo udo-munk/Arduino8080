@@ -53,6 +53,7 @@ WBE	JMP	WBOOT		;warm start
 ;
 SIGNON	DB	MSIZE / 10 + '0',MSIZE MOD 10 + '0'
 	DB	'K CP/M 2.2 VERS B01',13,10,0
+BOOTERR	DB	13,10,'BOOT ERROR',13,10,0
 ;
 ;	disk parameter header for disk 0
 DPBASE	DW	TRANS,0000H
@@ -104,6 +105,7 @@ BOOT	LXI	SP,80H		;use space below buffer for stack
 	CALL	PRTMSG
 	XRA	A		;zero in the accumulator
 	STA	CDISK		;select disk drive 0
+	STA	DSKNO
 	STA	IOBYTE		;setup IOBYTE
 	MVI	A,10H		;setup FDC command
 	OUT	FDC
@@ -136,7 +138,9 @@ LOAD1	PUSH	B		;save sector count and current track
 	CALL	READ		;read sector
 	ORA	A		;any errors?
 	JZ	LOAD2		;no, continue
-	HLT			;otherwise halt the machine
+	LXI	H,BOOTERR	;otherwise print message
+	CALL	PRTMSG
+	HLT			;and halt the machine
 LOAD2	POP	H		;recall DMA address
 	LXI	D,128		;DMA = DMA + 128
 	DAD	D		;next DMA address now in HL
@@ -221,12 +225,10 @@ HOME	MVI	C,0		;select track 0
 ;
 SELDSK	LXI	H,0		;error return code
 	MOV	A,C		;get disk # to accumulator
-	CPI	0		;disk drive 0 ?
-	JZ	SEL1
-	CPI	1		;disk drive 1 ?
-	JZ	SEL1
+	CPI	2		;disk drive < 2 ?
+	JC	SEL1
 	RET			;no, return with error
-SEL1	STA	CDISK		;save disk #
+SEL1	STA	DSKNO		;save disk #
 	MOV	L,C		;HL = disk #
 	DAD	H		;*2
 	DAD	H		;*4
@@ -258,13 +260,13 @@ SETDMA	MOV	A,C		;low order address
 ;
 ;	perform read operation
 ;
-READ	LDA     CDISK		;get disk #
+READ	LDA     DSKNO		;get disk #
 	ORI	20H		;mask in read command
         JMP     DOIO            ;do I/O operation
 ;
 ;	perform write operation
 ;
-WRITE	LDA	CDISK		;get disk #
+WRITE	LDA	DSKNO		;get disk #
 	ORI	40H		;mask in write command
 	JMP	DOIO		;do I/O operation
 ;
@@ -291,6 +293,8 @@ SECTRAN	XCHG			;HL=.TRANS
 ;	between "BEGDAT" and "ENDDAT".
 ;
 BEGDAT	EQU	$		;begin of data area
+;
+DSKNO	DS	1		;selected disk
 ;
 DIRBF	DS	128		;scratch directory area
 ALL00	DS	31		;allocation vector 0
