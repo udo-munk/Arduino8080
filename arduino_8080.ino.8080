@@ -136,7 +136,7 @@ void cpu_8080(struct cpu_state *cpu_state)
   BYTE A, B, C, D, E, H, L, F, IFF;
   WORD PC8, SP8;
   BYTE t, res, cout, P;
-  WORD addr;
+  WORD W;
 
   A = cpu_state->A;
   B = cpu_state->B;
@@ -153,7 +153,7 @@ void cpu_8080(struct cpu_state *cpu_state)
   do {
     t = 4; // minimum clock cycles for M1
 
-    switch (memrdr(PC8++)) { // execute next opcode
+    switch (memrdr(PC8++)) {	/* execute next opcode */
 
     case 0x00:			/* NOP */
     case 0x08:			/* NOP* */
@@ -187,9 +187,9 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0x03:			/* INX B */
-      addr = ((B << 8) | C) + 1;
-      B = (addr >> 8);
-      C = (addr & 0xff);
+      W = ((B << 8) | C) + 1;
+      B = W >> 8;
+      C = W & 0xff;
       t++;
       break;
 
@@ -197,10 +197,11 @@ void cpu_8080(struct cpu_state *cpu_state)
       P = B;
       res = ++B;
     finish_inr:
-      cout = ((P & 1) | ((P | 1) & ~res));
+      cout = (P & 1) | ((P | 1) & ~res);
       F = ((F & C_FLAG) |
            (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
+      /* C_FLAG unchanged */
       t++;
       break;
 
@@ -208,11 +209,12 @@ void cpu_8080(struct cpu_state *cpu_state)
       P = B;
       res = --B;
     finish_dcr:
-      cout = ((~P & 1) | ((~P | 1) & res));
+      cout = (~P & 1) | ((~P | 1) & res);
       F = ((F & C_FLAG) |
            (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
       F ^= H_FLAG;
+      /* C_FLAG unchanged */
       t++;
       break;
 
@@ -222,19 +224,20 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0x07:			/* RLC */
-      res = ((A & 128) >> 7) & 1;
+      res = ((A & 0x80) >> 7) & 1;
       F = (F & ~C_FLAG) | (res << C_SHIFT);
+      /* S_FLAG, Z_FLAG, H_FLAG, and P_FLAG unchanged */
       A = (A << 1) | res;
       break;
 
     case 0x09:			/* DAD B */
-      addr = ((H << 8) | L);
-      addr += ((B << 8) | C);
-      cout = ((H & B) | ((H | B) & ~(addr >> 8)));
+      W = ((H << 8) | L) + ((B << 8) | C);
+      cout = (H & B) | ((H | B) & ~(W >> 8));
     finish_dad:
-      F = ((F & ~C_FLAG) | (((cout >> 7) & 1) << C_SHIFT));
-      H = (addr >> 8);
-      L = (addr & 0xff);
+      F = (F & ~C_FLAG) | (((cout >> 7) & 1) << C_SHIFT);
+      /* S_FLAG, Z_FLAG, H_FLAG, and P_FLAG unchanged */
+      H = W >> 8;
+      L = W & 0xff;
       t += 6;
       break;
 
@@ -244,9 +247,9 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0x0b:			/* DCX B */
-      addr = ((B << 8) | C) - 1;
-      B = (addr >> 8);
-      C = (addr & 0xff);
+      W = ((B << 8) | C) - 1;
+      B = W >> 8;
+      C = W & 0xff;
       t++;
       break;
 
@@ -268,6 +271,7 @@ void cpu_8080(struct cpu_state *cpu_state)
     case 0x0f:			/* RRC */
       res = A & 1;
       F = (F & ~C_FLAG) | (res << C_SHIFT);
+      /* S_FLAG, Z_FLAG, H_FLAG, and P_FLAG unchanged */
       A = (A >> 1) | (res << 7);
       break;
 
@@ -283,9 +287,9 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0x13:			/* INX D */
-      addr = ((D << 8) | E) + 1;
-      D = (addr >> 8);
-      E = (addr & 0xff);
+      W = ((D << 8) | E) + 1;
+      D = W >> 8;
+      E = W & 0xff;
       t++;
       break;
 
@@ -306,14 +310,14 @@ void cpu_8080(struct cpu_state *cpu_state)
 
     case 0x17:			/* RAL */
       res = (F >> C_SHIFT) & 1;
-      F = (F & ~C_FLAG) | ((((A & 128) >> 7) & 1) << C_SHIFT);
+      F = (F & ~C_FLAG) | ((((A & 0x80) >> 7) & 1) << C_SHIFT);
+      /* S_FLAG, Z_FLAG, H_FLAG, and P_FLAG unchanged */
       A = (A << 1) | res;
       break;
 
     case 0x19:			/* DAD D */
-      addr = ((H << 8) | L);
-      addr += ((D << 8) | E);
-      cout = ((H & D) | ((H | D) & ~(addr >> 8)));
+      W = ((H << 8) | L) + ((D << 8) | E);
+      cout = (H & D) | ((H | D) & ~(W >> 8));
       goto finish_dad;
 
     case 0x1a:			/* LDAX D */
@@ -322,9 +326,9 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0x1b:			/* DCX D */
-      addr = ((D << 8) | E) - 1;
-      D = (addr >> 8);
-      E = (addr & 0xff);
+      W = ((D << 8) | E) - 1;
+      D = W >> 8;
+      E = W & 0xff;
       t++;
       break;
 
@@ -346,6 +350,7 @@ void cpu_8080(struct cpu_state *cpu_state)
     case 0x1f:			/* RAR */
       res = (F >> C_SHIFT) & 1;
       F = (F & ~C_FLAG) | ((A & 1) << C_SHIFT);
+      /* S_FLAG, Z_FLAG, H_FLAG, and P_FLAG unchanged */
       A = (A >> 1) | (res << 7);
       break;
 
@@ -356,17 +361,17 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0x22:			/* SHLD nn */
-      addr = memrdr(PC8++);
-      addr |= memrdr(PC8++) << 8;
-      memwrt(addr, L);
-      memwrt(addr + 1, H);
+      W = memrdr(PC8++);
+      W |= memrdr(PC8++) << 8;
+      memwrt(W, L);
+      memwrt(W + 1, H);
       t += 12;
       break;
 
     case 0x23:			/* INX H */
-      addr = ((H << 8) | L) + 1;
-      H = (addr >> 8);
-      L = (addr & 0xff);
+      W = ((H << 8) | L) + 1;
+      H = W >> 8;
+      L = W & 0xff;
       t++;
       break;
 
@@ -385,14 +390,6 @@ void cpu_8080(struct cpu_state *cpu_state)
       t += 3;
       break;
 
-// Rewrote DAA after looking at
-// https://zeptobars.com/en/read/KR580VM80A-intel-i8080-verilog-reverse-engineering
-// in the verilog file.
-// It is just a normal addition with a special operand setup and the carry flag
-// is set to "A > 0x99 or carry was set". That is what makes DAA a bit strange.
-//
-// Thomas Eberhardt
-
     case 0x27:			/* DAA */
       P = 0;
       if (((A & 0xf) > 9) || (F & H_FLAG))
@@ -402,7 +399,7 @@ void cpu_8080(struct cpu_state *cpu_state)
         P |= 0x60;
       }
       res = A + P;
-      cout = ((A & P) | ((A | P) & ~res));
+      cout = (A & P) | ((A | P) & ~res);
       F = ((F & C_FLAG) |
            (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
@@ -410,22 +407,22 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0x29:			/* DAD H */
-      addr = ((H << 8) | L) << 1;
-      cout = (H | (H & ~(addr >> 8)));
+      W = ((H << 8) | L) << 1;
+      cout = H | (H & ~(W >> 8));
       goto finish_dad;
 
     case 0x2a:			/* LHLD nn */
-      addr = memrdr(PC8++);
-      addr |= memrdr(PC8++) << 8;
-      L = memrdr(addr);
-      H = memrdr(addr + 1);
+      W = memrdr(PC8++);
+      W |= memrdr(PC8++) << 8;
+      L = memrdr(W);
+      H = memrdr(W + 1);
       t += 12;
       break;
 
     case 0x2b:			/* DCX H */
-      addr = ((H << 8) | L) - 1;
-      H = (addr >> 8);
-      L = (addr & 0xff);
+      W = ((H << 8) | L) - 1;
+      H = W >> 8;
+      L = W & 0xff;
       t++;
       break;
 
@@ -455,9 +452,9 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0x32:			/* STA nn */
-      addr = memrdr(PC8++);
-      addr |= memrdr(PC8++) << 8;
-      memwrt(addr, A);
+      W = memrdr(PC8++);
+      W |= memrdr(PC8++) << 8;
+      memwrt(W, A);
       t += 9;
       break;
 
@@ -467,18 +464,18 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0x34:			/* INR M */
-      addr = (H << 8) | L;
-      P = memrdr(addr);
+      W = (H << 8) | L;
+      P = memrdr(W);
       res = P + 1;
-      memwrt(addr, res);
+      memwrt(W, res);
       t += 5;
       goto finish_inr;
 
     case 0x35:			/* DCR M */
-      addr = (H << 8) | L;
-      P = memrdr(addr);
+      W = (H << 8) | L;
+      P = memrdr(W);
       res = P - 1;
-      memwrt(addr, res);
+      memwrt(W, res);
       t += 5;
       goto finish_dcr;
 
@@ -489,17 +486,18 @@ void cpu_8080(struct cpu_state *cpu_state)
 
     case 0x37:			/* STC */
       F |= C_FLAG;
+      /* S_FLAG, Z_FLAG, H_FLAG, and P_FLAG unchanged */
       break;
 
     case 0x39:			/* DAD SP */
-      addr = ((H << 8) | L) + SP8;
-      cout = ((H & (SP8 >> 8)) | ((H | (SP8 >> 8)) & ~(addr >> 8)));
+      W = ((H << 8) | L) + SP8;
+      cout = (H & (SP8 >> 8)) | ((H | (SP8 >> 8)) & ~(W >> 8));
       goto finish_dad;
 
     case 0x3a:			/* LDA nn */
-      addr = memrdr(PC8++);
-      addr |= memrdr(PC8++) << 8;
-      A = memrdr(addr);
+      W = memrdr(PC8++);
+      W |= memrdr(PC8++) << 8;
+      A = memrdr(W);
       t += 9;
       break;
 
@@ -525,6 +523,7 @@ void cpu_8080(struct cpu_state *cpu_state)
 
     case 0x3f:			/* CMC */
       F ^= C_FLAG;
+      /* S_FLAG, Z_FLAG, H_FLAG, and P_FLAG unchanged */
       break;
 
     case 0x41:			/* MOV B,C */
@@ -817,7 +816,7 @@ void cpu_8080(struct cpu_state *cpu_state)
       P = B;
     finish_add:
       res = A + P;
-      cout = ((A & P) | ((A | P) & ~res));
+      cout = (A & P) | ((A | P) & ~res);
       F = ((((cout >> 7) & 1) << C_SHIFT) |
            (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
@@ -857,7 +856,7 @@ void cpu_8080(struct cpu_state *cpu_state)
       P = B;
     finish_adc:
       res = A + P + ((F >> C_SHIFT) & 1);
-      cout = ((A & P) | ((A | P) & ~res));
+      cout = (A & P) | ((A | P) & ~res);
       F = ((((cout >> 7) & 1) << C_SHIFT) |
            (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
@@ -897,7 +896,7 @@ void cpu_8080(struct cpu_state *cpu_state)
       P = B;
     finish_sub:
       res = A - P;
-      cout = ((~A & P) | ((~A | P) & res));
+      cout = (~A & P) | ((~A | P) & res);
       F = ((((cout >> 7) & 1) << C_SHIFT) |
            (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
@@ -932,7 +931,7 @@ void cpu_8080(struct cpu_state *cpu_state)
 
     case 0x97:			/* SUB A */
       F = Z_FLAG | H_FLAG | P_FLAG;
-      // S_FLAG and C_FLAG cleared
+      /* S_FLAG and C_FLAG cleared */
       A = 0;
       break;
 
@@ -940,7 +939,7 @@ void cpu_8080(struct cpu_state *cpu_state)
       P = B;
     finish_sbb:
       res = A - P - ((F >> C_SHIFT) & 1);
-      cout = ((~A & P) | ((~A | P) & res));
+      cout = (~A & P) | ((~A | P) & res);
       F = ((((cout >> 7) & 1) << C_SHIFT) |
            (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
@@ -981,9 +980,14 @@ void cpu_8080(struct cpu_state *cpu_state)
       P = B;
     finish_ana:
       res = A & P;
+#ifdef AMD8080
+      F = szp_flags[res];
+      /* H_FLAG and C_FLAG cleared */
+#else
       F = (((((A | P) >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
-      // C_FLAG cleared
+      /* C_FLAG cleared */
+#endif
       A = res;
       break;
 
@@ -1017,107 +1021,89 @@ void cpu_8080(struct cpu_state *cpu_state)
       goto finish_ana;
 
     case 0xa8:			/* XRA B */
-      A ^= B;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
+      P = B;
+    finish_xra:
+      res = A ^ P;
+      F = szp_flags[res];
+      /* H_FLAG and C_FLAG cleared */
+      A = res;
       break;
 
     case 0xa9:			/* XRA C */
-      A ^= C;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      P = C;
+      goto finish_xra;
 
     case 0xaa:			/* XRA D */
-      A ^= D;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      P = D;
+      goto finish_xra;
 
     case 0xab:			/* XRA E */
-      A ^= E;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      P = E;
+      goto finish_xra;
 
     case 0xac:			/* XRA H */
-      A ^= H;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      P = H;
+      goto finish_xra;
 
     case 0xad:			/* XRA L */
-      A ^= L;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      P = L;
+      goto finish_xra;
 
     case 0xae:			/* XRA M */
-      A ^= memrdr((H << 8) | L);
+      P = memrdr((H << 8) | L);
       t += 3;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      goto finish_xra;
 
     case 0xaf:			/* XRA A */
-      A = 0;
       F = Z_FLAG | P_FLAG;
-      // S_FLAG, H_FLAG and C_FLAG cleared
+      /* S_FLAG, H_FLAG, and C_FLAG cleared */
+      A = 0;
       break;
 
     case 0xb0:			/* ORA B */
-      A |= B;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
+      P = B;
+    finish_ora:
+      res = A | P;
+      F = szp_flags[res];
+      /* H_FLAG and C_FLAG cleared */
+      A = res;
       break;
 
     case 0xb1:			/* ORA C */
-      A |= C;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      P = C;
+      goto finish_ora;
 
     case 0xb2:			/* ORA D */
-      A |= D;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      P = D;
+      goto finish_ora;
 
     case 0xb3:			/* ORA E */
-      A |= E;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      P = E;
+      goto finish_ora;
 
     case 0xb4:			/* ORA H */
-      A |= H;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      P = H;
+      goto finish_ora;
 
     case 0xb5:			/* ORA L */
-      A |= L;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      P = L;
+      goto finish_ora;
 
     case 0xb6:			/* ORA M */
-      A |= memrdr((H << 8) | L);
+      P = memrdr((H << 8) | L);
       t += 3;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      goto finish_ora;
 
     case 0xb7:			/* ORA A */
       F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
+      /* H_FLAG and C_FLAG cleared */
       break;
 
     case 0xb8:			/* CMP B */
       P = B;
     finish_cmp:
       res = A - P;
-      cout = ((~A & P) | ((~A | P) & res));
+      cout = (~A & P) | ((~A | P) & res);
       F = ((((cout >> 7) & 1) << C_SHIFT) |
            (((cout >> 3) & 1) << H_SHIFT) |
            szp_flags[res]);
@@ -1151,7 +1137,7 @@ void cpu_8080(struct cpu_state *cpu_state)
 
     case 0xbf:			/* CMP A */
       F = Z_FLAG | H_FLAG | P_FLAG;
-      // S_FLAG and C_FLAG cleared
+      /* S_FLAG and C_FLAG cleared */
       break;
 
     case 0xc0:			/* RNZ */
@@ -1171,26 +1157,26 @@ void cpu_8080(struct cpu_state *cpu_state)
     case 0xc2:			/* JNZ nn */
       res = !(F & Z_FLAG);
     finish_jmpc:
-      addr = memrdr(PC8++);
-      addr |= memrdr(PC8++) << 8;
+      W = memrdr(PC8++);
+      W |= memrdr(PC8++) << 8;
       t += 6;
       if (res)
-        PC8 = addr;
+        PC8 = W;
       break;
 
     case 0xc3:			/* JMP nn */
     case 0xcb:			/* JMP* nn */
-      addr = memrdr(PC8++);
-      addr |= memrdr(PC8) << 8;
+      W = memrdr(PC8++);
+      W |= memrdr(PC8) << 8;
       t += 6;
-      PC8 = addr;
+      PC8 = W;
       break;
 
     case 0xc4:			/* CNZ nn */
       res = !(F & Z_FLAG);
     finish_callc:
-      addr = memrdr(PC8++);
-      addr |= memrdr(PC8++) << 8;
+      W = memrdr(PC8++);
+      W |= memrdr(PC8++) << 8;
       t += 7;
       if (res)
         goto finish_call;
@@ -1208,43 +1194,43 @@ void cpu_8080(struct cpu_state *cpu_state)
       goto finish_add;
 
     case 0xc7:			/* RST 0 */
-      addr = 0;
+      W = 0;
       t++;
       goto finish_call;
 
     case 0xc8:			/* RZ */
-      res = (F & Z_FLAG);
+      res = F & Z_FLAG;
       goto finish_retc;
 
     case 0xc9:			/* RET */
     case 0xd9:			/* RET* */
     finish_ret:
-      addr = memrdr(SP8++);
-      addr |= memrdr(SP8++) << 8;
+      W = memrdr(SP8++);
+      W |= memrdr(SP8++) << 8;
       t += 6;
-      PC8 = addr;
+      PC8 = W;
       break;
 
     case 0xca:			/* JZ nn */
-      res = (F & Z_FLAG);
+      res = F & Z_FLAG;
       goto finish_jmpc;
 
     case 0xcc:			/* CZ nn */
-      res = (F & Z_FLAG);
+      res = F & Z_FLAG;
       goto finish_callc;
 
     case 0xcd:			/* CALL nn */
     case 0xdd:			/* CALL* nn */
     case 0xed:			/* CALL* nn */
     case 0xfd:			/* CALL* nn */
-      addr = memrdr(PC8++);
-      addr |= memrdr(PC8++) << 8;
+      W = memrdr(PC8++);
+      W |= memrdr(PC8++) << 8;
       t += 7;
     finish_call:
       memwrt(--SP8, PC8 >> 8);
-      memwrt(--SP8, PC8);
+      memwrt(--SP8, PC8 & 0xff);
       t += 6;
-      PC8 = addr;
+      PC8 = W;
       break;
 
     case 0xce:			/* ACI n */
@@ -1253,7 +1239,7 @@ void cpu_8080(struct cpu_state *cpu_state)
       goto finish_adc;
 
     case 0xcf:			/* RST 1 */
-      addr = 0x08;
+      W = 0x08;
       t++;
       goto finish_call;
 
@@ -1293,16 +1279,16 @@ void cpu_8080(struct cpu_state *cpu_state)
       goto finish_sub;
 
     case 0xd7:			/* RST 2 */
-      addr = 0x10;
+      W = 0x10;
       t++;
       goto finish_call;
 
     case 0xd8:			/* RC */
-      res = (F & C_FLAG);
+      res = F & C_FLAG;
       goto finish_retc;
 
     case 0xda:			/* JC nn */
-      res = (F & C_FLAG);
+      res = F & C_FLAG;
       goto finish_jmpc;
 
     case 0xdb:			/* IN n */
@@ -1312,7 +1298,7 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0xdc:			/* CC nn */
-      res = (F & C_FLAG);
+      res = F & C_FLAG;
       goto finish_callc;
 
     case 0xde:			/* SBI n */
@@ -1321,7 +1307,7 @@ void cpu_8080(struct cpu_state *cpu_state)
       goto finish_sbb;
 
     case 0xdf:			/* RST 3 */
-      addr = 0x18;
+      W = 0x18;
       t++;
       goto finish_call;
 
@@ -1365,12 +1351,12 @@ void cpu_8080(struct cpu_state *cpu_state)
       goto finish_ana;
 
     case 0xe7:			/* RST 4 */
-      addr = 0x20;
+      W = 0x20;
       t++;
       goto finish_call;
 
     case 0xe8:			/* RPE */
-      res = (F & P_FLAG);
+      res = F & P_FLAG;
       goto finish_retc;
 
     case 0xe9:			/* PCHL */
@@ -1379,7 +1365,7 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0xea:			/* JPE nn */
-      res = (F & P_FLAG);
+      res = F & P_FLAG;
       goto finish_jmpc;
 
     case 0xeb:			/* XCHG */
@@ -1392,18 +1378,16 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0xec:			/* CPE nn */
-      res = (F & P_FLAG);
+      res = F & P_FLAG;
       goto finish_callc;
 
     case 0xee:			/* XRI n */
-      A ^= memrdr(PC8++);
+      P = memrdr(PC8++);
       t += 3;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      goto finish_xra;
 
     case 0xef:			/* RST 5 */
-      addr = 0x28;
+      W = 0x28;
       t++;
       goto finish_call;
 
@@ -1436,19 +1420,17 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0xf6:			/* ORI n */
-      A |= memrdr(PC8++);
+      P = memrdr(PC8++);
       t += 3;
-      F = szp_flags[A];
-      // H_FLAG and C_FLAG cleared
-      break;
+      goto finish_ora;
 
     case 0xf7:			/* RST 6 */
-      addr = 0x30;
+      W = 0x30;
       t++;
       goto finish_call;
 
     case 0xf8:			/* RM */
-      res = (F & S_FLAG);
+      res = F & S_FLAG;
       goto finish_retc;
 
     case 0xf9:			/* SPHL */
@@ -1457,15 +1439,16 @@ void cpu_8080(struct cpu_state *cpu_state)
       break;
 
     case 0xfa:			/* JM nn */
-      res = (F & S_FLAG);
+      res = F & S_FLAG;
       goto finish_jmpc;
 
     case 0xfb:			/* EI */
       IFF = 3;
+      // int_protection = 1;	/* protect next instruction */
       break;
 
     case 0xfc:			/* CM nn */
-      res = (F & S_FLAG);
+      res = F & S_FLAG;
       goto finish_callc;
 
     case 0xfe:			/* CPI n */
@@ -1474,13 +1457,9 @@ void cpu_8080(struct cpu_state *cpu_state)
       goto finish_cmp;
 
     case 0xff:			/* RST 7 */
-      addr = 0x38;
+      W = 0x38;
       t++;
       goto finish_call;
-
-    default:
-      t = 0;        /* silence compiler */
-      break;
     }
 
     tstates += t; // account for the executed instruction
