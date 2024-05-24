@@ -21,8 +21,8 @@
 #define FDC_READ	0x20  // read sector from disk
 #define FDC_WRITE	0x40  // write sector to disk
 
-static BYTE fdc_cmd[4];    // fdc command
-static BYTE fdc_state = 0; // state of the fdc state machine
+static BYTE fdc_cmd[4];    // FDC command
+static BYTE fdc_state;     // state of the FDC state machine
 static BYTE fdc_stat;      // status of last FDC command
 static WORD fdc_cmd_addr;  // address of the disk command
 static WORD fdc_dma_addr;  // address for a DMA transfer
