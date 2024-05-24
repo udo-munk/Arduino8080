@@ -137,6 +137,12 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
   FatFile sd_file;
   uint32_t pos;
 
+  // check if track and sector in range
+  if (track > TRK)
+    return FDC_STAT_TRACK;
+  if ((sector < 1) || (sector > SPT))
+    return FDC_STAT_SEC;
+
   // check if disk in drive
   if (!strlen(disks[drive])) {
     return FDC_STAT_NODISK;
@@ -172,6 +178,12 @@ int write_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
 {
   FatFile sd_file;
   uint32_t pos;
+
+  // check if track and sector in range
+  if (track > TRK)
+    return FDC_STAT_TRACK;
+  if ((sector < 1) || (sector > SPT))
+    return FDC_STAT_SEC;
 
   // check if disk in drive
   if (!strlen(disks[drive])) {
