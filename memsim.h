@@ -159,12 +159,11 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
     sd_file.close();
     return FDC_STAT_READ;
   }
+  sd_file.close();
   if (!fram.write(addr, &dsk_buf[0], SEC_SZ)) {
-    sd_file.close();
     return FDC_STAT_DMA;
   }
 
-  sd_file.close();
   return FDC_STAT_OK;
 }
 
