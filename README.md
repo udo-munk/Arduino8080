@@ -253,3 +253,9 @@ Of course now the comfort features from my TODO list won't fit
 anymore, but one can't have it all I guess.
 
 Long live the Zilog Z80 !
+
+Just noticed that you probably are not able to compile the Z80 version
+because out of memory. This is because I have disabled debug output in
+the FRAM library from Adafruit. You'll find my modified fork here:
+
+https://github.com/udo-munk/Adafruit_FRAM_SPI.git
