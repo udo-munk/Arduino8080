@@ -165,6 +165,10 @@ void cpu_8080(struct cpu_state *cpu_state)
 #undef F
 #pragma push_macro("SP")
 #undef SP
+#pragma push_macro("SPH")
+#undef SPH
+#pragma push_macro("SPL")
+#undef SPL
 #pragma push_macro("PC")
 #undef PC
 
@@ -1544,6 +1548,8 @@ finish_call:
 
 #pragma pop_macro("F")
 #pragma pop_macro("SP")
+#pragma pop_macro("SPH")
+#pragma pop_macro("SPL")
 #pragma pop_macro("PC")
 }
 
