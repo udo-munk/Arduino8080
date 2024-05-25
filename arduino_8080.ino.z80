@@ -278,7 +278,8 @@ finish_inc:
         cout = (P & 1) | ((P | 1) & ~res);
         F = ((F & C_FLAG) |
              ((((cout + 64) >> 7) & 1) << P_SHIFT) |
-             (((cout >> 3) & 1) << H_SHIFT) |
+             // (((cout >> 3) & 1) << H_SHIFT) |
+             ((cout & 8) << (H_SHIFT - 3)) |
              (szp_flags[res] & ~P_FLAG));
         /* N_FLAG cleared, C_FLAG unchanged */
         break;
@@ -290,7 +291,8 @@ finish_dec:
         cout = (~P & 1) | ((~P | 1) & res);
         F = ((F & C_FLAG) |
              ((((cout + 64) >> 7) & 1) << P_SHIFT) |
-             (((cout >> 3) & 1) << H_SHIFT) |
+             // (((cout >> 3) & 1) << H_SHIFT) |
+             ((cout & 8) << (H_SHIFT - 3)) |
              N_FLAG |
              (szp_flags[res] & ~P_FLAG));
         /* C_FLAG unchanged */
@@ -994,7 +996,8 @@ finish_add:
         cout = (A & P) | ((A | P) & ~res);
         F = ((((cout >> 7) & 1) << C_SHIFT) |
              ((((cout + 64) >> 7) & 1) << P_SHIFT) |
-             (((cout >> 3) & 1) << H_SHIFT) |
+             // (((cout >> 3) & 1) << H_SHIFT) |
+             ((cout & 8) << (H_SHIFT - 3)) |
              (szp_flags[res] & ~P_FLAG));
         /* N_FLAG cleared */
         A = res;
@@ -1095,7 +1098,8 @@ finish_sub:
         cout = (~A & P) | ((~A | P) & res);
         F = ((((cout >> 7) & 1) << C_SHIFT) |
              ((((cout + 64) >> 7) & 1) << P_SHIFT) |
-             (((cout >> 3) & 1) << H_SHIFT) |
+             // (((cout >> 3) & 1) << H_SHIFT) |
+             ((cout & 8) << (H_SHIFT - 3)) |
              N_FLAG |
              (szp_flags[res] & ~P_FLAG));
         A = res;
@@ -1328,7 +1332,8 @@ finish_cp:
         cout = (~A & P) | ((~A | P) & res);
         F = ((((cout >> 7) & 1) << C_SHIFT) |
              ((((cout + 64) >> 7) & 1) << P_SHIFT) |
-             (((cout >> 3) & 1) << H_SHIFT) |
+             // (((cout >> 3) & 1) << H_SHIFT) |
+             ((cout & 8) << (H_SHIFT - 3)) |
              N_FLAG |
              (szp_flags[res] & ~P_FLAG));
         break;
@@ -1783,7 +1788,8 @@ finish_call:
 finish_sachl:
             F |= ((((cout >> 7) & 1) << C_SHIFT) |
                   ((((cout + 64) >> 7) & 1) << P_SHIFT) |
-                  (((cout >> 3) & 1) << H_SHIFT) |
+                  // (((cout >> 3) & 1) << H_SHIFT) |
+                  ((cout & 8) << (H_SHIFT - 3)) |
                   ((W == 0) << Z_SHIFT) |
                   (((WH & 0x80) >> 7) << S_SHIFT));
             HL = W;
