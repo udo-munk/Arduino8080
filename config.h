@@ -54,8 +54,17 @@ static void prompt_fn(char *s)
 // configuration dialog for the machine
 void config(void)
 {
+  const char *cfg = "/CONF80/CFG.TXT";
   char s[10];
   int go_flag = 0;
+
+  // try to read config file
+  if (sd_file.openExistingSFN(cfg)) {
+    sd_file.read(&fp_value, 1);
+    sd_file.read(&disks[0], 22);
+    sd_file.read(&disks[1], 22);
+    sd_file.close();
+  }
 
   while (!go_flag) {
     Serial.print(F("1 - port 255: 0x"));
@@ -121,5 +130,13 @@ again:
     default:
       break;
     }
+  }
+
+  // try to save config file
+  if (sd_file.openExistingSFN(cfg)) {
+    sd_file.write(&fp_value, 1);
+    sd_file.write(&disks[0], 22);
+    sd_file.write(&disks[1], 22);
+    sd_file.close();
   }
 }

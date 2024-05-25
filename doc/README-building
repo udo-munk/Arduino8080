@@ -14,3 +14,13 @@ in Adafruit_FRAM_SPI.cpp, a fork with the modification also is here:
 
 This might be neccessary, saves over 100 bytes, during the dev process
 we sometimes exceeded the boards flash memory.
+
+Preparing a MicroSD card:
+In the root directory of the card create these directories:
+CONF80
+CODE80
+DISKS80
+
+Into the CODE80 directory copy all the .bin files from src-examples.
+Into the DISKS80 directory copy the CP/M disk image from disks.
+In CONF80 create an empty text file CFG.TXT.
