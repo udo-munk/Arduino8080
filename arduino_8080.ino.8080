@@ -1610,7 +1610,7 @@ void loop()
   // put your main code here, to run repeatedly:
   // variables for measuring the run time
   unsigned long start, stop;
-  int stat;
+  BYTE stat;
 
   // we have no memory for a fancy banner
   Serial.println(F("\f8080-SIM v1.6\n"));
