@@ -25,6 +25,9 @@
 // we want hardware SPI
 Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS);
 
+// file handle, at any time we have only one file open
+FatFile sd_file;
+
 // transfer buffer for disk/memory transfers
 static BYTE dsk_buf[SEC_SZ];
 
@@ -82,7 +85,6 @@ void load_file(char *name)
 {
   uint32_t i = 0;
   unsigned char c;
-  FatFile sd_file;
   char SFN[25];
  
   strcpy(SFN, "/CODE80/");
@@ -109,7 +111,6 @@ void load_file(char *name)
 // mount a disk image 'name' on disk 'drive'
 void mount_disk(int8_t drive, char *name)
 {
-  FatFile sd_file;
   char SFN[22];
 
   strcpy(SFN, "/DISKS80/");
@@ -131,10 +132,9 @@ void mount_disk(int8_t drive, char *name)
   Serial.println();
 }
 
-// read from drive a sector on track into FRAM addr
-int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
+// prepare I/O for sector read and write routines
+BYTE prep_io(int8_t drive, int8_t track, int8_t sector, WORD addr)
 {
-  FatFile sd_file;
   uint32_t pos;
 
   // check if track and sector in range
@@ -159,6 +159,18 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
     sd_file.close();
     return FDC_STAT_SEEK;
   }
+
+  return FDC_STAT_OK;
+}
+
+// read from drive a sector on track into FRAM addr
+BYTE read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
+{
+  BYTE stat;
+
+  // prepare for sector read
+  if ((stat = prep_io(drive, track, sector, addr)) != FDC_STAT_OK)
+    return stat;
 
   // read sector into FRAM
   if (sd_file.read(&dsk_buf[0], SEC_SZ) != SEC_SZ) {
@@ -174,33 +186,13 @@ int read_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
 }
 
 // write to drive a sector on track from FRAM addr
-int write_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
+BYTE write_sec(int8_t drive, int8_t track, int8_t sector, WORD addr)
 {
-  FatFile sd_file;
-  uint32_t pos;
+  BYTE stat;
 
-  // check if track and sector in range
-  if (track > TRK)
-    return FDC_STAT_TRACK;
-  if ((sector < 1) || (sector > SPT))
-    return FDC_STAT_SEC;
-
-  // check if disk in drive
-  if (!strlen(disks[drive])) {
-    return FDC_STAT_NODISK;
-  }
-
-  // open file with the disk image
-  if (!sd_file.openExistingSFN(disks[drive])) {
-	  return FDC_STAT_NODISK;
-  }
-
-  // seek to track/sector
-  pos = (((uint32_t) track * (uint32_t) SPT) + sector - 1) * SEC_SZ;
-  if (!sd_file.seekSet(pos)) {
-    sd_file.close();
-    return FDC_STAT_SEEK;
-  }
+  // prepare for sector write
+  if ((stat = prep_io(drive, track, sector, addr)) != FDC_STAT_OK)
+    return stat;
 
   // write sector to disk image
   if (!fram.read(addr, &dsk_buf[0], SEC_SZ)) {
