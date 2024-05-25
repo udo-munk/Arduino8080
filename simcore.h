@@ -41,10 +41,12 @@ char disks[2][22];
 
 // FDC status codes
 #define FDC_STAT_OK      0 // command executed successfull
-#define FDC_STAT_NODISK  1 // disk file open error
-#define FDC_STAT_SEEK    2 // disk file seek error
-#define FDC_STAT_READ    3 // disk file read error
-#define FDC_STAT_WRITE   4 // disk file write error
-#define FDC_STAT_DMA     5 // DMA memory read/write error
-#define FDC_STAT_TRACK   6 // track # > TRK
-#define FDC_STAT_SEC     7 // sector < 1 or > SPT
+#define FDC_STAT_DISK    1 // disk drive out of range
+#define FDC_STAT_NODISK  2 // disk file open error
+#define FDC_STAT_SEEK    3 // disk file seek error
+#define FDC_STAT_READ    4 // disk file read error
+#define FDC_STAT_WRITE   5 // disk file write error
+#define FDC_STAT_DMA     6 // DMA memory read/write error
+#define FDC_STAT_DMAADR  7 // DMA address out of range (cannot wrap 0xffff -> 0)
+#define FDC_STAT_TRACK   8 // track # > TRK
+#define FDC_STAT_SEC     9 // sector # < 1 or > SPT

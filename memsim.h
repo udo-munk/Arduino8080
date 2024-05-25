@@ -137,11 +137,19 @@ BYTE prep_io(int8_t drive, int8_t track, int8_t sector, WORD addr)
 {
   uint32_t pos;
 
+  // check if drive in range
+  if ((drive < 0) || (drive > 1))
+    return FDC_STAT_DISK;
+  
   // check if track and sector in range
   if (track > TRK)
     return FDC_STAT_TRACK;
   if ((sector < 1) || (sector > SPT))
     return FDC_STAT_SEC;
+
+  // check if DMA address in range
+  if (addr > 0xff7f)
+    return FDC_STAT_DMAADR;
 
   // check if disk in drive
   if (!strlen(disks[drive])) {
