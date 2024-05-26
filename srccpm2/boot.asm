@@ -2,7 +2,6 @@
 ;
 ;	Copyright (C) 2024 by Udo Munk
 ;
-	.8080
 	ORG	0		;mem base of boot
 ;
 MSIZE	EQU	64		;mem size in kbytes

@@ -26,7 +26,6 @@ CONSTA	EQU	0		;console status port
 CONDAT	EQU	1		;console data port
 FDC	EQU	4		;port for the FDC
 ;
-	.8080
 	ORG	BIOS		;origin of BIOS
 ;
 ;	jump vector for individual subroutines
