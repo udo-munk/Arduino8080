@@ -1,0 +1,25 @@
+The directory srccpm2 includes everything needed to put a customized
+CP/M 2.2 on the boot tracks of a disk image. A Makefile is included,
+that assembles boot loader and CBIOS with z80pack z80asm, and also
+builds the putsys utility, used to write the system onto the disk image.
+This is done with two commands executed in the directory:
+
+	make
+	./putsys
+
+With that disks/cpm22.dsk is ready to be copied to a MicroSD card into
+a directory /DISKS80, which you need to create. Because I have done
+this already you can just copy disks/cpm22.dsk into /DISKS80 on the
+SD card.
+
+The CP/M 2.2 disk image includes everything that came with CP/M 2.2,
+plus a selection of some usefull tools. I also copied boot loader
+and CBIOS sources together with submit scripts onto the disk. CP/M
+was designed as self containing systems, means it has everything
+like editor, assembler, loader and so on, that it can be used to
+create a bootable disk. I always thought it is a good test for an
+operating system, when it can build and install it self on some disk.
+For this the filesystem must be stable, one needs working tools, so
+everything included that you can verify this. Please be aware that
+the machine is slow, this will need like 20 Minutes or so, but
+great fun to watch it at doing serious work.
