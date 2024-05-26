@@ -22,4 +22,10 @@ operating system, when it can build and install it self on some disk.
 For this the filesystem must be stable, one needs working tools, so
 everything included that you can verify this. Please be aware that
 the machine is slow, this will need like 20 minutes or so, but
-great fun to watch it at doing serious work.
+great fun to watch it at doing serious work. On the booted CP/M
+system run these commands:
+
+	submit sysgen64
+	sysgen cpm64.sys
+
+Answer question about drive with 'a'.
