@@ -266,7 +266,7 @@ with the following components:
 				  programs and the system configuration
 
 This computer system certainly will not win any speed award, but it should
-receive some cooleness award, because with a few tiny microelectronic circuits
+receive some coolness award, because with a few tiny microelectronic circuits
 it substitutes a complete S100 mainframe from ca. 1980.
 
 Udo Munk, May 2024
