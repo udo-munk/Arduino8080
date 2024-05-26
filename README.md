@@ -254,3 +254,21 @@ anymore, but one can't have it all I guess.
 
 Long live the Zilog Z80 !
 
+With this release we have implemented a real computer system
+with the following components:
+
+	8080 or Z80 CPU running with 0.04 MHz
+	MITS Altair 88-SIO Rev. 1 for serial communication
+	RAM @ 0000H - FEFFH
+	ROM @ FF00H - FFFFH
+	Floppy disk controller with two 8" floppy disk drives
+	Huge 32 GB MicroSD drive, that stores floppy disk images, standalone
+				  programs and the system configuration
+
+This computer system certainly will not win any speed award, but it should
+receive some cooleness award, because with a few tiny microelectronic circuits
+it substitutes a complete S100 mainframe from ca. 1980.
+
+Udo Munk, May 2024
+
+<><><><><><><><><><><><><><><><><><><><><><><>
