@@ -26,5 +26,9 @@ picoboard3:
 I added a switch connected to GND and D3 at the Arduino Nano. Pressing
 the switch will cause an interrupt, which stops the 8080 CPU at next M1
 from whatever it is doing.
+This is optional and not really required for a functioning system. If the
+machine gets stuck with some broken software you can reset the Arduino
+board and restart all over. It just helps to analyze problems with buggy
+software.
 
 MAY 2024, Udo Munk
