@@ -24,3 +24,9 @@ DISKS80
 Into the CODE80 directory copy all the .bin files from src-examples.
 Into the DISKS80 directory copy the CP/M disk image from disks.
 In CONF80 create an empty text file CFG.TXT.
+
+I have tried to create the configuration file from the application,
+but this would pull in another 2 KB into the code segment, which we
+don't have when building the Z80 variant. So the directory and an
+empty file must be created once, from there on it will just be used
+to save and load the last configuration.
