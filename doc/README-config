@@ -1,0 +1,44 @@
+When the system is powered on it displays a configuration dialog,
+that allows to setup and run the machine, either with standalone
+software, or boot an operating system from floppy disk. The dialog
+is very ineloquent and there is no builtin help, because of the
+limited memory resources of the Arduino Nano's ATmega328 MCU. So
+here a short introduction how to use it, the dialog looks like this:
+
+	Z80-SIM v1.6
+
+	1 - port 255: 0x22
+	2 - load file
+	3 - Disk 0:
+	4 - Disk 1:
+	5 - run machine
+
+	Command:
+
+To select a configuration option enter the number at the prompt.
+
+With 1 the value read from port 255 can be set. This is the hardware
+configuration that sofware can query, which components are in the
+machine. MITS Altair BASIC interpreter versions < 4.0 need a value
+of 0x00 and versions >= 4.0 a value of 0x22. To set the value enter
+two hex digits, not just one and return. If you want to set it to
+0x07 then enter 07.
+
+With 2 one can load a file with 8080/Z80 binary code into the memory.
+Just enter the name of the file, directory and extension will be added
+by the software. Unfortunately we cannot list directory contents because
+of the memory constrains, so keep directory listings on the PC you used
+to prepare the MicroSD card.
+
+With 3 one can mount/unmount disk images on disk drive 0. To mount
+one enter the filename, to unmount enter return only. If disk drive 0
+has a disk image mounted the machine will boot from this, no matter
+which program code was loaded before. A disk image in disk drive 0
+must contain a bootable operating system, like the included CP/M 2.2
+implementation for the machine.
+
+With 4 one can mount/unmount another disk image with some application
+software or data or whatever, same as with drive 0.
+
+With 5 the 8080/Z80 CPU is started with code from disk drive 0, and
+if nothing mounted with whatever was loaded into the memory.
