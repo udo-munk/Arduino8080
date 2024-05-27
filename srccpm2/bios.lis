@@ -1,7 +1,7 @@
 Z80/8080-Macro-Assembler  Release 2.0
 
 LOC   OBJECT CODE   LINE   STMT SOURCE CODE
-                       1      1 ;	8080 CBIOS for Arduino 8080
+                       1      1 ;	8080 CBIOS for z80pack machines using SD-FDC
                        2      2 ;
                        3      3 ;	Copyright (C) 2024 by Udo Munk
                        4      4 ;

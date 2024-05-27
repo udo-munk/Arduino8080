@@ -1,4 +1,4 @@
-;	8080 CBIOS for Arduino 8080
+;	8080 CBIOS for z80pack machines using SD-FDC
 ;
 ;	Copyright (C) 2024 by Udo Munk
 ;

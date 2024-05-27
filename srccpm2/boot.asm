@@ -1,4 +1,5 @@
-;	CP/M 2.2 boot-loader for Arduino 8080
+;
+;	CP/M 2.2 boot-loader for z80pack machines using SD-FDC
 ;
 ;	Copyright (C) 2024 by Udo Munk
 ;
