@@ -269,6 +269,8 @@ This computer system certainly will not win any speed award, but it should
 receive some coolness award, because with a few tiny microelectronic circuits
 it substitutes a complete S100 mainframe from ca. 1980.
 
+And here a video that shows this system in action: https://youtu.be/DQ6wM0TVROI
+
 Udo Munk, May 2024
 
 <><><><><><><><><><><><><><><><><><><><><><><>
