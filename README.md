@@ -262,8 +262,8 @@ with the following components:
 	RAM @ 0000H - FEFFH
 	ROM @ FF00H - FFFFH
 	Floppy disk controller with two 8" floppy disk drives
-	Huge 32 GB MicroSD drive, that stores floppy disk images, standalone
-				  programs and the system configuration
+	Huge 32 GB MicroSD drive, that stores floppy disk images,
+	standalone programs and the system configuration
 
 This computer system certainly will not win any speed award, but it should
 receive some coolness award, because with a few tiny microelectronic circuits
