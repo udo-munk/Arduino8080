@@ -12,6 +12,7 @@
 // 18-MAY-2024 Release 1.4 read 8080 code from a file on SD into FRAM
 // 20-MAY-2024 Release 1.5.1 added interrupt key and register dump for debugging
 // 22-MAY-2024 Release 1.6 boot from a disk image on SD
+// 13-JUN-2024 Release 1.6.1 power on jump into boot ROM
 //
 
 //#define DEBUG // enables some debug messages
@@ -144,7 +145,7 @@ static const BYTE szp_flags[256] = {
 // beginning, which is not the case with the silicon.
 static void init_cpu(struct cpu_state *cpu_state)
 {
-  cpu_state->pc.w = 0;
+  cpu_state->pc.w = 0xff00; // normally 0, power on jump to boot ROM
   cpu_state->sp.w = random(65535);
   cpu_state->af.w = random(65535);
   cpu_state->bc.w = random(65535);
@@ -2568,32 +2569,24 @@ void setup()
 void loop()
 {
   // put your main code here, to run repeatedly:
+
   // variables for measuring the run time
   unsigned long start, stop;
-  BYTE stat;
 
   // we have no memory for a fancy banner
-  Serial.println(F("\fZ80-SIM v1.6\n"));
+  Serial.println(F("\fZ80-SIM v1.6.1\n"));
 
   // initialize and configure all virtual hardware
   init_cpu(&cpu_state);
   init_memory();
   NOPE: config();
 
-  // if there is a disk in drive 0 try to boot from it
+  // check if there are disks in the drives
   if (strlen(disks[0]) != 0) {
     // they will try this for sure, so ...
     if (!strcmp(disks[0], disks[1])) {
       Serial.println(F("Not with this config dude\n"));
       goto NOPE;
-    }
-    stat = read_sec(0, 0, 1, 0); // read track 0 sector 1 into memory addr. 0
-    if (stat != FDC_STAT_OK) {
-      Serial.print(F("Disk 0 read error: "));
-      Serial.println(stat, DEC);
-      Serial.println();
-      Serial.flush();
-      exit(1);
     }
   }
 

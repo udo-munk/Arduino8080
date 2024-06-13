@@ -19,11 +19,16 @@
 // 18-MAY-2024 Release 1.4 read 8080 code from a file on SD into FRAM
 // 19-MAY-2024 Release 1.5 use SdFat lib instead of SD lib to save memory
 // 21-MAY-2024 Release 1.6 added low level functions for disk images on SD
+// 13-JUN-2024 Release 1.6.1 use a real boot ROM for booting the machine
 //
 
 // 64 KB unbanked memory in FRAM
 // we want hardware SPI
 Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_CS);
+
+// boot ROM
+#define MEMSIZE 256
+#include "bootrom.h"
 
 // file handle, at any time we have only one file open
 FatFile sd_file;
@@ -36,9 +41,9 @@ void init_memory(void)
 {
   uint32_t i;
 
-  // fill top page of 8080 memory with 0xff, write protected ROM
-  for (i = 0xff00; i <= 0xffff; i++)
-    fram.write8(i, 0xff);
+  // copy the boot ROM into the top page of 8080 memory
+  for (i = 0; i < 256; i++)
+    fram.write8(0xff00 + i, pgm_read_byte_near(code + i));
 }
 
 // read a byte from 8080 CPU memory at address addr
@@ -50,7 +55,7 @@ static inline BYTE memrdr(WORD addr)
 // write a byte data into 8080 CPU RAM at address addr 
 static inline void memwrt(WORD addr, BYTE data)
 {
-  if (addr < 0xff00) // top memory page write protected for MITS BASIC
+  if (addr < 0xff00) // top memory page write protected, boot ROM
     fram.write8((uint32_t) addr, data);
 }
 
