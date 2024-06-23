@@ -96,11 +96,6 @@ void load_file(char *name)
   strcat(SFN, name);
   strcat(SFN, ".BIN");
 
-#ifdef DEBUG
-  Serial.print(F("Filename: "));
-  Serial.println(SFN);
-#endif
-
   if (!sd_file.openExistingSFN(SFN)) {
     complain();
     return;
@@ -121,11 +116,6 @@ void mount_disk(int8_t drive, char *name)
   strcpy(SFN, "/DISKS80/");
   strcat(SFN, name);
   strcat(SFN, ".DSK");
-
-#ifdef DEBUG
-  Serial.print(F("Filename: "));
-  Serial.println(SFN);
-#endif
 
   if (!sd_file.openExistingSFN(SFN)) {
     complain();
