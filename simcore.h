@@ -36,7 +36,7 @@ enum CPUState { Running = 1, Halted = 2, Interrupted = 3 };
 #define SPT       26    // sectors per track
 #define TRK       77    // number of tracks
 
-// path name for 2 disk images /DISKS80/filename.BIN
+// path name for 2 disk images /DISKS80/filename.DSK
 char disks[2][22];
 
 // FDC status codes
