@@ -6,15 +6,6 @@ additional libraries, which need to get installed in the IDE:
 	Adafruit_FRAM_SPI
 	SdFat - Adafruit Fork
 
-The Adafruit FRAM library prints debug messages to the terminal,
-which needs memory. I have disabled this with #ifdef DEBUG .. #endif
-in Adafruit_FRAM_SPI.cpp, a fork with the modification also is here:
-
-	https://github.com/udo-munk/Adafruit_FRAM_SPI.git
-
-This might be neccessary, saves over 100 bytes, during the dev process
-we sometimes exceeded the boards flash memory.
-
 Preparing a MicroSD card:
 In the root directory of the card create these directories:
 CONF80
