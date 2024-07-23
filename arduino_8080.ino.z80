@@ -15,7 +15,8 @@
 // 13-JUN-2024 Release 1.6.1 power on jump into boot ROM
 //
 
-//#define DEBUG // enables some debug messages
+//#define FRAM_DEBUG 1  // enables FRAM debug messages
+//#define DEBUG         // enables some application debug messages
 
 #include <stdint.h>
 #include <SPI.h>
